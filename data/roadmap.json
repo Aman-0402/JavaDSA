@@ -46,7 +46,8 @@
       "id": "arrays-strings",
       "title": "Arrays & Strings",
       "topics": [
-        { "id": "java-1d-arrays", "title": "1D Arrays", "lesson": "java-1d-arrays" }
+        { "id": "java-1d-arrays", "title": "1D Arrays", "lesson": "java-1d-arrays" },
+        { "id": "java-2d-arrays", "title": "2D Arrays", "lesson": "java-2d-arrays" }
       ]
     },
     { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },

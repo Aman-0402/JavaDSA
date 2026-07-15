@@ -1,0 +1,165 @@
+{
+  "id": "java-2d-arrays",
+  "moduleId": "arrays-strings",
+  "title": "2D Arrays",
+  "description": "Arrays of arrays — declaring a grid, accessing with [row][col], and looping with nested loops.",
+  "objectives": [
+    "Declare and initialize a 2D array",
+    "Access and modify elements using row and column indices",
+    "Loop over a 2D array with nested for loops"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. An Array of Arrays"
+    },
+    {
+      "type": "paragraph",
+      "text": "A 1D array is a row of values. A 2D array is a grid — rows and columns — which Java implements as an array where each element is itself another array."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};"
+    },
+    {
+      "type": "definition",
+      "term": "2D array",
+      "text": "An array whose elements are themselves arrays, commonly visualized as a grid of rows and columns and accessed with two indices: array[row][col]."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Spreadsheet analogy",
+      "text": "Think of a 2D array like a spreadsheet: the first index picks the row, the second picks the column within that row. grid[1][2] means \"row 1, column 2\" — the value 6 in the example above."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring a 2D Array with a Fixed Size"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[][] grid = new int[3][4]; // 3 rows, 4 columns, all default to 0"
+    },
+    {
+      "type": "heading",
+      "text": "3. Accessing and Modifying Elements"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\n\nSystem.out.println(grid[0][0]);\nSystem.out.println(grid[1][2]);\ngrid[2][0] = 100;\nSystem.out.println(grid[2][0]);",
+      "output": "1\n6\n100",
+      "retypePractice": true,
+      "retypeId": "java-2d-access"
+    },
+    {
+      "type": "warning",
+      "text": "grid[1][2] means row index 1, column index 2 — both zero-based, same as 1D arrays. It's easy to accidentally swap row and column in your head; always read it as [row][col]."
+    },
+    {
+      "type": "heading",
+      "text": "4. Looping Over a 2D Array"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\n\nfor (int row = 0; row < grid.length; row++) {\n    for (int col = 0; col < grid[row].length; col++) {\n        System.out.print(grid[row][col] + \" \");\n    }\n    System.out.println();\n}",
+      "output": "1 2 3 \n4 5 6 \n7 8 9",
+      "retypePractice": true,
+      "retypeId": "java-2d-print-grid"
+    },
+    {
+      "type": "note",
+      "text": "grid.length gives the number of ROWS (3 here). grid[row].length gives the number of COLUMNS in that specific row (also 3 here, but rows could theoretically have different lengths — see the next section). The inner println() with no arguments moves to a new line after each row finishes printing."
+    },
+    {
+      "type": "heading",
+      "text": "5. Rows Don't Have to Be the Same Length"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[][] jagged = {\n    {1},\n    {2, 3},\n    {4, 5, 6}\n};\n\nSystem.out.println(jagged[2][1]); // 5"
+    },
+    {
+      "type": "note",
+      "text": "Because a 2D array in Java is really an array of separate array objects, each inner array can have its own independent length. This is called a jagged array. This is why the loop in the previous section always used grid[row].length for the inner bound, rather than assuming every row is the same size."
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int[][] matrix = {\n            {1, 2, 3},\n            {4, 5, 6},\n            {7, 8, 9}\n        };\n\n        int sum = 0;\n        for (int row = 0; row < matrix.length; row++) {\n            for (int col = 0; col < matrix[row].length; col++) {\n                sum += matrix[row][col];\n            }\n        }\n\n        System.out.println(\"Sum of all elements: \" + sum);\n    }\n}",
+      "output": "Sum of all elements: 45",
+      "retypePractice": true,
+      "retypeId": "java-2d-sum"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Swapping row and column in your head — grid[row][col], always in that order.",
+        "Assuming every row has the same length and using a single .length for both loop bounds instead of grid[row].length for the inner loop.",
+        "Forgetting a 2D array is really an array of arrays — grid.length is the ROW count, not the total element count.",
+        "Off-by-one errors in the nested loop bounds, same risk as with 1D arrays but doubled across two dimensions."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a 2D array in Java, conceptually?",
+          "answer": "An array whose elements are themselves arrays — commonly visualized as a grid of rows and columns, accessed with two indices as array[row][col]."
+        },
+        {
+          "question": "What does grid.length give you for a 2D array? What about grid[0].length?",
+          "answer": "grid.length gives the number of rows (the outer array's size). grid[0].length gives the number of columns in row 0 specifically — the size of that particular inner array."
+        },
+        {
+          "question": "What is a jagged array?",
+          "answer": "A 2D array where the inner arrays (rows) have different lengths from each other, which is possible because each row is genuinely a separate array object in Java."
+        }
+      ],
+      "thirtySecondAnswer": "A 2D array is Java's array-of-arrays, typically visualized as a grid and accessed with two indices, array[row][col], both zero-based. grid.length gives the number of rows; grid[row].length gives the number of columns in that specific row, which matters because Java allows jagged arrays where rows have different lengths. Looping over a 2D array uses nested for loops, with the inner loop's bound checked per-row (grid[row].length) rather than assuming a uniform row size."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "2D array = a spreadsheet. First bracket picks the ROW, second bracket picks the COLUMN. Rows can even be different lengths — it's really just an array of independent arrays."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "In grid[row][col], which index is the row and which is the column?",
+        "What does grid.length return? What about grid[0].length?",
+        "What is a jagged array?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-2d-access", "lang": "java", "filename": "Main.java", "code": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\n\nSystem.out.println(grid[0][0]);\nSystem.out.println(grid[1][2]);\ngrid[2][0] = 100;\nSystem.out.println(grid[2][0]);", "output": "1\n6\n100" },
+    { "id": "java-2d-print-grid", "lang": "java", "filename": "Main.java", "code": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\n\nfor (int row = 0; row < grid.length; row++) {\n    for (int col = 0; col < grid[row].length; col++) {\n        System.out.print(grid[row][col] + \" \");\n    }\n    System.out.println();\n}", "output": "1 2 3 \n4 5 6 \n7 8 9" },
+    { "id": "java-2d-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int[][] matrix = {\n            {1, 2, 3},\n            {4, 5, 6},\n            {7, 8, 9}\n        };\n\n        int sum = 0;\n        for (int row = 0; row < matrix.length; row++) {\n            for (int col = 0; col < matrix[row].length; col++) {\n                sum += matrix[row][col];\n            }\n        }\n\n        System.out.println(\"Sum of all elements: \" + sum);\n    }\n}", "output": "Sum of all elements: 45" }
+  ],
+  "retypePractice": [
+    { "id": "java-2d-access", "reference": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\n\nSystem.out.println(grid[0][0]);\nSystem.out.println(grid[1][2]);\ngrid[2][0] = 100;\nSystem.out.println(grid[2][0]);" },
+    { "id": "java-2d-print-grid", "reference": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\n\nfor (int row = 0; row < grid.length; row++) {\n    for (int col = 0; col < grid[row].length; col++) {\n        System.out.print(grid[row][col] + \" \");\n    }\n    System.out.println();\n}" },
+    { "id": "java-2d-sum", "reference": "public class Main {\n    public static void main(String[] args) {\n        int[][] matrix = {\n            {1, 2, 3},\n            {4, 5, 6},\n            {7, 8, 9}\n        };\n\n        int sum = 0;\n        for (int row = 0; row < matrix.length; row++) {\n            for (int col = 0; col < matrix[row].length; col++) {\n                sum += matrix[row][col];\n            }\n        }\n\n        System.out.println(\"Sum of all elements: \" + sum);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-2d-access", "java-2d-print-grid", "java-2d-sum"]
+  }
+}
