@@ -1,0 +1,164 @@
+{
+  "id": "java-enhanced-for-loop",
+  "moduleId": "control-flow",
+  "title": "Enhanced for Loop (for-each)",
+  "description": "The simplified for-each syntax for looping over every element of an array, previewed ahead of the Arrays lesson.",
+  "objectives": [
+    "Write an enhanced for (for-each) loop over an array",
+    "Understand what it hides compared to a regular for loop",
+    "Know when for-each can't be used"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. A Quick Preview: Arrays"
+    },
+    {
+      "type": "paragraph",
+      "text": "We haven't formally learned arrays yet — that's a dedicated upcoming module. But the enhanced for loop is best understood with one, so here's the minimum needed: an array is a group of values of the same type, stored together, that you can loop over."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] numbers = {10, 20, 30, 40, 50};"
+    },
+    {
+      "type": "warning",
+      "text": "The int[] numbers = {...}; syntax itself is explained properly in the Arrays module. For this lesson, just treat numbers as \"a row of 5 int values.\""
+    },
+    {
+      "type": "heading",
+      "text": "2. Looping Over an Array with a Regular for Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int i = 0; i < numbers.length; i++) {\n    System.out.println(numbers[i]);\n}"
+    },
+    {
+      "type": "note",
+      "text": "numbers.length gives the number of elements, and numbers[i] accesses the element at position i. This works, but you have to manage the index i yourself, even though all you really wanted was \"give me each value, one at a time.\""
+    },
+    {
+      "type": "heading",
+      "text": "3. The Enhanced for Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int num : numbers) {\n    System.out.println(num);\n}",
+      "output": "10\n20\n30\n40\n50",
+      "retypePractice": true,
+      "retypeId": "java-enhanced-for-numbers"
+    },
+    {
+      "type": "definition",
+      "term": "Enhanced for loop (for-each)",
+      "text": "A simplified for loop syntax, for (type variable : collection), that automatically visits every element of an array or collection in order, without needing an index variable."
+    },
+    {
+      "type": "paragraph",
+      "text": "Read for (int num : numbers) as \"for each num in numbers.\" On each pass, num holds the next value from numbers — first 10, then 20, and so on — until every value has been visited."
+    },
+    {
+      "type": "heading",
+      "text": "4. What It Hides"
+    },
+    {
+      "type": "table",
+      "headers": ["Regular for", "Enhanced for"],
+      "rows": [
+        ["You manage the index i yourself", "No index — Java manages the position internally"],
+        ["Can access numbers[i] at any position", "You only get each value, one at a time, in order"],
+        ["Can loop backward, skip elements, or stop early with custom logic", "Always moves forward through every element"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Because there's no index, the enhanced for loop cannot tell you the position of the current element, cannot loop backward, and cannot modify the array's contents through the loop variable. Use a regular for loop when you need the index for any reason."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int[] scores = {85, 92, 78, 90};\n        int total = 0;\n\n        for (int score : scores) {\n            total += score;\n        }\n\n        System.out.println(\"Total: \" + total);\n    }\n}",
+      "output": "Total: 345",
+      "retypePractice": true,
+      "retypeId": "java-enhanced-for-sum"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "total starts at 0",
+        "score = 85: total becomes 85",
+        "score = 92: total becomes 177",
+        "score = 78: total becomes 255",
+        "score = 90: total becomes 345",
+        "no more elements — loop ends, total is 345"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to get the current index inside an enhanced for loop — it doesn't provide one; use a regular for loop if you need i.",
+        "Trying to modify the array through the loop variable, expecting it to change the original array — reassigning num inside for (int num : numbers) does not affect numbers itself.",
+        "Using an enhanced for loop when you need to loop backward or skip elements — it always moves forward through every element."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the syntax of Java's enhanced for (for-each) loop?",
+          "answer": "for (type variable : collection) { ... } — it automatically visits every element of an array or collection, assigning each one to variable in turn, with no index management needed."
+        },
+        {
+          "question": "What can a regular for loop do that an enhanced for loop cannot?",
+          "answer": "A regular for loop provides access to the index, can loop backward, skip elements, or stop at an arbitrary position — the enhanced for loop only moves forward through every element with no index available."
+        },
+        {
+          "question": "Does modifying the loop variable in an enhanced for loop change the underlying array?",
+          "answer": "No. The loop variable holds a copy of each element's value (for primitives); reassigning it inside the loop body has no effect on the original array."
+        }
+      ],
+      "thirtySecondAnswer": "The enhanced for loop, for (type variable : collection), simplifies looping over every element of an array or collection by removing the need to manage an index manually — Java handles the position internally and gives you each value in turn. It trades that convenience for flexibility: there's no index available, so you can't loop backward, skip elements, or know an element's position. Use a regular for loop instead whenever you need the index or non-sequential access."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "for (int num : numbers) reads as \"for each num IN numbers.\" No index, no numbers[i] — just the values, one after another, forward only."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does for (int num : numbers) mean in plain English?",
+        "Can you get the current index inside an enhanced for loop?",
+        "When would you choose a regular for loop over an enhanced for loop?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-enhanced-for-numbers", "lang": "java", "filename": "Main.java", "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int num : numbers) {\n    System.out.println(num);\n}", "output": "10\n20\n30\n40\n50" },
+    { "id": "java-enhanced-for-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int[] scores = {85, 92, 78, 90};\n        int total = 0;\n\n        for (int score : scores) {\n            total += score;\n        }\n\n        System.out.println(\"Total: \" + total);\n    }\n}", "output": "Total: 345" }
+  ],
+  "retypePractice": [
+    { "id": "java-enhanced-for-numbers", "reference": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int num : numbers) {\n    System.out.println(num);\n}" },
+    { "id": "java-enhanced-for-sum", "reference": "public class Main {\n    public static void main(String[] args) {\n        int[] scores = {85, 92, 78, 90};\n        int total = 0;\n\n        for (int score : scores) {\n            total += score;\n        }\n\n        System.out.println(\"Total: \" + total);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-enhanced-for-numbers", "java-enhanced-for-sum"]
+  }
+}
