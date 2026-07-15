@@ -1,0 +1,159 @@
+{
+  "id": "java-list-arraylist-linkedlist",
+  "moduleId": "collections-framework",
+  "title": "List: ArrayList vs LinkedList",
+  "description": "The List interface, its two most common implementations, and when each one's performance actually matters.",
+  "objectives": [
+    "Understand List as an interface with multiple implementations",
+    "Compare ArrayList and LinkedList's performance trade-offs",
+    "Choose between them based on the actual usage pattern"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. List: One Interface, Multiple Implementations"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the JCF Overview, we recommended declaring List<String> names = new ArrayList<>();. Today we look at WHY there's a choice at all -- List has more than one implementation, and ArrayList isn't always the best fit."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.LinkedList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> arrList = new ArrayList<>();\n        arrList.add(\"a\");\n        arrList.add(\"b\");\n\n        List<String> linkedList = new LinkedList<>();\n        linkedList.add(\"x\");\n        linkedList.add(\"y\");\n\n        System.out.println(arrList);\n        System.out.println(linkedList);\n    }\n}",
+      "output": "[a, b]\n[x, y]",
+      "retypePractice": true,
+      "retypeId": "java-list-both"
+    },
+    {
+      "type": "note",
+      "text": "Both use the exact same List methods (add, get, remove) identically -- this is the whole benefit of programming against the List interface (JCF Overview) rather than a concrete class. What differs is what happens INTERNALLY, and therefore performance."
+    },
+    {
+      "type": "heading",
+      "text": "2. How ArrayList Works Internally"
+    },
+    {
+      "type": "paragraph",
+      "text": "ArrayList is backed by an actual array under the hood (recall 1D Arrays) -- when it runs out of room, it silently creates a bigger array and copies everything over. This gives it fast index-based access (get(i) is nearly instant), but inserting or removing from the MIDDLE requires shifting every element after it."
+    },
+    {
+      "type": "heading",
+      "text": "3. How LinkedList Works Internally"
+    },
+    {
+      "type": "paragraph",
+      "text": "LinkedList (previewed here, covered properly with the manual Node-based version in the Linked List module) stores each element in its own small node, linked to the next and previous node -- like a chain. Inserting or removing in the middle just relinks a couple of nodes, no shifting required. But finding the element at index 500 means walking the chain from the start, one link at a time."
+    },
+    {
+      "type": "table",
+      "title": "ArrayList vs LinkedList",
+      "headers": ["", "ArrayList", "LinkedList"],
+      "rows": [
+        ["Backed by", "A resizable array", "A chain of linked nodes"],
+        ["get(index)", "Fast -- direct access", "Slow -- must walk the chain from the start"],
+        ["add/remove at the END", "Fast (usually)", "Fast"],
+        ["add/remove in the MIDDLE", "Slow -- shifts every following element", "Fast -- just relinks neighboring nodes"],
+        ["Best for", "Frequent random access by index", "Frequent insertion/removal in the middle"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Using LinkedList as a Deque (Preview)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "LinkedList<Integer> list = new LinkedList<>();\nlist.addFirst(1);\nlist.addLast(2);\nSystem.out.println(list); // [1, 2]"
+    },
+    {
+      "type": "warning",
+      "text": "LinkedList also implements Deque (double-ended queue), giving it addFirst/addLast/removeFirst/removeLast methods that ArrayList doesn't have. We only preview this here -- Deque gets its own full lesson in the Stacks & Queues module."
+    },
+    {
+      "type": "heading",
+      "text": "5. Which Should You Default To?"
+    },
+    {
+      "type": "tip",
+      "text": "In everyday code, ArrayList is the more common default -- most programs read/access elements far more often than they insert into the middle. Reach for LinkedList specifically when your usage pattern involves frequent middle insertions/removals, or when you need Deque-style operations at both ends."
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        for (int i = 1; i <= 5; i++) {\n            numbers.add(i * 10);\n        }\n\n        numbers.remove(Integer.valueOf(30)); // removes the VALUE 30, not index 30\n\n        System.out.println(numbers);\n    }\n}",
+      "output": "[10, 20, 40, 50]",
+      "retypePractice": true,
+      "retypeId": "java-list-remove-value"
+    },
+    {
+      "type": "warning",
+      "text": "numbers.remove(30) alone would try to remove the element AT INDEX 30 (throwing an exception, since this list has only 5 elements), because remove(int) is overloaded (Method Overloading) to mean 'remove by index.' Wrapping it as Integer.valueOf(30) forces Java to match the remove(Object) overload instead, removing the VALUE 30 -- a classic List gotcha."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Calling list.remove(30) expecting it to remove the value 30, when it actually removes the element at index 30 -- use Integer.valueOf(30) to remove by value instead.",
+        "Defaulting to LinkedList without a specific reason, when ArrayList's fast random access fits most everyday use cases better.",
+        "Assuming LinkedList's get(index) is just as fast as ArrayList's -- it must walk the chain from the start, which is much slower for large lists.",
+        "Forgetting that repeatedly inserting into the middle of a large ArrayList is slow, since every following element must shift."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the main performance difference between ArrayList and LinkedList?",
+          "answer": "ArrayList offers fast index-based access (get(i)) since it's backed by an array, but inserting/removing in the middle is slow due to shifting elements. LinkedList offers fast middle insertion/removal since it just relinks nodes, but get(i) is slow since it must walk the chain from the start."
+        },
+        {
+          "question": "When would you choose LinkedList over ArrayList?",
+          "answer": "When the usage pattern involves frequent insertions or removals in the middle of the list, or when Deque-style operations (adding/removing from both ends) are needed -- otherwise, ArrayList is usually the better default."
+        },
+        {
+          "question": "Why does list.remove(30) behave differently than list.remove(Integer.valueOf(30))?",
+          "answer": "remove is overloaded: remove(int index) removes by position, while remove(Object o) removes by matching value. A plain int argument like 30 matches the index version; wrapping it as Integer.valueOf(30) forces the value-based overload instead."
+        }
+      ],
+      "thirtySecondAnswer": "List is an interface with multiple implementations -- ArrayList and LinkedList are the two most common. ArrayList is backed by a resizable array, giving fast index-based access but slow middle insertion/removal (since elements must shift). LinkedList is a chain of linked nodes, giving fast middle insertion/removal (just relinking neighbors) but slow index-based access (must walk the chain). ArrayList is the sensible everyday default; LinkedList suits frequent middle modifications or Deque-style use at both ends. A classic gotcha: list.remove(30) removes by INDEX, while list.remove(Integer.valueOf(30)) removes by VALUE, due to overloading."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "ArrayList = a numbered row of seats -- jump straight to any seat, but squeezing a new one into the middle means everyone shifts. LinkedList = a human chain holding hands -- inserting someone just means two people let go and grab the new person instead, but finding person #500 means walking the whole chain."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Which is faster for get(index): ArrayList or LinkedList? Why?",
+        "Which is faster for inserting into the middle: ArrayList or LinkedList? Why?",
+        "When would you specifically choose LinkedList?",
+        "Why does list.remove(30) behave differently than list.remove(Integer.valueOf(30))?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-list-both", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.LinkedList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> arrList = new ArrayList<>();\n        arrList.add(\"a\");\n        arrList.add(\"b\");\n\n        List<String> linkedList = new LinkedList<>();\n        linkedList.add(\"x\");\n        linkedList.add(\"y\");\n\n        System.out.println(arrList);\n        System.out.println(linkedList);\n    }\n}", "output": "[a, b]\n[x, y]" },
+    { "id": "java-list-remove-value", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        for (int i = 1; i <= 5; i++) {\n            numbers.add(i * 10);\n        }\n\n        numbers.remove(Integer.valueOf(30)); // removes the VALUE 30, not index 30\n\n        System.out.println(numbers);\n    }\n}", "output": "[10, 20, 40, 50]" }
+  ],
+  "retypePractice": [
+    { "id": "java-list-both", "reference": "import java.util.ArrayList;\nimport java.util.LinkedList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> arrList = new ArrayList<>();\n        arrList.add(\"a\");\n        arrList.add(\"b\");\n\n        List<String> linkedList = new LinkedList<>();\n        linkedList.add(\"x\");\n        linkedList.add(\"y\");\n\n        System.out.println(arrList);\n        System.out.println(linkedList);\n    }\n}" },
+    { "id": "java-list-remove-value", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        for (int i = 1; i <= 5; i++) {\n            numbers.add(i * 10);\n        }\n\n        numbers.remove(Integer.valueOf(30)); // removes the VALUE 30, not index 30\n\n        System.out.println(numbers);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-list-both", "java-list-remove-value"]
+  }
+}

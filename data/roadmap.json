@@ -84,7 +84,8 @@
       "id": "collections-framework",
       "title": "Java Collections Framework",
       "topics": [
-        { "id": "java-jcf-overview", "title": "Java Collections Framework Overview", "lesson": "java-jcf-overview" }
+        { "id": "java-jcf-overview", "title": "Java Collections Framework Overview", "lesson": "java-jcf-overview" },
+        { "id": "java-list-arraylist-linkedlist", "title": "List: ArrayList vs LinkedList", "lesson": "java-list-arraylist-linkedlist" }
       ]
     },
     { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
