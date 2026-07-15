@@ -1,0 +1,207 @@
+{
+  "id": "java-type-casting",
+  "moduleId": "java-fundamentals",
+  "title": "Type Casting",
+  "description": "Widening (implicit) vs narrowing (explicit) casts, why (double) a / b fixes integer division, and the overflow risk of narrowing.",
+  "objectives": [
+    "Understand what type casting means and why it's needed",
+    "Tell the difference between widening (implicit) and narrowing (explicit) casts",
+    "Use (double) to fix integer division, as previewed in the Operators lesson",
+    "Recognize the data-loss risk when narrowing a value"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Do We Need Type Casting?"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Operators lesson, we saw that 5 / 2 gives 2 because both operands are int, and we fixed it with (double) a / b without fully explaining that (double) part. Today we explain it."
+    },
+    {
+      "type": "definition",
+      "term": "Type Casting",
+      "text": "Type casting is converting a value from one data type to another, either automatically (by Java) or explicitly (by you, the programmer)."
+    },
+    {
+      "type": "heading",
+      "text": "2. Widening Casting (Automatic)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Widening means converting a smaller type into a larger, more capable type — Java does this automatically, since no information can be lost."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int myInt = 9;\ndouble myDouble = myInt; // automatic widening: int -> double\nSystem.out.println(myDouble); // 9.0"
+    },
+    {
+      "type": "table",
+      "title": "Common widening conversions (automatic)",
+      "headers": ["From", "To"],
+      "rows": [
+        ["byte", "short, int, long, float, double"],
+        ["short or char", "int, long, float, double"],
+        ["int", "long, float, double"],
+        ["long", "float, double"],
+        ["float", "double"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Notice this always goes from a type that can hold less to one that can hold more (or equal) range — an int always fits inside a double, so Java doesn't need your permission."
+    },
+    {
+      "type": "heading",
+      "text": "3. Narrowing Casting (Explicit)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Narrowing means converting a larger type into a smaller one — this can lose information, so Java requires you to explicitly ask for it using a cast."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "double myDouble = 9.78;\nint myInt = (int) myDouble; // explicit narrowing: double -> int\nSystem.out.println(myInt); // 9"
+    },
+    {
+      "type": "warning",
+      "text": "(int) myDouble does not round 9.78 to 10 — it simply truncates (cuts off) the decimal part, keeping only 9. This is the same truncation behavior we saw with integer division in the Operators lesson."
+    },
+    {
+      "type": "definition",
+      "term": "Cast operator",
+      "text": "Writing a target type in parentheses immediately before a value, like (int) myDouble, tells Java to explicitly convert that value to the given type."
+    },
+    {
+      "type": "heading",
+      "text": "4. Fixing Integer Division (Callback to Operators)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int a = 5;\nint b = 2;\n\nSystem.out.println(a / b);          // 2 — int / int stays int\nSystem.out.println((double) a / b); // 2.5 — a is cast to double first"
+    },
+    {
+      "type": "note",
+      "text": "(double) a converts a to 5.0 before the division happens. Now one operand is a double, so Java performs decimal division for the whole expression — this is exactly the trick previewed in the Operators lesson, now fully explained."
+    },
+    {
+      "type": "heading",
+      "text": "5. Narrowing Can Overflow"
+    },
+    {
+      "type": "paragraph",
+      "text": "Narrowing isn't just about losing decimals — it can also lose entire whole-number ranges if the value doesn't fit in the smaller type."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int big = 130;\nbyte small = (byte) big;\nSystem.out.println(small); // -126 (not 130!)"
+    },
+    {
+      "type": "warning",
+      "text": "byte can only hold -128 to 127. 130 doesn't fit, so the extra bits wrap around, producing a confusing negative result. This is called overflow. We are only previewing this here — the exact bit-level reason is out of scope for now, but the takeaway matters: casting to a smaller type is only safe when you're sure the value actually fits."
+    },
+    {
+      "type": "heading",
+      "text": "6. char and int Are Closely Related"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "char letter = 'A';\nint code = letter; // widening: char -> int, automatic\nSystem.out.println(code); // 65\n\nint num = 66;\nchar back = (char) num; // narrowing: int -> char, needs a cast\nSystem.out.println(back); // B"
+    },
+    {
+      "type": "note",
+      "text": "Internally, a char is stored as a numeric code (its Unicode value — 'A' is 65). This is why char widens to int automatically, but converting an int back to char needs an explicit cast."
+    },
+    {
+      "type": "heading",
+      "text": "7. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int total = 7;\n        int count = 2;\n\n        double average = (double) total / count;\n        System.out.println(\"Average: \" + average);\n\n        double price = 49.99;\n        int roundedDownPrice = (int) price;\n        System.out.println(\"Rounded down price: \" + roundedDownPrice);\n    }\n}",
+      "output": "Average: 3.5\nRounded down price: 49",
+      "retypePractice": true,
+      "retypeId": "java-type-casting-mix"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "(double) total converts 7 to 7.0 before dividing",
+        "7.0 / 2 performs decimal division, giving 3.5",
+        "(int) price truncates 49.99 down to 49 — no rounding happens"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming (int) rounds to the nearest whole number — it truncates (cuts off the decimal), it never rounds up.",
+        "Casting a value to a smaller type without checking it actually fits — narrowing can silently overflow instead of throwing an error.",
+        "Forgetting that (double) must be applied before the division happens for it to affect the result, not after — (double) (a / b) casts an already-truncated int result, which does not fix the problem.",
+        "Confusing widening (automatic, safe) with narrowing (explicit, potentially lossy) — only narrowing requires you to write a cast."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between widening and narrowing casting in Java?",
+          "answer": "Widening converts a smaller type to a larger one (e.g. int to double) and happens automatically since no data is lost. Narrowing converts a larger type to a smaller one (e.g. double to int) and requires an explicit cast because it can lose information."
+        },
+        {
+          "question": "Does (int) rounding a double round to the nearest integer?",
+          "answer": "No. (int) truncates — it discards the decimal part entirely. (int) 9.99 is 9, not 10."
+        },
+        {
+          "question": "Why does (double) a / b give a different result than a / b when a and b are both int?",
+          "answer": "a / b performs integer division and truncates the result if both operands are int. Casting a to (double) first makes one operand a double, so Java performs the division as decimal (floating-point) division instead, keeping the fractional part."
+        },
+        {
+          "question": "What happens if you narrow a value that doesn't fit in the target type, like (byte) 130?",
+          "answer": "It overflows — the value wraps around to a different, often negative, number rather than throwing an error. This is why narrowing casts should only be used when you're confident the value fits."
+        }
+      ],
+      "thirtySecondAnswer": "Type casting converts a value from one type to another. Widening casts (like int to double) happen automatically because no data is lost, while narrowing casts (like double to int) require an explicit cast, written as (targetType) value, because they can lose information. (int) truncates rather than rounds, and narrowing a value that doesn't fit its target type causes overflow instead of an error. Casting a value to double before dividing, like (double) a / b, is the standard way to force decimal division when both operands would otherwise be treated as int."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Widen = automatic, safe, no cast needed (small fits into big). Narrow = explicit, risky, cast required (big might not fit into small). (int) always chops the decimal — it never rounds."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between widening and narrowing?",
+        "Does (int) 9.9 give 9 or 10?",
+        "Why does (double) a / b give a decimal result but a / b doesn't?",
+        "What happens when you narrow-cast a value that overflows the target type?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-type-casting-mix", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int total = 7;\n        int count = 2;\n\n        double average = (double) total / count;\n        System.out.println(\"Average: \" + average);\n\n        double price = 49.99;\n        int roundedDownPrice = (int) price;\n        System.out.println(\"Rounded down price: \" + roundedDownPrice);\n    }\n}", "output": "Average: 3.5\nRounded down price: 49" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-type-casting-mix",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        int total = 7;\n        int count = 2;\n\n        double average = (double) total / count;\n        System.out.println(\"Average: \" + average);\n\n        double price = 49.99;\n        int roundedDownPrice = (int) price;\n        System.out.println(\"Rounded down price: \" + roundedDownPrice);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-type-casting-mix"]
+  }
+}
