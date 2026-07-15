@@ -1,0 +1,163 @@
+{
+  "id": "java-method-overloading",
+  "moduleId": "methods",
+  "title": "Method Overloading",
+  "description": "Multiple methods sharing one name, distinguished by their parameter lists.",
+  "objectives": [
+    "Define method overloading and why it's useful",
+    "Understand what makes two overloaded methods distinct (the parameter list, not the return type)",
+    "Recognize which overload Java picks for a given call"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Same Name, Different Parameters"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sometimes you want the \"same idea\" — like adding two things — to work for different types of input. Instead of naming them addInts, addDoubles, addThreeInts, Java lets you reuse one name: add, as long as each version's parameter list is different."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int add(int a, int b) {\n        return a + b;\n    }\n\n    static double add(double a, double b) {\n        return a + b;\n    }\n\n    static int add(int a, int b, int c) {\n        return a + b + c;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(add(2, 3));\n        System.out.println(add(2.5, 3.5));\n        System.out.println(add(1, 2, 3));\n    }\n}",
+      "output": "5\n6.0\n6",
+      "retypePractice": true,
+      "retypeId": "java-overload-add"
+    },
+    {
+      "type": "definition",
+      "term": "Method overloading",
+      "text": "Defining multiple methods with the same name in the same class, each with a different parameter list (different number and/or types of parameters)."
+    },
+    {
+      "type": "heading",
+      "text": "2. How Java Picks the Right Overload"
+    },
+    {
+      "type": "paragraph",
+      "text": "At compile time, Java looks at the arguments in a call and matches them to the overload whose parameter list fits — by count first, then by type."
+    },
+    {
+      "type": "table",
+      "title": "Which add() runs for each call",
+      "headers": ["Call", "Matches", "Why"],
+      "rows": [
+        ["add(2, 3)", "add(int, int)", "Two int arguments"],
+        ["add(2.5, 3.5)", "add(double, double)", "Two double arguments"],
+        ["add(1, 2, 3)", "add(int, int, int)", "Three arguments — count alone decides it here"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "The RETURN TYPE alone is never enough to distinguish overloads. Two methods named calc that both take (int a, int b) but return different types (one int, one double) will NOT compile — Java can't tell them apart from a call site, since the call itself doesn't declare what return type it expects."
+    },
+    {
+      "type": "heading",
+      "text": "3. Overloading with Different Types"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static void printValue(int value) {\n    System.out.println(\"int: \" + value);\n}\n\nstatic void printValue(String value) {\n    System.out.println(\"String: \" + value);\n}\n\n// printValue(5)      -> \"int: 5\"\n// printValue(\"hi\")   -> \"String: hi\""
+    },
+    {
+      "type": "note",
+      "text": "This is a common real use of overloading — supporting the \"same operation\" across several input types, without inventing a separate name for each one."
+    },
+    {
+      "type": "heading",
+      "text": "4. Overloading vs Overriding (Preview)"
+    },
+    {
+      "type": "warning",
+      "text": "Overloading is not the same as method overriding, which involves inheritance and subclasses — a completely different concept covered later in Object-Oriented Programming. Overloading happens entirely within one class, based purely on differing parameter lists."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static double area(double side) {\n        return side * side;\n    }\n\n    static double area(double length, double width) {\n        return length * width;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(\"Square area: \" + area(4));\n        System.out.println(\"Rectangle area: \" + area(4, 6));\n    }\n}",
+      "output": "Square area: 16.0\nRectangle area: 24.0",
+      "retypePractice": true,
+      "retypeId": "java-overload-area"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "area(4) has one argument, matching area(double side) — computes 4*4 = 16.0",
+        "area(4, 6) has two arguments, matching area(double length, double width) — computes 4*6 = 24.0",
+        "Both share the name area, since a shape's 'area' is conceptually the same idea regardless of how many dimensions describe it"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to overload two methods that differ only in return type, with identical parameter lists — this does not compile.",
+        "Assuming overloading and overriding are the same concept — overloading is same-class, different-parameters; overriding is subclass-based (covered later).",
+        "Forgetting that argument count alone can distinguish overloads — add(int,int) and add(int,int,int) are perfectly valid overloads of each other.",
+        "Expecting Java to pick an overload based on the variable name used at the call site rather than the argument's actual type."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is method overloading?",
+          "answer": "Defining multiple methods with the same name in the same class, each distinguished by a different parameter list — different number and/or types of parameters."
+        },
+        {
+          "question": "Can two methods be overloads of each other if they differ only in return type?",
+          "answer": "No. Java requires overloaded methods to have different parameter lists; differing only in return type with an identical parameter list causes a compile error."
+        },
+        {
+          "question": "How does Java decide which overloaded method to call?",
+          "answer": "At compile time, based on the number and types of the arguments provided at the call site, matched against each overload's parameter list."
+        },
+        {
+          "question": "What is the difference between overloading and overriding?",
+          "answer": "Overloading defines multiple same-named methods in one class with different parameter lists. Overriding involves a subclass providing its own implementation of a method inherited from a parent class — an entirely different, inheritance-based concept."
+        }
+      ],
+      "thirtySecondAnswer": "Method overloading lets multiple methods share one name within the same class, as long as their parameter lists differ in number or type — Java picks the correct overload at compile time based on the arguments in the call. Return type alone can never distinguish two overloads; the parameter list is what matters. This is useful for expressing the same conceptual operation, like add or area, across different input shapes without inventing a new method name each time. It's unrelated to method overriding, a separate inheritance-based concept covered later."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Overload = SAME name, DIFFERENT parameter list, SAME class. Return type never counts as the tiebreaker."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What makes two methods valid overloads of each other?",
+        "Can return type alone distinguish two overloaded methods?",
+        "How does Java pick which overload to run for a given call?",
+        "What's the difference between overloading and overriding?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-overload-add", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int add(int a, int b) {\n        return a + b;\n    }\n\n    static double add(double a, double b) {\n        return a + b;\n    }\n\n    static int add(int a, int b, int c) {\n        return a + b + c;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(add(2, 3));\n        System.out.println(add(2.5, 3.5));\n        System.out.println(add(1, 2, 3));\n    }\n}", "output": "5\n6.0\n6" },
+    { "id": "java-overload-area", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static double area(double side) {\n        return side * side;\n    }\n\n    static double area(double length, double width) {\n        return length * width;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(\"Square area: \" + area(4));\n        System.out.println(\"Rectangle area: \" + area(4, 6));\n    }\n}", "output": "Square area: 16.0\nRectangle area: 24.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-overload-add", "reference": "public class Main {\n    static int add(int a, int b) {\n        return a + b;\n    }\n\n    static double add(double a, double b) {\n        return a + b;\n    }\n\n    static int add(int a, int b, int c) {\n        return a + b + c;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(add(2, 3));\n        System.out.println(add(2.5, 3.5));\n        System.out.println(add(1, 2, 3));\n    }\n}" },
+    { "id": "java-overload-area", "reference": "public class Main {\n    static double area(double side) {\n        return side * side;\n    }\n\n    static double area(double length, double width) {\n        return length * width;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(\"Square area: \" + area(4));\n        System.out.println(\"Rectangle area: \" + area(4, 6));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-overload-add", "java-overload-area"]
+  }
+}
