@@ -1,0 +1,265 @@
+{
+  "id": "java-data-types",
+  "moduleId": "java-fundamentals",
+  "title": "Data Types",
+  "description": "Java's eight primitive types, their sizes and default values, and the difference between primitives and object (reference) types.",
+  "objectives": [
+    "List Java's eight primitive types and what each one stores",
+    "Understand default values a primitive gets when not explicitly initialized",
+    "Understand the difference between a primitive type and an object (reference) type",
+    "Use the correct literal syntax for long, float, and char values",
+    "Avoid common data type mistakes like overflow and type confusion"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Do We Need Different Types?"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Variables lesson, we only used int. But not every value is a whole number — some are decimals, some are single characters, some are true/false. Java needs a way to know what kind of value a variable holds, and a type is exactly that."
+    },
+    {
+      "type": "definition",
+      "term": "Data Type",
+      "text": "A data type tells the compiler what kind of value a variable can store, how much memory to reserve for it, and what operations make sense on it."
+    },
+    {
+      "type": "heading",
+      "text": "2. Primitive Types"
+    },
+    {
+      "type": "paragraph",
+      "text": "Java has 8 built-in primitive types. A primitive type stores its value directly — not a reference to something else."
+    },
+    {
+      "type": "table",
+      "title": "The 8 primitive types",
+      "headers": ["Type", "Stores", "Size", "Example"],
+      "rows": [
+        ["byte", "Whole number", "8 bits (-128 to 127)", "byte b = 100;"],
+        ["short", "Whole number", "16 bits", "short s = 20000;"],
+        ["int", "Whole number", "32 bits", "int age = 25;"],
+        ["long", "Whole number", "64 bits", "long big = 10000000000L;"],
+        ["float", "Decimal number", "32 bits", "float price = 9.99f;"],
+        ["double", "Decimal number", "64 bits (more precise)", "double pi = 3.14159;"],
+        ["char", "Single character", "16 bits", "char grade = 'A';"],
+        ["boolean", "true or false", "1 bit (conceptually)", "boolean isActive = true;"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "You do not need to memorize exact bit sizes right now. What matters at this stage: int and double are the two you'll use constantly; the rest exist for specific size/precision needs you'll grow into."
+    },
+    {
+      "type": "heading",
+      "text": "3. Whole Numbers: byte, short, int, long"
+    },
+    {
+      "type": "paragraph",
+      "text": "These four types all store whole numbers (no decimal point) — they only differ in how large a number they can hold."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int score = 100;\nlong population = 8000000000L;"
+    },
+    {
+      "type": "note",
+      "text": "The L at the end of 8000000000L tells Java to treat this literal as a long. Without the L, Java assumes it's an int by default — and this particular number is too big to fit in an int, causing a compile error."
+    },
+    {
+      "type": "keyPoints",
+      "title": "In practice",
+      "points": [
+        "int is the default choice for whole numbers — used almost everywhere in this course",
+        "long is used when a number might exceed int's range (roughly ±2.1 billion)",
+        "byte and short are rarely used in everyday code — mainly relevant for memory-constrained situations, which we won't focus on yet"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Decimal Numbers: float and double"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "double price = 19.99;\nfloat weight = 65.5f;"
+    },
+    {
+      "type": "note",
+      "text": "The f at the end of 65.5f tells Java to treat this literal as a float. Without the f, Java assumes any decimal literal is a double by default — so float weight = 65.5; (no f) would not compile, since you can't put a double value into a float variable without saying so explicitly."
+    },
+    {
+      "type": "keyPoints",
+      "title": "In practice",
+      "points": [
+        "double is the default choice for decimal numbers in Java — used far more often than float",
+        "float takes half the memory but is less precise — mainly used when memory matters more than precision"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Single Characters: char"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "char grade = 'A';\nchar symbol = '$';"
+    },
+    {
+      "type": "warning",
+      "text": "A char uses single quotes ('A') and holds exactly one character. Double quotes (\"A\") create a String instead, which is a different type — covered in the Strings topic soon. Mixing these up is one of the most common beginner errors."
+    },
+    {
+      "type": "heading",
+      "text": "6. True or False: boolean"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "boolean isLoggedIn = true;\nboolean hasPermission = false;"
+    },
+    {
+      "type": "paragraph",
+      "text": "A boolean can only ever be true or false — nothing else. You will use boolean constantly once we reach conditions (if statements) and loops."
+    },
+    {
+      "type": "heading",
+      "text": "7. Default Values"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Variables lesson we said Java won't let you read a local (inside a method) variable before initializing it. But primitive fields that belong to a class (covered later, in Object-Oriented Programming) do get automatic default values if you don't set one."
+    },
+    {
+      "type": "table",
+      "title": "Default values (for class fields, not local variables)",
+      "headers": ["Type", "Default"],
+      "rows": [
+        ["byte, short, int, long", "0"],
+        ["float, double", "0.0"],
+        ["char", "'\\u0000' (an invisible character)"],
+        ["boolean", "false"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "We have not learned classes and fields yet — this table is only here to prevent future confusion. Right now, inside main(), you must always initialize your own variables; the compiler won't let you skip it."
+    },
+    {
+      "type": "heading",
+      "text": "8. Primitives vs Object (Reference) Types"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every type in Java is either primitive or a reference type (also called an object type). The 8 types above are the only primitives — everything else, like String, is a reference type."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age = 25;\nString name = \"Aman\";"
+    },
+    {
+      "type": "definition",
+      "term": "Primitive type",
+      "text": "A type whose variable directly stores its value in memory (e.g. int, double, char, boolean)."
+    },
+    {
+      "type": "definition",
+      "term": "Reference type (object type)",
+      "text": "A type whose variable stores a reference (an address, conceptually) pointing to an object that lives elsewhere. String, arrays, and every class are reference types."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Box vs signpost analogy",
+      "text": "A primitive variable is like a box that directly holds its content — open int age and 25 is right there. A reference type variable is like a signpost pointing to a house down the road — String name doesn't hold the text itself, it points to where the actual text object lives."
+    },
+    {
+      "type": "warning",
+      "text": "We are only previewing this distinction here. Its real consequences — like how reference types behave differently when passed around, or compared with == — are studied properly once we reach Object-Oriented Programming. For now, just recognize: int, double, char, boolean = primitive. String and everything else = reference type."
+    },
+    {
+      "type": "heading",
+      "text": "9. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        double height = 5.9;\n        char grade = 'A';\n        boolean isPassing = true;\n        String name = \"Aman\";\n\n        System.out.println(name + \" is \" + age + \" years old.\");\n        System.out.println(\"Height: \" + height);\n        System.out.println(\"Grade: \" + grade);\n        System.out.println(\"Passing: \" + isPassing);\n    }\n}",
+      "output": "Aman is 25 years old.\nHeight: 5.9\nGrade: A\nPassing: true",
+      "retypePractice": true,
+      "retypeId": "java-data-types-mix"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Writing a large whole number literal without the L suffix — e.g. long x = 10000000000; fails to compile without the L.",
+        "Writing a decimal literal into a float without the f suffix — e.g. float f = 3.14; fails to compile without the f.",
+        "Using double quotes for a char — 'A' is a char, \"A\" is a String; they are not interchangeable.",
+        "Assuming all types have a default value you can rely on inside main() — that's only true for class fields, not local variables.",
+        "Confusing float and double — double is the safe default for decimals in this course unless you have a specific reason to use float."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What are Java's primitive types?",
+          "answer": "byte, short, int, long, float, double, char, and boolean. There are exactly 8, and each stores its value directly rather than as a reference."
+        },
+        {
+          "question": "What is the difference between a primitive type and a reference type?",
+          "answer": "A primitive type variable stores its value directly. A reference type variable stores a reference to an object that lives elsewhere in memory. String, arrays, and classes are all reference types."
+        },
+        {
+          "question": "Why do you need L after a long literal, or f after a float literal?",
+          "answer": "Java treats whole number literals as int and decimal literals as double by default. The L or f suffix tells the compiler to treat the literal as a long or float instead, which is required when assigning to a variable of that type."
+        },
+        {
+          "question": "What is the difference between char and String in Java?",
+          "answer": "char holds exactly one character and uses single quotes, like 'A'. String holds a sequence of characters (text) and uses double quotes, like \"A\", and is a reference type, not a primitive."
+        },
+        {
+          "question": "What is the default value of an uninitialized boolean field?",
+          "answer": "false. This default applies to fields belonging to a class; local variables inside a method must always be explicitly initialized before use."
+        }
+      ],
+      "thirtySecondAnswer": "Java has 8 primitive types — byte, short, int, long, float, double, char, and boolean — each storing its value directly. Everything else, like String, is a reference type, whose variable stores a reference to an object elsewhere in memory rather than the value itself. Literals need suffixes to match certain types: L for long, f for float. Class fields get automatic default values (0, 0.0, false, etc.) if not set, but local variables inside a method must always be initialized before Java lets you read them."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember Primitives",
+      "text": "\"Bytes Sit In Long Fields, Deciding Character Booleans\" — Byte, Short, Int, Long, Float, Double, Char, Boolean — the 8 primitives, in a common teaching order (small whole numbers → big whole numbers → decimals → char → boolean)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Name all 8 Java primitive types.",
+        "Why does long big = 10000000000L; need the L?",
+        "What's the difference between char and String?",
+        "Is String a primitive type or a reference type?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-data-types-mix", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        double height = 5.9;\n        char grade = 'A';\n        boolean isPassing = true;\n        String name = \"Aman\";\n\n        System.out.println(name + \" is \" + age + \" years old.\");\n        System.out.println(\"Height: \" + height);\n        System.out.println(\"Grade: \" + grade);\n        System.out.println(\"Passing: \" + isPassing);\n    }\n}", "output": "Aman is 25 years old.\nHeight: 5.9\nGrade: A\nPassing: true" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-data-types-mix",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        double height = 5.9;\n        char grade = 'A';\n        boolean isPassing = true;\n        String name = \"Aman\";\n\n        System.out.println(name + \" is \" + age + \" years old.\");\n        System.out.println(\"Height: \" + height);\n        System.out.println(\"Grade: \" + grade);\n        System.out.println(\"Passing: \" + isPassing);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-data-types-mix"]
+  }
+}
