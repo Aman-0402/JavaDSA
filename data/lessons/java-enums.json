@@ -1,0 +1,163 @@
+{
+  "id": "java-enums",
+  "moduleId": "advanced-java",
+  "title": "Enums",
+  "description": "A fixed set of named constants as a type-safe alternative to int/String constants, and using enums directly with switch from Control Flow.",
+  "objectives": [
+    "Declare an enum representing a fixed set of named values",
+    "Use an enum in a switch statement",
+    "Add fields and methods to an enum for richer constants"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem With Plain Constants"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we want to represent a day of the week. We could use int (1 for Monday, 2 for Tuesday...) or String (\"MONDAY\", \"TUESDAY\"...), but both allow invalid values -- nothing stops someone from writing int day = 47; or String day = \"Blorsday\";. enum fixes this by defining a genuinely fixed, type-safe set of options."
+    },
+    {
+      "type": "definition",
+      "term": "enum",
+      "text": "A special type representing a fixed set of named constants, providing type safety that plain int or String constants cannot -- only the declared values are ever valid."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring an Enum"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Day.java",
+      "code": "public enum Day {\n    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    enum Day {\n        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n    }\n\n    public static void main(String[] args) {\n        Day today = Day.WEDNESDAY;\n        System.out.println(today);\n    }\n}",
+      "output": "WEDNESDAY",
+      "retypePractice": true,
+      "retypeId": "java-enum-basic"
+    },
+    {
+      "type": "warning",
+      "text": "Day today = Day.MONDAY_TYPO; simply does not compile -- unlike a String, there's no way to accidentally create an invalid Day value. This is the entire benefit of enum over plain constants."
+    },
+    {
+      "type": "heading",
+      "text": "3. Using an Enum With switch"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    enum Day {\n        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n    }\n\n    public static void main(String[] args) {\n        Day today = Day.SATURDAY;\n\n        String type = switch (today) {\n            case SATURDAY, SUNDAY -> \"Weekend\";\n            default -> \"Weekday\";\n        };\n\n        System.out.println(type);\n    }\n}",
+      "output": "Weekend",
+      "retypePractice": true,
+      "retypeId": "java-enum-switch"
+    },
+    {
+      "type": "note",
+      "text": "This is exactly the switch expression syntax from the switch Statement lesson, now used with an enum. Notice each case just names the constant directly (SATURDAY, not Day.SATURDAY) -- Java already knows the type being matched from today's declared type."
+    },
+    {
+      "type": "heading",
+      "text": "4. Enums Can Have Fields, Constructors, and Methods"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    enum Planet {\n        MERCURY(3.3e23, 2.4e6),\n        EARTH(5.9e24, 6.4e6);\n\n        private final double mass;\n        private final double radius;\n\n        Planet(double mass, double radius) {\n            this.mass = mass;\n            this.radius = radius;\n        }\n\n        double getMass() {\n            return mass;\n        }\n    }\n\n    public static void main(String[] args) {\n        System.out.println(Planet.EARTH.getMass());\n    }\n}",
+      "output": "5.9E24",
+      "retypePractice": true,
+      "retypeId": "java-enum-fields"
+    },
+    {
+      "type": "warning",
+      "text": "Each enum constant (MERCURY, EARTH) calls the enum's own constructor exactly once, with the arguments shown -- this is exactly the constructor mechanism from the Constructors lesson, just applied to enum values instead of a regular class. private final fields (final meaning never reassignable after construction) are common in enums, since a constant's data shouldn't change after creation."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    enum TrafficLight {\n        RED, YELLOW, GREEN\n    }\n\n    static String action(TrafficLight light) {\n        return switch (light) {\n            case RED -> \"Stop\";\n            case YELLOW -> \"Slow down\";\n            case GREEN -> \"Go\";\n        };\n    }\n\n    public static void main(String[] args) {\n        System.out.println(action(TrafficLight.RED));\n        System.out.println(action(TrafficLight.GREEN));\n    }\n}",
+      "output": "Stop\nGo",
+      "retypePractice": true,
+      "retypeId": "java-enum-traffic-light"
+    },
+    {
+      "type": "note",
+      "text": "Notice there's no default case here at all -- since TrafficLight only has exactly 3 possible values and all 3 are covered, Java recognizes the switch expression is exhaustive and doesn't require one."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using plain int or String constants when an enum would provide real type safety -- an enum prevents entire categories of invalid-value bugs at compile time.",
+        "Writing Day.MONDAY inside a switch's case labels when just MONDAY is expected -- case labels for an enum use the bare constant name, not the qualified Day.MONDAY form.",
+        "Forgetting enum constructors are implicitly private and can never be called with new elsewhere -- enum constants are created only once, automatically, when the enum type is first used.",
+        "Assuming enums can't have real behavior -- they can have fields, constructors, and methods, exactly like any other class."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is an enum, and why use it over a plain int or String constant?",
+          "answer": "An enum defines a fixed, type-safe set of named constants. Unlike int or String, the compiler guarantees only the declared values can ever be used -- there's no way to accidentally create an invalid value."
+        },
+        {
+          "question": "Can an enum have fields and methods?",
+          "answer": "Yes. Enum constants can carry their own data via a constructor (called once per constant automatically) and fields, and the enum type can define regular methods just like any class."
+        },
+        {
+          "question": "How are case labels written for an enum inside a switch?",
+          "answer": "Using the bare constant name (like case MONDAY ->), not the fully qualified Day.MONDAY -- Java already knows the enum type from the value being switched on."
+        }
+      ],
+      "thirtySecondAnswer": "An enum defines a fixed, type-safe set of named constants, preventing the invalid-value bugs possible with plain int or String constants -- there's no way to create an enum value outside its declared set. Enums integrate directly with switch, using bare constant names as case labels, and can carry their own fields and behavior via a constructor called once per constant, plus regular methods, just like any class. When a switch expression covers every possible enum value, Java recognizes it as exhaustive and doesn't require a default case."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "enum = a locked menu with ONLY these exact options, nothing else possible. Each option can carry its own data, set once via a constructor, like any class."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why is an enum safer than a plain String constant for a fixed set of options?",
+        "How are case labels written for an enum in a switch?",
+        "Can an enum have a constructor and fields?",
+        "When can a switch expression over an enum skip the default case?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-enum-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    enum Day {\n        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n    }\n\n    public static void main(String[] args) {\n        Day today = Day.WEDNESDAY;\n        System.out.println(today);\n    }\n}", "output": "WEDNESDAY" },
+    { "id": "java-enum-switch", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    enum Day {\n        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n    }\n\n    public static void main(String[] args) {\n        Day today = Day.SATURDAY;\n\n        String type = switch (today) {\n            case SATURDAY, SUNDAY -> \"Weekend\";\n            default -> \"Weekday\";\n        };\n\n        System.out.println(type);\n    }\n}", "output": "Weekend" },
+    { "id": "java-enum-fields", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    enum Planet {\n        MERCURY(3.3e23, 2.4e6),\n        EARTH(5.9e24, 6.4e6);\n\n        private final double mass;\n        private final double radius;\n\n        Planet(double mass, double radius) {\n            this.mass = mass;\n            this.radius = radius;\n        }\n\n        double getMass() {\n            return mass;\n        }\n    }\n\n    public static void main(String[] args) {\n        System.out.println(Planet.EARTH.getMass());\n    }\n}", "output": "5.9E24" },
+    { "id": "java-enum-traffic-light", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    enum TrafficLight {\n        RED, YELLOW, GREEN\n    }\n\n    static String action(TrafficLight light) {\n        return switch (light) {\n            case RED -> \"Stop\";\n            case YELLOW -> \"Slow down\";\n            case GREEN -> \"Go\";\n        };\n    }\n\n    public static void main(String[] args) {\n        System.out.println(action(TrafficLight.RED));\n        System.out.println(action(TrafficLight.GREEN));\n    }\n}", "output": "Stop\nGo" }
+  ],
+  "retypePractice": [
+    { "id": "java-enum-basic", "reference": "public class Main {\n    enum Day {\n        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n    }\n\n    public static void main(String[] args) {\n        Day today = Day.WEDNESDAY;\n        System.out.println(today);\n    }\n}" },
+    { "id": "java-enum-switch", "reference": "public class Main {\n    enum Day {\n        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY\n    }\n\n    public static void main(String[] args) {\n        Day today = Day.SATURDAY;\n\n        String type = switch (today) {\n            case SATURDAY, SUNDAY -> \"Weekend\";\n            default -> \"Weekday\";\n        };\n\n        System.out.println(type);\n    }\n}" },
+    { "id": "java-enum-fields", "reference": "public class Main {\n    enum Planet {\n        MERCURY(3.3e23, 2.4e6),\n        EARTH(5.9e24, 6.4e6);\n\n        private final double mass;\n        private final double radius;\n\n        Planet(double mass, double radius) {\n            this.mass = mass;\n            this.radius = radius;\n        }\n\n        double getMass() {\n            return mass;\n        }\n    }\n\n    public static void main(String[] args) {\n        System.out.println(Planet.EARTH.getMass());\n    }\n}" },
+    { "id": "java-enum-traffic-light", "reference": "public class Main {\n    enum TrafficLight {\n        RED, YELLOW, GREEN\n    }\n\n    static String action(TrafficLight light) {\n        return switch (light) {\n            case RED -> \"Stop\";\n            case YELLOW -> \"Slow down\";\n            case GREEN -> \"Go\";\n        };\n    }\n\n    public static void main(String[] args) {\n        System.out.println(action(TrafficLight.RED));\n        System.out.println(action(TrafficLight.GREEN));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-enum-basic", "java-enum-switch", "java-enum-fields", "java-enum-traffic-light"]
+  }
+}

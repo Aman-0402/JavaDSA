@@ -74,7 +74,8 @@
       "title": "Advanced Java",
       "topics": [
         { "id": "java-exception-handling", "title": "Exception Handling", "lesson": "java-exception-handling" },
-        { "id": "java-generics", "title": "Generics", "lesson": "java-generics" }
+        { "id": "java-generics", "title": "Generics", "lesson": "java-generics" },
+        { "id": "java-enums", "title": "Enums", "lesson": "java-enums" }
       ]
     },
     { "id": "collections-framework", "title": "Java Collections Framework", "topics": [] },
