@@ -1,0 +1,291 @@
+{
+  "id": "java-introduction",
+  "moduleId": "java-fundamentals",
+  "title": "Introduction to Java",
+  "description": "What Java is, why it's used, how it runs on the JVM, and why it matters for DSA and interviews.",
+  "objectives": [
+    "Understand what a programming language is and what Java is",
+    "Understand why Java is used and where",
+    "Understand the Java Code → Bytecode → JVM flow at a high level",
+    "Understand what JVM, JDK, and JRE mean",
+    "Read a first Java program without needing to fully explain it yet"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What is Java?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Java is a programming language. A programming language lets us give instructions to a computer. Think of a computer like a very fast worker — but it does not understand normal English instructions. You cannot simply tell a computer \"Add two numbers and show me the answer.\" Instead, we write instructions using a programming language."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Example.java",
+      "code": "int a = 10;\nint b = 20;\n\nSystem.out.println(a + b);",
+      "output": "30"
+    },
+    {
+      "type": "definition",
+      "term": "Java",
+      "text": "Java is a general-purpose, object-oriented programming language designed to run on almost any device or operating system without being rewritten."
+    },
+    {
+      "type": "heading",
+      "text": "2. Why do we use Java?"
+    },
+    {
+      "type": "paragraph",
+      "text": "One major reason is portability — a famous Java slogan is \"Write Once, Run Anywhere\" (WORA). Java also manages memory for you automatically, so you don't have to manually free memory the way some older languages require."
+    },
+    {
+      "type": "keyPoints",
+      "title": "Commonly used in",
+      "points": [
+        "Enterprise back-end systems",
+        "Android app development",
+        "Web servers and APIs",
+        "Big data tools",
+        "Trading and banking systems",
+        "Competitive programming",
+        "Data Structures and Algorithms"
+      ]
+    },
+    {
+      "type": "tip",
+      "text": "For our learning journey, we are mainly using Java for: DSA + LeetCode + Coding Interviews."
+    },
+    {
+      "type": "heading",
+      "text": "3. How does Java work?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we write this Java code:"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "System.out.println(\"Hello\");"
+    },
+    {
+      "type": "paragraph",
+      "text": "The computer's processor cannot directly understand this Java code. The processor understands machine instructions. Conceptually, we can imagine them as binary instructions like 10110100, 11001010, 00110101. But Java does not translate straight to machine code like some languages do — it goes through an extra step."
+    },
+    {
+      "type": "flow",
+      "title": "Java's compile-and-run flow",
+      "steps": ["Java Code (.java)", "Compiler (javac)", "Bytecode (.class)", "JVM", "Machine Executes It"]
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Universal translator analogy",
+      "text": "Imagine you write a letter in a universal script that no human speaks directly, but every country has its own local translator who can read that script and speak it in the local language. You write once (bytecode); each machine's own JVM \"translator\" reads it and runs it locally. That's why the same compiled Java program can run on Windows, macOS, or Linux without changes."
+    },
+    {
+      "type": "warning",
+      "text": "We have not officially learned the compiler or JVM in depth yet — only the words are introduced here. We study them properly in the next section of this same lesson."
+    },
+    {
+      "type": "heading",
+      "text": "4. JVM, JDK, and JRE"
+    },
+    {
+      "type": "paragraph",
+      "text": "You will see three abbreviations constantly when people talk about Java: JVM, JDK, and JRE. They sound similar but mean different things."
+    },
+    {
+      "type": "definition",
+      "term": "JVM (Java Virtual Machine)",
+      "text": "A program that reads compiled Java bytecode and executes it on your specific machine. It is what makes Java portable — a different JVM exists for each operating system, but they all understand the same bytecode."
+    },
+    {
+      "type": "definition",
+      "term": "JRE (Java Runtime Environment)",
+      "text": "The JVM plus the standard library classes needed to actually run a Java program. If you only want to run Java programs (not write/compile them), the JRE is enough."
+    },
+    {
+      "type": "definition",
+      "term": "JDK (Java Development Kit)",
+      "text": "The JRE plus development tools such as the compiler (javac). If you want to write and compile Java code, you need the JDK. The JDK contains the JRE, and the JRE contains the JVM."
+    },
+    {
+      "type": "table",
+      "title": "JDK vs JRE vs JVM",
+      "headers": ["Piece", "Contains", "Who needs it"],
+      "rows": [
+        ["JVM", "The engine that runs bytecode", "Everyone, even just to run a Java app"],
+        ["JRE", "JVM + standard library", "Someone who only runs Java programs"],
+        ["JDK", "JRE + compiler + dev tools", "Someone who writes/compiles Java code — that's us"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "In this course we always use the JDK, since we are writing and reading Java code, not just running finished apps."
+    },
+    {
+      "type": "heading",
+      "text": "5. Why is Java good for DSA?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we want to store many numbers. Java provides powerful ready-made tools for this. Later, you will learn things like ArrayList, HashMap, HashSet, Deque, and PriorityQueue. These tools are part of the Java Collections Framework (JCF)."
+    },
+    {
+      "type": "warning",
+      "text": "Do not worry about these names now. You are not expected to understand or use them yet — each one will be learned separately before being used in DSA problems."
+    },
+    {
+      "type": "heading",
+      "text": "6. When should we use Java?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Java is a strong choice when",
+      "points": [
+        "We want the same code to run across operating systems",
+        "We want automatic memory management (no manual freeing)",
+        "We are solving DSA problems",
+        "We are doing competitive programming",
+        "We are building large enterprise systems",
+        "We are preparing for coding interviews"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "For example, imagine we need to process 1,000,000 numbers — efficiency becomes important. Later, you will learn how Java and DSA help us write efficient solutions."
+    },
+    {
+      "type": "heading",
+      "text": "7. Real-Life Example"
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Chef and recipe",
+      "text": "A recipe says: 1) Take two eggs, 2) Break the eggs, 3) Mix them, 4) Heat the pan, 5) Cook the eggs. The chef follows the instructions step by step. Programming works similarly — we write instructions (Step 1, Step 2, Step 3, Step 4) and the computer executes them."
+    },
+    {
+      "type": "table",
+      "title": "Analogy",
+      "headers": ["Recipe World", "Programming World"],
+      "rows": [
+        ["Java Program", "Recipe"],
+        ["Computer + JVM", "Chef"],
+        ["Instructions", "Java Code"]
+      ]
+    },
+    {
+      "type": "memoryTrick",
+      "text": "Programming is giving step-by-step instructions to a computer."
+    },
+    {
+      "type": "heading",
+      "text": "8. First Look at Java Syntax"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}",
+      "output": "Hello World",
+      "retypePractice": true,
+      "retypeId": "java-intro-hello-world"
+    },
+    {
+      "type": "warning",
+      "text": "You do not need to understand this code yet. It contains multiple new concepts — class, public, static, void, main(), String[] args, System.out.println. We learn a concept before expecting you to use it, so these are covered one by one later. For now, only understand: this is an example of a Java program, and every runnable Java program needs a main method inside a class."
+    },
+    {
+      "type": "heading",
+      "text": "9. Java Syntax"
+    },
+    {
+      "type": "paragraph",
+      "text": "Syntax means the rules for writing code. In English, we may write \"I am learning Java.\" Writing \"Learning am I Java.\" does not follow normal English sentence structure. Programming languages also have rules."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "System.out.println(\"Hello\");"
+    },
+    {
+      "type": "note",
+      "text": "Writing something incorrectly may cause an error. For example: System.out.println(\"Hello\") without the semicolon — Java may reject this instruction because the syntax is incorrect (Java statements end with a semicolon)."
+    },
+    {
+      "type": "definition",
+      "term": "Syntax",
+      "text": "Syntax is the set of rules used to correctly write code in a programming language."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to memorize code like public class Main / public static void main(String[] args) without understanding it.",
+        "Thinking you need to learn all Java syntax before writing any code — instead, build gradually: Concept → Understand → See Example → Trace Code → Practice → Use in DSA.",
+        "Confusing JDK, JRE, and JVM — remember: JDK (write + compile) ⊃ JRE (run) ⊃ JVM (execute bytecode).",
+        "Jumping straight into LeetCode before arrays, loops, hashing, collections, and complexity analysis are clear — this leads to memorizing solutions instead of learning problem solving."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is Java?",
+          "answer": "Java is a general-purpose, object-oriented programming language known for portability — compiled Java bytecode can run on any device with a matching JVM. It is commonly used in enterprise systems, Android development, and Data Structures and Algorithms."
+        },
+        {
+          "question": "What is the difference between JDK, JRE, and JVM?",
+          "answer": "The JVM executes Java bytecode on a specific machine. The JRE is the JVM plus the standard library needed to run programs. The JDK is the JRE plus development tools like the compiler (javac), needed to write and compile Java code."
+        },
+        {
+          "question": "Is Java a compiled or interpreted language?",
+          "answer": "Both, in a sense. Java source code is first compiled into bytecode by javac, and then the JVM executes that bytecode — interpreting it and/or compiling hot parts to native machine code just-in-time (JIT). The exact JVM internals are a later topic."
+        },
+        {
+          "question": "What does \"Write Once, Run Anywhere\" mean?",
+          "answer": "It means Java bytecode compiled on one machine can run unchanged on any other machine that has a compatible JVM installed, because the JVM — not the raw hardware — is what understands the bytecode."
+        },
+        {
+          "question": "What is syntax?",
+          "answer": "Syntax is the set of rules that defines how code must be written correctly in a programming language."
+        }
+      ],
+      "thirtySecondAnswer": "Java is a general-purpose, object-oriented, compiled-and-interpreted programming language. Source code compiles to bytecode, which the JVM executes — making Java portable across operating systems (\"Write Once, Run Anywhere\"). The JDK (used to write and compile Java) contains the JRE (used to run Java), which contains the JVM (executes bytecode). Java is popular for DSA and interviews because of its readable syntax and the Java Collections Framework."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember JDK / JRE / JVM",
+      "text": "JDK ⊃ JRE ⊃ JVM — like nesting dolls. JDK = Develop (write + compile). JRE = Run. JVM = execute bytecode, the innermost engine."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is Java in your own words?",
+        "What is the difference between JDK, JRE, and JVM?",
+        "What does \"Write Once, Run Anywhere\" mean?",
+        "What does syntax mean?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-intro-two-numbers", "lang": "java", "code": "int a = 10;\nint b = 20;\n\nSystem.out.println(a + b);", "output": "30" },
+    { "id": "java-intro-hello-world", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}", "output": "Hello World" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-intro-hello-world",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-intro-hello-world"]
+  }
+}
