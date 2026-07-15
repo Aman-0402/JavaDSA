@@ -1,0 +1,219 @@
+{
+  "id": "java-input-output",
+  "moduleId": "java-fundamentals",
+  "title": "Input and Output",
+  "description": "Printing with System.out.print/println/printf, and reading user input with Scanner.",
+  "objectives": [
+    "Tell the difference between System.out.print and System.out.println",
+    "Format output with System.out.printf",
+    "Read different types of input using Scanner",
+    "Avoid the classic nextInt() + nextLine() mistake"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Output So Far"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've used System.out.println() since the Introduction lesson without formally naming it. Today we cover output properly, and add input — reading values the user types in."
+    },
+    {
+      "type": "definition",
+      "term": "System.out",
+      "text": "A built-in object representing the standard output stream — normally your console/terminal — that Java programs write text to."
+    },
+    {
+      "type": "heading",
+      "text": "2. print vs println"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "System.out.print(\"Hello \");\nSystem.out.print(\"World\");\n// Output: Hello World  (no line break in between)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "System.out.println(\"Hello\");\nSystem.out.println(\"World\");\n// Output:\n// Hello\n// World"
+    },
+    {
+      "type": "table",
+      "headers": ["Method", "Behavior"],
+      "rows": [
+        ["print", "Prints text with no line break after it — the next output continues on the same line"],
+        ["println", "Prints text and then moves to a new line — the next output starts on a fresh line"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Formatted Output with printf"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sometimes you want to control exactly how a value is displayed — like how many decimal places a number shows. printf (\"print formatted\") uses placeholders inside a text template."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String name = \"Aman\";\nint age = 25;\ndouble gpa = 8.6789;\n\nSystem.out.printf(\"Name: %s, Age: %d, GPA: %.2f%n\", name, age, gpa);\n// Output: Name: Aman, Age: 25, GPA: 8.68"
+    },
+    {
+      "type": "table",
+      "title": "Common printf placeholders",
+      "headers": ["Placeholder", "Meaning"],
+      "rows": [
+        ["%s", "A String value"],
+        ["%d", "An int (whole number) value"],
+        ["%f", "A decimal value (default 6 decimal places)"],
+        ["%.2f", "A decimal value rounded to 2 decimal places"],
+        ["%n", "A platform-correct new line (preferred over \\n inside printf)"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "%.2f rounds to 2 decimal places for display purposes only — it does not change the underlying value stored in the variable. gpa itself is still 8.6789 after this line runs."
+    },
+    {
+      "type": "heading",
+      "text": "4. Reading Input with Scanner"
+    },
+    {
+      "type": "paragraph",
+      "text": "To read something the user types, Java provides a class called Scanner. We haven't learned classes yet, but you can use Scanner today by following this exact pattern — we'll explain what a class truly is once we reach Object-Oriented Programming."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        System.out.print(\"Enter your age: \");\n        int age = sc.nextInt();\n\n        System.out.println(\"You are \" + age + \" years old.\");\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "import java.util.Scanner; and new Scanner(System.in) contain concepts not covered yet (import, new, objects). For now, treat these two lines as a fixed pattern you copy whenever you need to read input — we revisit exactly what they mean once we reach Object-Oriented Programming."
+    },
+    {
+      "type": "heading",
+      "text": "5. Scanner's Reading Methods"
+    },
+    {
+      "type": "table",
+      "title": "Common Scanner methods",
+      "headers": ["Method", "Reads"],
+      "rows": [
+        ["nextInt()", "One int value"],
+        ["nextDouble()", "One double value"],
+        ["next()", "One word (stops at whitespace)"],
+        ["nextLine()", "An entire line of text, including spaces"]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Scanner sc = new Scanner(System.in);\n\nSystem.out.print(\"Enter your name: \");\nString name = sc.nextLine();\n\nSystem.out.print(\"Enter your age: \");\nint age = sc.nextInt();\n\nSystem.out.println(name + \" is \" + age);"
+    },
+    {
+      "type": "heading",
+      "text": "6. The nextInt() + nextLine() Trap"
+    },
+    {
+      "type": "paragraph",
+      "text": "This is one of the most common Scanner bugs beginners hit."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Scanner sc = new Scanner(System.in);\n\nSystem.out.print(\"Enter your age: \");\nint age = sc.nextInt();\n\nSystem.out.print(\"Enter your name: \");\nString name = sc.nextLine(); // this line seems to get skipped!\n\nSystem.out.println(age + \" \" + name);"
+    },
+    {
+      "type": "warning",
+      "text": "nextInt() reads only the number you typed, and leaves the leftover newline character (from pressing Enter) still waiting in the input. The very next nextLine() then immediately reads that leftover empty leftover instead of waiting for new text, so it appears to be \"skipped.\" The common fix is to add an extra sc.nextLine(); right after nextInt() to consume that leftover newline before reading a real line of text."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age = sc.nextInt();\nsc.nextLine(); // consumes the leftover newline\nString name = sc.nextLine(); // now reads correctly"
+    },
+    {
+      "type": "heading",
+      "text": "7. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        System.out.print(\"Enter your name: \");\n        String name = sc.nextLine();\n\n        System.out.print(\"Enter your age: \");\n        int age = sc.nextInt();\n\n        System.out.printf(\"Hello %s, you are %d years old.%n\", name, age);\n    }\n}",
+      "output": "(Assuming input: Aman, then 25)\nEnter your name: Aman\nEnter your age: 25\nHello Aman, you are 25 years old.",
+      "retypePractice": true,
+      "retypeId": "java-io-scanner"
+    },
+    {
+      "type": "note",
+      "text": "This lesson's code reads real keyboard input, so its exact output depends on what a user types — the sample output above assumes the example values shown. This eBook's editors are for reading and retyping code only, not running it."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Calling nextLine() right after nextInt() (or nextDouble()) and being confused when it seems to get skipped — add an extra sc.nextLine(); to consume the leftover newline first.",
+        "Forgetting System.out.print() (no line break) doesn't add a space or newline automatically before the next output.",
+        "Using %d for a double or %f for an int in printf — the placeholder type must match the value's actual type.",
+        "Forgetting import java.util.Scanner; at the top of the file — without it, Scanner is unrecognized."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between System.out.print and System.out.println?",
+          "answer": "print outputs text with no trailing line break, so the next output continues on the same line. println outputs text and then moves to a new line."
+        },
+        {
+          "question": "What class is commonly used to read user input in Java?",
+          "answer": "Scanner, from java.util.Scanner, wrapping System.in. It provides methods like nextInt(), nextDouble(), next(), and nextLine() for reading different types of input."
+        },
+        {
+          "question": "Why does nextLine() sometimes appear to be skipped after nextInt()?",
+          "answer": "nextInt() only consumes the numeric characters typed, leaving the newline character (from pressing Enter) unread in the input buffer. The following nextLine() call immediately reads that leftover empty newline instead of waiting for new input. Calling an extra sc.nextLine(); after nextInt() consumes that leftover newline."
+        },
+        {
+          "question": "What does %.2f do in a printf format string?",
+          "answer": "It formats a decimal value to show exactly 2 digits after the decimal point, rounding as needed for display — it does not change the underlying stored value."
+        }
+      ],
+      "thirtySecondAnswer": "Java prints output with System.out.print (no line break), System.out.println (adds a line break), or System.out.printf for formatted output using placeholders like %s, %d, and %.2f. Input is read with Scanner, wrapping System.in, using methods like nextInt(), nextDouble(), and nextLine() for different value types. The most common Scanner gotcha is calling nextLine() right after nextInt(): the leftover newline from the number entry gets read immediately as an empty line, so an extra sc.nextLine() call is needed to consume it first."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "println = PRINT + NEW LINE. printf = PRINT + FORMATTED. Scanner's nextInt() leaves the Enter key's newline behind — always sc.nextLine(); to clean it up before reading a real line."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between print and println?",
+        "Which Scanner method reads an entire line including spaces?",
+        "Why does calling nextLine() right after nextInt() often cause a bug?",
+        "What does %.2f do in printf?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-io-scanner", "lang": "java", "filename": "Main.java", "code": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        System.out.print(\"Enter your name: \");\n        String name = sc.nextLine();\n\n        System.out.print(\"Enter your age: \");\n        int age = sc.nextInt();\n\n        System.out.printf(\"Hello %s, you are %d years old.%n\", name, age);\n    }\n}", "output": "(Assuming input: Aman, then 25)\nEnter your name: Aman\nEnter your age: 25\nHello Aman, you are 25 years old." }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-io-scanner",
+      "reference": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        System.out.print(\"Enter your name: \");\n        String name = sc.nextLine();\n\n        System.out.print(\"Enter your age: \");\n        int age = sc.nextInt();\n\n        System.out.printf(\"Hello %s, you are %d years old.%n\", name, age);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-io-scanner"]
+  }
+}
