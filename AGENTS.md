@@ -97,7 +97,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 2 | Control Flow | ✅ done | Conditional Statements (if/else if/else), switch Statement, Loops (overview), for Loop, Enhanced for Loop, while Loop, do-while Loop, break, continue, Labeled Loops |
 | 3 | Methods | ✅ done | Method Declaration and Calling, Parameters and Arguments, Return Types, Method Overloading, Varargs, Recursion Basics, Static vs Instance Methods |
 | 4 | Arrays & Strings | ✅ done | 1D Arrays, 2D Arrays, Strings and Immutability, Common String Methods, StringBuilder, Array vs ArrayList (Intro) |
-| 5 | Object-Oriented Programming | ⬜ | — |
+| 5 | Object-Oriented Programming | ✅ done | Classes and Objects, Constructors, this Keyword, Encapsulation and Access Modifiers, Inheritance, Polymorphism, Abstract Classes, Interfaces, Packages |
 | 6 | Advanced Java | ⬜ | — |
 | 7 | Java Collections Framework | ⬜ | — |
 | 8 | DSA Foundations | ⬜ | — |
