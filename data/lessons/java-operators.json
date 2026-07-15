@@ -1,0 +1,266 @@
+{
+  "id": "java-operators",
+  "moduleId": "java-fundamentals",
+  "title": "Operators",
+  "description": "Arithmetic, assignment, relational, and logical operators — including the integer-division gotcha and pre/post increment.",
+  "objectives": [
+    "Use Java's arithmetic operators and understand integer vs decimal division",
+    "Use shorthand assignment operators and increment/decrement",
+    "Use relational operators to compare values",
+    "Use logical operators to combine true/false conditions",
+    "Avoid the classic = vs == mistake"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What is an Operator?"
+    },
+    {
+      "type": "definition",
+      "term": "Operator",
+      "text": "A symbol that performs an operation on one or more values (called operands), such as adding two numbers or comparing them."
+    },
+    {
+      "type": "paragraph",
+      "text": "We already used one operator without naming it: the = in int age = 25; is the assignment operator. Java has several categories of operators — today we cover the most common ones."
+    },
+    {
+      "type": "heading",
+      "text": "2. Arithmetic Operators"
+    },
+    {
+      "type": "table",
+      "headers": ["Operator", "Meaning", "Example", "Result"],
+      "rows": [
+        ["+", "Addition", "5 + 2", "7"],
+        ["-", "Subtraction", "5 - 2", "3"],
+        ["*", "Multiplication", "5 * 2", "10"],
+        ["/", "Division", "5 / 2", "2 (see below)"],
+        ["%", "Modulo (remainder)", "5 % 2", "1"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "5 / 2 gives 2, not 2.5! When both operands are int, Java performs integer division and throws away the decimal part entirely — it does not round. This is one of the most common bugs beginners hit."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int a = 5;\nint b = 2;\nSystem.out.println(a / b);        // 2 (int / int = int)\nSystem.out.println((double) a / b); // 2.5 (one side is now double)"
+    },
+    {
+      "type": "note",
+      "text": "(double) a temporarily treats a as a double for this expression. This is called type casting, and it's a dedicated topic coming up soon — for now, just recognize why it fixes the division here: if either operand is a double, Java performs decimal division and keeps the fractional part."
+    },
+    {
+      "type": "heading",
+      "text": "3. The Modulo Operator (%)"
+    },
+    {
+      "type": "paragraph",
+      "text": "% gives you the remainder after division, not the quotient. It's extremely common in DSA later — e.g. checking if a number is even (n % 2 == 0)."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "System.out.println(10 % 3); // 1  (10 = 3*3 + 1)\nSystem.out.println(9 % 3);  // 0  (9 divides evenly)"
+    },
+    {
+      "type": "heading",
+      "text": "4. Assignment Operators"
+    },
+    {
+      "type": "paragraph",
+      "text": "Beyond plain =, Java has shorthand operators that combine an operation with assignment."
+    },
+    {
+      "type": "table",
+      "headers": ["Operator", "Meaning", "Same as"],
+      "rows": [
+        ["+=", "Add and assign", "x = x + 5"],
+        ["-=", "Subtract and assign", "x = x - 5"],
+        ["*=", "Multiply and assign", "x = x * 5"],
+        ["/=", "Divide and assign", "x = x / 5"],
+        ["%=", "Modulo and assign", "x = x % 5"]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int x = 10;\nx += 5; // x is now 15\nx -= 3; // x is now 12"
+    },
+    {
+      "type": "heading",
+      "text": "5. Increment and Decrement (++ / --)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int count = 5;\ncount++; // count is now 6\ncount--; // count is now 5 again"
+    },
+    {
+      "type": "paragraph",
+      "text": "++ increases a variable by 1; -- decreases it by 1. There are two forms: post-increment (count++) and pre-increment (++count) — they behave differently when used inside a larger expression."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int a = 5;\nint b = a++; // b = 5, then a becomes 6  (post: use old value, then increment)\n\nint c = 5;\nint d = ++c; // c becomes 6, then d = 6  (pre: increment first, then use new value)"
+    },
+    {
+      "type": "warning",
+      "text": "This pre/post distinction only matters when the ++ or -- is combined with another operation in the same expression. When it's on its own line, like count++;, both forms behave identically. We'll return to trickier expressions once we cover loops, where ++ is used constantly."
+    },
+    {
+      "type": "heading",
+      "text": "6. Relational (Comparison) Operators"
+    },
+    {
+      "type": "table",
+      "headers": ["Operator", "Meaning", "Example", "Result"],
+      "rows": [
+        ["==", "Equal to", "5 == 5", "true"],
+        ["!=", "Not equal to", "5 != 3", "true"],
+        [">", "Greater than", "5 > 3", "true"],
+        ["<", "Less than", "5 < 3", "false"],
+        [">=", "Greater than or equal to", "5 >= 5", "true"],
+        ["<=", "Less than or equal to", "5 <= 3", "false"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "= assigns a value; == compares two values. int x = 5; sets x to 5. x == 5 checks whether x currently equals 5, and produces true or false — it does not change x. Confusing the two is a classic beginner mistake, and in some contexts Java's compiler will catch it, but not always."
+    },
+    {
+      "type": "heading",
+      "text": "7. Logical Operators"
+    },
+    {
+      "type": "table",
+      "headers": ["Operator", "Meaning", "Example"],
+      "rows": [
+        ["&&", "AND — true only if both sides are true", "(age > 18) && (hasId)"],
+        ["||", "OR — true if at least one side is true", "(isAdmin) || (isOwner)"],
+        ["!", "NOT — flips true to false and vice versa", "!isLoggedIn"]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "boolean age18Plus = true;\nboolean hasId = false;\n\nboolean canEnter = age18Plus && hasId;\nSystem.out.println(canEnter); // false, because hasId is false"
+    },
+    {
+      "type": "warning",
+      "text": "We have not covered if statements yet — that's the very next lesson. Logical operators are introduced here because they produce boolean results just like relational operators do; you'll immediately put both to use once if arrives."
+    },
+    {
+      "type": "heading",
+      "text": "8. Operator Precedence (Brief Preview)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Just like in math, Java evaluates * and / before + and -, unless parentheses say otherwise."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int result = 2 + 3 * 4;   // 14, not 20 — * happens first\nint result2 = (2 + 3) * 4; // 20 — parentheses force + first"
+    },
+    {
+      "type": "tip",
+      "text": "When unsure, add parentheses. They cost nothing and make your intent unambiguous to any reader (including future you)."
+    },
+    {
+      "type": "heading",
+      "text": "9. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int a = 7;\n        int b = 2;\n\n        System.out.println(\"a / b = \" + (a / b));\n        System.out.println(\"a % b = \" + (a % b));\n\n        boolean isEven = (a % 2 == 0);\n        System.out.println(\"Is a even? \" + isEven);\n\n        int score = 10;\n        score += 5;\n        System.out.println(\"Score: \" + score);\n    }\n}",
+      "output": "a / b = 3\na % b = 1\nIs a even? false\nScore: 15",
+      "retypePractice": true,
+      "retypeId": "java-operators-mix"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "a / b = 7 / 2 = 3 (integer division, decimal dropped)",
+        "a % b = 7 % 2 = 1 (remainder of 7 divided by 2)",
+        "a % 2 == 0 checks evenness: 7 % 2 is 1, not 0, so isEven is false",
+        "score += 5 makes score go from 10 to 15"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Expecting int / int to give a decimal result — 5 / 2 is 2, not 2.5, unless one side is a double.",
+        "Using = where == was meant, or vice versa — = assigns, == compares.",
+        "Forgetting % gives the remainder, not the quotient — 10 % 3 is 1, not 3.",
+        "Assuming ++count and count++ always behave the same — they only differ when combined with another operation in the same expression.",
+        "Skipping parentheses in mixed expressions and getting surprised by precedence — 2 + 3 * 4 is 14, not 20."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does 5 / 2 evaluate to in Java, and why?",
+          "answer": "2. When both operands of / are int, Java performs integer division and discards the fractional part rather than rounding. To get 2.5, at least one operand must be a double (or cast to one)."
+        },
+        {
+          "question": "What is the difference between = and ==?",
+          "answer": "= is the assignment operator, which stores a value into a variable. == is the equality operator, which compares two values and produces a boolean (true or false) without changing anything."
+        },
+        {
+          "question": "What does the % operator do?",
+          "answer": "It returns the remainder of dividing the left operand by the right operand. For example, 10 % 3 is 1, since 3 goes into 10 three times with 1 left over."
+        },
+        {
+          "question": "What is the difference between x++ and ++x?",
+          "answer": "x++ (post-increment) returns x's current value and then increments it. ++x (pre-increment) increments x first and then returns the new value. They only produce different results when used inside a larger expression."
+        },
+        {
+          "question": "What do && and || do?",
+          "answer": "&& (logical AND) evaluates to true only if both sides are true. || (logical OR) evaluates to true if at least one side is true. Both are used to combine boolean conditions, commonly inside if statements."
+        }
+      ],
+      "thirtySecondAnswer": "Java's arithmetic operators are + - * / %, and integer division between two int values truncates the decimal part rather than rounding, which trips up a lot of beginners. Assignment operators like += give shorthand for updating a variable, and ++/-- increment or decrement by one, with pre and post forms that only differ inside larger expressions. Relational operators (==, !=, <, >, <=, >=) compare values and produce a boolean, while logical operators (&&, ||, !) combine boolean values — together these are the building blocks for the if statements and loops coming up next."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "One equals sign ASSIGNS (x = 5), two equals signs ASK a question (x == 5?). And: int / int always rounds toward zero by dropping the decimal, never by rounding up or down."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does 7 / 2 evaluate to, and what about 7.0 / 2?",
+        "What's the difference between = and ==?",
+        "What does 10 % 4 evaluate to?",
+        "When do x++ and ++x behave differently?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-operators-mix", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int a = 7;\n        int b = 2;\n\n        System.out.println(\"a / b = \" + (a / b));\n        System.out.println(\"a % b = \" + (a % b));\n\n        boolean isEven = (a % 2 == 0);\n        System.out.println(\"Is a even? \" + isEven);\n\n        int score = 10;\n        score += 5;\n        System.out.println(\"Score: \" + score);\n    }\n}", "output": "a / b = 3\na % b = 1\nIs a even? false\nScore: 15" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-operators-mix",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        int a = 7;\n        int b = 2;\n\n        System.out.println(\"a / b = \" + (a / b));\n        System.out.println(\"a % b = \" + (a % b));\n\n        boolean isEven = (a % 2 == 0);\n        System.out.println(\"Is a even? \" + isEven);\n\n        int score = 10;\n        score += 5;\n        System.out.println(\"Score: \" + score);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-operators-mix"]
+  }
+}

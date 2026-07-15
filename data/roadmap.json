@@ -6,7 +6,8 @@
       "topics": [
         { "id": "java-introduction", "title": "Introduction to Java", "lesson": "java-introduction" },
         { "id": "java-variables", "title": "Variables", "lesson": "java-variables" },
-        { "id": "java-data-types", "title": "Data Types", "lesson": "java-data-types" }
+        { "id": "java-data-types", "title": "Data Types", "lesson": "java-data-types" },
+        { "id": "java-operators", "title": "Operators", "lesson": "java-operators" }
       ]
     },
     { "id": "control-flow", "title": "Control Flow", "topics": [] },
