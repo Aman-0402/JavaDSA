@@ -1,0 +1,174 @@
+{
+  "id": "java-break",
+  "moduleId": "control-flow",
+  "title": "break",
+  "description": "Exiting a loop early with break, and how it also shows up inside switch (already seen in the switch lesson).",
+  "objectives": [
+    "Use break to exit a loop before its condition naturally becomes false",
+    "Understand which loop break exits when loops are nested",
+    "Recognize break's dual role: exiting loops AND exiting switch cases"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Exiting a Loop Early"
+    },
+    {
+      "type": "paragraph",
+      "text": "So far, every loop we've written only stops when its condition becomes false. Sometimes you want to stop immediately, as soon as something specific happens — regardless of the loop's condition. That's what break does."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "for (int i = 1; i <= 10; i++) {\n    if (i == 5) {\n        break;\n    }\n    System.out.println(i);\n}",
+      "output": "1\n2\n3\n4",
+      "retypePractice": true,
+      "retypeId": "java-break-early-exit"
+    },
+    {
+      "type": "definition",
+      "term": "break",
+      "text": "A statement that immediately exits the innermost loop (or switch) it's inside, skipping any remaining iterations entirely."
+    },
+    {
+      "type": "warning",
+      "text": "The loop's own condition (i <= 10) is completely irrelevant once break runs — even though i is only 5, and 5 <= 10 is still true, the loop stops anyway because break doesn't care about the condition."
+    },
+    {
+      "type": "heading",
+      "text": "2. Searching for a Value (A Realistic Use Case)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[] numbers = {4, 8, 15, 16, 23, 42};\nint target = 15;\nboolean found = false;\n\nfor (int num : numbers) {\n    if (num == target) {\n        found = true;\n        break;\n    }\n}\n\nSystem.out.println(\"Found: \" + found);",
+      "output": "Found: true",
+      "retypePractice": true,
+      "retypeId": "java-break-search"
+    },
+    {
+      "type": "note",
+      "text": "Once target is found, there's no reason to keep checking the remaining elements (16, 23, 42) — break stops the search immediately, which matters a lot for performance once arrays get large (arrays covered properly soon)."
+    },
+    {
+      "type": "heading",
+      "text": "3. break Only Exits the Innermost Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            break;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}\n// 1,1  2,1  3,1"
+    },
+    {
+      "type": "warning",
+      "text": "This break only exits the INNER loop (the j loop), not the outer i loop. The outer loop keeps running normally — that's why 1,1, 2,1, and 3,1 all print, once per outer iteration, each stopped early by the same inner break. We'll see how to escape an outer loop directly in the Labeled Loops lesson."
+    },
+    {
+      "type": "heading",
+      "text": "4. break Also Exits switch (Recap)"
+    },
+    {
+      "type": "paragraph",
+      "text": "We already used break in the switch Statement lesson to prevent fallthrough. It's worth noticing this is the exact same keyword — break always means \"stop the innermost thing I'm inside of, right now,\" whether that's a loop or a switch case."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int day = 2;\n\nswitch (day) {\n    case 1:\n        System.out.println(\"Monday\");\n        break; // exits the switch, not a loop\n    case 2:\n        System.out.println(\"Tuesday\");\n        break;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "If a switch is written inside a loop, break inside a case exits the switch only — it does NOT also exit the surrounding loop. This trips people up, since it's the same keyword doing two conceptually different jobs depending on context."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int number = 29;\n        boolean isPrime = true;\n\n        for (int i = 2; i < number; i++) {\n            if (number % i == 0) {\n                isPrime = false;\n                break;\n            }\n        }\n\n        System.out.println(number + \" is prime: \" + isPrime);\n    }\n}",
+      "output": "29 is prime: true",
+      "retypePractice": true,
+      "retypeId": "java-break-prime-check"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "isPrime starts true, assuming 29 is prime",
+        "For each i from 2 to 28, we check if 29 % i == 0",
+        "None of them divide evenly into 29, so isPrime stays true the entire loop",
+        "The loop runs to completion (no break triggered), confirming 29 is prime"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming break exits ALL surrounding loops when nested — it only exits the innermost one it's directly inside.",
+        "Assuming break inside a switch that's inside a loop also stops the loop — it only exits the switch.",
+        "Using break as a substitute for a correctly designed loop condition, when adjusting the condition itself would be clearer.",
+        "Forgetting that code after break inside the same loop iteration never runs — it's an immediate exit, not a skip-to-next-check."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does break do inside a loop?",
+          "answer": "It immediately exits the loop it's directly inside, skipping any remaining iterations, regardless of whether the loop's condition is still true."
+        },
+        {
+          "question": "In nested loops, which loop does break exit?",
+          "answer": "Only the innermost loop it's directly inside. The outer loop(s) continue running normally and are unaffected."
+        },
+        {
+          "question": "If a switch statement is inside a loop, what does break inside a case do?",
+          "answer": "It exits the switch statement only — it does not also exit the surrounding loop, even though it's the same break keyword used for both purposes."
+        },
+        {
+          "question": "Why is break useful in a search loop?",
+          "answer": "Once the target has been found, there's no reason to keep checking the remaining elements — break stops the loop immediately, avoiding unnecessary work once the answer is already known."
+        }
+      ],
+      "thirtySecondAnswer": "break immediately exits the innermost loop or switch it's directly inside, regardless of whether the loop's own condition is still true — useful for stopping a search the moment a target is found, or bailing out of a loop as soon as some condition is detected. In nested loops, break only affects the innermost loop; the outer loop keeps running. The same keyword is also used inside switch cases to prevent fallthrough, but a break inside a switch that happens to be nested inside a loop only exits the switch, not the loop."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "break = EJECT BUTTON for the closest loop or switch — it doesn't care about the outer condition, and it never reaches further out than the ring it's directly inside."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does break do inside a loop?",
+        "In nested loops, which loop does a single break statement exit?",
+        "Does break inside a switch that's nested in a loop also exit the loop?",
+        "Why is break useful when searching for a value?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-break-early-exit", "lang": "java", "filename": "Main.java", "code": "for (int i = 1; i <= 10; i++) {\n    if (i == 5) {\n        break;\n    }\n    System.out.println(i);\n}", "output": "1\n2\n3\n4" },
+    { "id": "java-break-search", "lang": "java", "filename": "Main.java", "code": "int[] numbers = {4, 8, 15, 16, 23, 42};\nint target = 15;\nboolean found = false;\n\nfor (int num : numbers) {\n    if (num == target) {\n        found = true;\n        break;\n    }\n}\n\nSystem.out.println(\"Found: \" + found);", "output": "Found: true" },
+    { "id": "java-break-prime-check", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int number = 29;\n        boolean isPrime = true;\n\n        for (int i = 2; i < number; i++) {\n            if (number % i == 0) {\n                isPrime = false;\n                break;\n            }\n        }\n\n        System.out.println(number + \" is prime: \" + isPrime);\n    }\n}", "output": "29 is prime: true" }
+  ],
+  "retypePractice": [
+    { "id": "java-break-early-exit", "reference": "for (int i = 1; i <= 10; i++) {\n    if (i == 5) {\n        break;\n    }\n    System.out.println(i);\n}" },
+    { "id": "java-break-search", "reference": "int[] numbers = {4, 8, 15, 16, 23, 42};\nint target = 15;\nboolean found = false;\n\nfor (int num : numbers) {\n    if (num == target) {\n        found = true;\n        break;\n    }\n}\n\nSystem.out.println(\"Found: \" + found);" },
+    { "id": "java-break-prime-check", "reference": "public class Main {\n    public static void main(String[] args) {\n        int number = 29;\n        boolean isPrime = true;\n\n        for (int i = 2; i < number; i++) {\n            if (number % i == 0) {\n                isPrime = false;\n                break;\n            }\n        }\n\n        System.out.println(number + \" is prime: \" + isPrime);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-break-early-exit", "java-break-search", "java-break-prime-check"]
+  }
+}
