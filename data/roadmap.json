@@ -61,7 +61,8 @@
         { "id": "java-classes-objects", "title": "Classes and Objects", "lesson": "java-classes-objects" },
         { "id": "java-constructors", "title": "Constructors", "lesson": "java-constructors" },
         { "id": "java-this-keyword", "title": "this Keyword", "lesson": "java-this-keyword" },
-        { "id": "java-encapsulation-access-modifiers", "title": "Encapsulation and Access Modifiers", "lesson": "java-encapsulation-access-modifiers" }
+        { "id": "java-encapsulation-access-modifiers", "title": "Encapsulation and Access Modifiers", "lesson": "java-encapsulation-access-modifiers" },
+        { "id": "java-inheritance", "title": "Inheritance", "lesson": "java-inheritance" }
       ]
     },
     { "id": "advanced-java", "title": "Advanced Java", "topics": [] },

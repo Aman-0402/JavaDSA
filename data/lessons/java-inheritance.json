@@ -1,0 +1,164 @@
+{
+  "id": "java-inheritance",
+  "moduleId": "oop",
+  "title": "Inheritance",
+  "description": "One class reusing another's fields and methods with extends, the super keyword, and the protected access level from Encapsulation.",
+  "objectives": [
+    "Understand inheritance as one class reusing another's fields and methods",
+    "Use extends to create a subclass and super to access the parent class",
+    "Know protected's role now that subclasses exist"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Avoiding Repeated Code Across Classes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine Student and Teacher both need name and age, plus an introduce() method. Writing all of that twice, identically, in two separate classes is wasteful. Inheritance lets one class (a subclass) reuse another's (a superclass's) fields and methods."
+    },
+    {
+      "type": "definition",
+      "term": "Inheritance",
+      "text": "A mechanism where one class (the subclass) acquires the fields and methods of another class (the superclass), using the extends keyword, allowing code reuse and an \"is-a\" relationship between classes."
+    },
+    {
+      "type": "heading",
+      "text": "2. A Superclass and a Subclass"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Person.java",
+      "code": "public class Person {\n    protected String name;\n    protected int age;\n\n    public Person(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n\n    public void introduce() {\n        System.out.println(\"Hi, I'm \" + name + \", age \" + age);\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student extends Person {\n    private String school;\n\n    public Student(String name, int age, String school) {\n        super(name, age);\n        this.school = school;\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\", 21, \"MIT\");\n        s.introduce();\n    }\n}",
+      "output": "Hi, I'm Aman, age 21",
+      "retypePractice": true,
+      "retypeId": "java-inheritance-basic"
+    },
+    {
+      "type": "warning",
+      "text": "Student never defines introduce() itself -- it inherits it directly from Person, since Student extends Person. This is the entire point: Student automatically gets name, age, and introduce() for free, and only needs to add what's genuinely new (school)."
+    },
+    {
+      "type": "heading",
+      "text": "3. protected, Now Explained"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Encapsulation, we previewed protected as \"same package, plus subclasses elsewhere\" without a concrete use. Now it makes sense: Person's fields are protected instead of private specifically so Student (a subclass) can use them directly (name, age inside introduce()), while classes with no inheritance relationship still can't touch them."
+    },
+    {
+      "type": "heading",
+      "text": "4. The super Keyword"
+    },
+    {
+      "type": "definition",
+      "term": "super",
+      "text": "A reference used inside a subclass to access its superclass's constructor or methods explicitly."
+    },
+    {
+      "type": "warning",
+      "text": "super(name, age); in Student's constructor calls Person's constructor, running its initialization logic (setting name and age) before Student's own constructor body continues. If a subclass constructor doesn't explicitly call super(...), Java automatically calls the superclass's no-argument constructor first -- and if the superclass has no no-argument constructor available, this causes a compile error."
+    },
+    {
+      "type": "heading",
+      "text": "5. Overriding an Inherited Method"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Person {\n        protected String name;\n\n        Person(String name) {\n            this.name = name;\n        }\n\n        void introduce() {\n            System.out.println(\"Hi, I'm \" + name);\n        }\n    }\n\n    static class Student extends Person {\n        private String school;\n\n        Student(String name, String school) {\n            super(name);\n            this.school = school;\n        }\n\n        @Override\n        void introduce() {\n            System.out.println(\"Hi, I'm \" + name + \", studying at \" + school);\n        }\n    }\n\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\", \"MIT\");\n        s.introduce();\n    }\n}",
+      "output": "Hi, I'm Aman, studying at MIT",
+      "retypePractice": true,
+      "retypeId": "java-inheritance-override"
+    },
+    {
+      "type": "warning",
+      "text": "We are only previewing @Override and overriding here -- it's covered fully in the next lesson, Polymorphism, alongside overloading. For now, notice that Student's introduce() replaces (rather than adds to) Person's version when called on a Student object."
+    },
+    {
+      "type": "heading",
+      "text": "6. Single Inheritance in Java"
+    },
+    {
+      "type": "warning",
+      "text": "A Java class can extend only ONE superclass -- Java does not support extending multiple classes at once (unlike some other languages). Achieving similar flexibility to \"multiple inheritance\" uses interfaces instead, which we cover as a dedicated topic soon."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting a subclass constructor must call super(...) as its FIRST statement if the superclass has no no-argument constructor -- otherwise it won't compile.",
+        "Keeping superclass fields private when a subclass genuinely needs direct access -- protected is the level designed for exactly this case.",
+        "Assuming a Java class can extend multiple classes at once -- Java only allows single inheritance; interfaces solve the multi-class-capability need instead.",
+        "Confusing overriding (a subclass replacing an inherited method) with overloading (same class, different parameter lists, from the Methods module) -- they're unrelated concepts that happen to sound similar."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is inheritance in Java?",
+          "answer": "A mechanism where a subclass acquires the fields and methods of a superclass using extends, enabling code reuse and expressing an \"is-a\" relationship between classes."
+        },
+        {
+          "question": "What does the super keyword do?",
+          "answer": "It lets a subclass explicitly call its superclass's constructor (super(...)) or access its superclass's methods, most commonly to run the superclass's initialization logic before the subclass's own constructor continues."
+        },
+        {
+          "question": "Why might a field be declared protected instead of private in a class meant to be extended?",
+          "answer": "protected allows subclasses to access that field directly, which private would prevent -- useful when subclasses genuinely need to work with the superclass's own data."
+        },
+        {
+          "question": "Can a Java class extend more than one class?",
+          "answer": "No. Java only supports single inheritance from one superclass; achieving similar flexibility across multiple sources of behavior is done with interfaces instead."
+        }
+      ],
+      "thirtySecondAnswer": "Inheritance lets a subclass acquire a superclass's fields and methods using extends, avoiding duplicated code across related classes and expressing an \"is-a\" relationship. super(...) explicitly calls the superclass's constructor, typically as the subclass constructor's first statement; if omitted, Java calls the superclass's no-argument constructor automatically. protected fields exist specifically so subclasses can access superclass data directly, which private would block. Java supports only single inheritance -- one superclass per class -- with interfaces used to achieve broader flexibility, covered as a later topic."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "extends = \"I am a special kind of you.\" super(...) = calling the parent's setup FIRST, always. protected = a family-only door -- open to subclasses, locked to strangers."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What keyword creates a subclass relationship in Java?",
+        "What does super(...) do inside a subclass constructor?",
+        "Why would a field be protected instead of private in a superclass?",
+        "Can a Java class extend more than one superclass?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-inheritance-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\", 21, \"MIT\");\n        s.introduce();\n    }\n}", "output": "Hi, I'm Aman, age 21" },
+    { "id": "java-inheritance-override", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Person {\n        protected String name;\n\n        Person(String name) {\n            this.name = name;\n        }\n\n        void introduce() {\n            System.out.println(\"Hi, I'm \" + name);\n        }\n    }\n\n    static class Student extends Person {\n        private String school;\n\n        Student(String name, String school) {\n            super(name);\n            this.school = school;\n        }\n\n        @Override\n        void introduce() {\n            System.out.println(\"Hi, I'm \" + name + \", studying at \" + school);\n        }\n    }\n\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\", \"MIT\");\n        s.introduce();\n    }\n}", "output": "Hi, I'm Aman, studying at MIT" }
+  ],
+  "retypePractice": [
+    { "id": "java-inheritance-basic", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\", 21, \"MIT\");\n        s.introduce();\n    }\n}" },
+    { "id": "java-inheritance-override", "reference": "public class Main {\n    static class Person {\n        protected String name;\n\n        Person(String name) {\n            this.name = name;\n        }\n\n        void introduce() {\n            System.out.println(\"Hi, I'm \" + name);\n        }\n    }\n\n    static class Student extends Person {\n        private String school;\n\n        Student(String name, String school) {\n            super(name);\n            this.school = school;\n        }\n\n        @Override\n        void introduce() {\n            System.out.println(\"Hi, I'm \" + name + \", studying at \" + school);\n        }\n    }\n\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\", \"MIT\");\n        s.introduce();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-inheritance-basic", "java-inheritance-override"]
+  }
+}
