@@ -1,0 +1,179 @@
+{
+  "id": "java-recursion-basics",
+  "moduleId": "methods",
+  "title": "Recursion Basics",
+  "description": "A method calling itself — the base case, the recursive case, and tracing the call stack for factorial.",
+  "objectives": [
+    "Understand what recursion is and why every recursive method needs a base case",
+    "Trace a simple recursive method call by call",
+    "Recognize the risk of a missing or unreachable base case"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. A Method Calling Itself"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every method we've written so far has called OTHER methods (or none at all). Recursion is when a method calls ITSELF, usually to solve a smaller version of the same problem."
+    },
+    {
+      "type": "definition",
+      "term": "Recursion",
+      "text": "A technique where a method solves a problem by calling itself with a smaller or simpler input, until it reaches a case simple enough to answer directly."
+    },
+    {
+      "type": "heading",
+      "text": "2. Factorial: The Classic First Example"
+    },
+    {
+      "type": "paragraph",
+      "text": "The factorial of n (written n!) is n × (n-1) × (n-2) × ... × 1. Notice: 5! = 5 × 4!, and 4! = 4 × 3!, and so on — factorial is naturally defined in terms of a smaller factorial."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int factorial(int n) {\n        if (n == 0) {\n            return 1; // base case\n        }\n        return n * factorial(n - 1); // recursive case\n    }\n\n    public static void main(String[] args) {\n        System.out.println(factorial(5));\n    }\n}",
+      "output": "120",
+      "retypePractice": true,
+      "retypeId": "java-recursion-factorial"
+    },
+    {
+      "type": "definition",
+      "term": "Base case",
+      "text": "The condition in a recursive method that stops further recursive calls and returns a direct answer, without calling the method again."
+    },
+    {
+      "type": "definition",
+      "term": "Recursive case",
+      "text": "The part of a recursive method where it calls itself with a smaller or simpler input, moving toward the base case."
+    },
+    {
+      "type": "warning",
+      "text": "Every recursive method needs a base case that is actually reachable. Without one, the method calls itself forever (or until Java runs out of memory for tracking calls, causing a StackOverflowError) — the recursive equivalent of an infinite loop."
+    },
+    {
+      "type": "heading",
+      "text": "3. Tracing factorial(5)"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing factorial(5) — calls going down",
+      "steps": [
+        "factorial(5) needs 5 * factorial(4)",
+        "factorial(4) needs 4 * factorial(3)",
+        "factorial(3) needs 3 * factorial(2)",
+        "factorial(2) needs 2 * factorial(1)",
+        "factorial(1) needs 1 * factorial(0)",
+        "factorial(0) hits the base case, returns 1 directly — no further calls"
+      ]
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing factorial(5) — answers unwinding back up",
+      "steps": [
+        "factorial(0) returns 1",
+        "factorial(1) returns 1 * 1 = 1",
+        "factorial(2) returns 2 * 1 = 2",
+        "factorial(3) returns 3 * 2 = 6",
+        "factorial(4) returns 4 * 6 = 24",
+        "factorial(5) returns 5 * 24 = 120 — the final answer"
+      ]
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Russian nesting dolls analogy",
+      "text": "Each doll (call) contains a smaller doll (the next call) inside it. You keep opening dolls until you reach the smallest one that doesn't open further (the base case) — then you close them back up one by one, combining what you found at each layer, until you're back to the outermost doll with your final answer."
+    },
+    {
+      "type": "heading",
+      "text": "4. The Call Stack (Preview)"
+    },
+    {
+      "type": "note",
+      "text": "Each recursive call is tracked by Java on something called the call stack — every call waits for the one it made to finish before it can compute its own answer, which is exactly why the \"unwinding\" happens in reverse order. We revisit the call stack in more depth in the DSA Foundations module."
+    },
+    {
+      "type": "heading",
+      "text": "5. A Second Example: Sum of 1 to n"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int sumUpTo(int n) {\n        if (n == 0) {\n            return 0; // base case\n        }\n        return n + sumUpTo(n - 1); // recursive case\n    }\n\n    public static void main(String[] args) {\n        System.out.println(sumUpTo(5));\n    }\n}",
+      "output": "15",
+      "retypePractice": true,
+      "retypeId": "java-recursion-sum"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Recognizing recursion opportunities",
+      "points": [
+        "Ask: can this problem be described in terms of a SMALLER version of itself? (n! in terms of (n-1)!)",
+        "Identify the base case: the smallest input you can answer directly without recursing further",
+        "Identify the recursive case: how to combine the current input with the answer to the smaller sub-problem"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the base case entirely, causing infinite recursion and a StackOverflowError.",
+        "Writing a base case that's never actually reached — e.g. checking n == 0 but only ever calling with even-stepped inputs that skip past 0.",
+        "Forgetting to actually move toward the base case in the recursive call — calling factorial(n) instead of factorial(n - 1) never shrinks the problem.",
+        "Assuming recursion is always more efficient than a loop — sometimes it's clearer to read, but it isn't automatically faster; this trade-off is explored further in DSA Foundations."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is recursion?",
+          "answer": "A technique where a method solves a problem by calling itself with a smaller or simpler version of the input, until it reaches a base case simple enough to answer directly without recursing further."
+        },
+        {
+          "question": "What is a base case, and why is it required?",
+          "answer": "The base case is the condition that stops recursion and returns an answer directly. Without a reachable base case, a recursive method calls itself indefinitely, eventually causing a StackOverflowError."
+        },
+        {
+          "question": "Trace factorial(3) using the recursive definition n! = n * (n-1)!.",
+          "answer": "factorial(3) = 3 * factorial(2); factorial(2) = 2 * factorial(1); factorial(1) = 1 * factorial(0); factorial(0) returns 1 (base case). Unwinding: factorial(1) = 1*1 = 1, factorial(2) = 2*1 = 2, factorial(3) = 3*2 = 6."
+        }
+      ],
+      "thirtySecondAnswer": "Recursion is when a method calls itself to solve a smaller version of the same problem, continuing until it reaches a base case — the smallest input answerable directly, without further recursive calls. Every recursive method needs both a base case and a recursive case that moves the input toward that base case; skipping either risks infinite recursion and a StackOverflowError. Classic examples like factorial(n) = n * factorial(n-1) illustrate the pattern: calls go 'down' toward the base case, then answers unwind back 'up', combining results at each level on the way back."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Recursion = a method that trusts a SMALLER version of itself to do the work, combines that with its own piece, and always has an ESCAPE HATCH (the base case)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are the two essential parts of any recursive method?",
+        "What happens if a recursive method has no reachable base case?",
+        "Trace factorial(4) step by step, both going down and unwinding back up.",
+        "In sumUpTo(n), what does the recursive case look like?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-recursion-factorial", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int factorial(int n) {\n        if (n == 0) {\n            return 1; // base case\n        }\n        return n * factorial(n - 1); // recursive case\n    }\n\n    public static void main(String[] args) {\n        System.out.println(factorial(5));\n    }\n}", "output": "120" },
+    { "id": "java-recursion-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int sumUpTo(int n) {\n        if (n == 0) {\n            return 0; // base case\n        }\n        return n + sumUpTo(n - 1); // recursive case\n    }\n\n    public static void main(String[] args) {\n        System.out.println(sumUpTo(5));\n    }\n}", "output": "15" }
+  ],
+  "retypePractice": [
+    { "id": "java-recursion-factorial", "reference": "public class Main {\n    static int factorial(int n) {\n        if (n == 0) {\n            return 1; // base case\n        }\n        return n * factorial(n - 1); // recursive case\n    }\n\n    public static void main(String[] args) {\n        System.out.println(factorial(5));\n    }\n}" },
+    { "id": "java-recursion-sum", "reference": "public class Main {\n    static int sumUpTo(int n) {\n        if (n == 0) {\n            return 0; // base case\n        }\n        return n + sumUpTo(n - 1); // recursive case\n    }\n\n    public static void main(String[] args) {\n        System.out.println(sumUpTo(5));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-recursion-factorial", "java-recursion-sum"]
+  }
+}
