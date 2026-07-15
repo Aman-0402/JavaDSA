@@ -1,0 +1,159 @@
+{
+  "id": "java-array-vs-arraylist",
+  "moduleId": "arrays-strings",
+  "title": "Array vs ArrayList (Intro)",
+  "description": "A first look at ArrayList, Java's resizable alternative to arrays — solving the fixed-size limitation from the 1D Arrays lesson.",
+  "objectives": [
+    "Understand ArrayList as a resizable, growable alternative to arrays",
+    "Use add(), get(), set(), remove(), and size()",
+    "Know why ArrayList requires a wrapper type, not a primitive"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Limitation, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In 1D Arrays, we said an array's size is fixed forever once created — you cannot add a 6th element to a 5-element array. ArrayList exists specifically to remove that limitation."
+    },
+    {
+      "type": "definition",
+      "term": "ArrayList",
+      "text": "A resizable, growable list from the Java Collections Framework that can have elements added or removed at any time, unlike a fixed-size array."
+    },
+    {
+      "type": "warning",
+      "text": "This lesson is only a first taste. ArrayList belongs to the Java Collections Framework, an entire module coming up later, where it's covered alongside LinkedList, HashSet, HashMap, and more. Today, we only compare it to what you already know: arrays."
+    },
+    {
+      "type": "heading",
+      "text": "2. Creating and Adding to an ArrayList"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> numbers = new ArrayList<>();\n\n        numbers.add(10);\n        numbers.add(20);\n        numbers.add(30);\n\n        System.out.println(numbers);\n        System.out.println(\"Size: \" + numbers.size());\n    }\n}",
+      "output": "[10, 20, 30]\nSize: 3",
+      "retypePractice": true,
+      "retypeId": "java-arraylist-add"
+    },
+    {
+      "type": "warning",
+      "text": "ArrayList<Integer>, not ArrayList<int>! ArrayList (and the rest of the Collections Framework) can only hold reference types, not primitives directly. Integer is the wrapper class for int — we only preview this here; wrapper types and autoboxing are covered properly in Advanced Java."
+    },
+    {
+      "type": "heading",
+      "text": "3. Accessing, Changing, and Removing Elements"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<String> fruits = new ArrayList<>();\n        fruits.add(\"apple\");\n        fruits.add(\"banana\");\n        fruits.add(\"cherry\");\n\n        System.out.println(fruits.get(1));\n\n        fruits.set(1, \"blueberry\");\n        System.out.println(fruits);\n\n        fruits.remove(\"apple\");\n        System.out.println(fruits);\n    }\n}",
+      "output": "banana\n[apple, blueberry, cherry]\n[blueberry, cherry]",
+      "retypePractice": true,
+      "retypeId": "java-arraylist-modify"
+    },
+    {
+      "type": "table",
+      "title": "Array vs ArrayList, side by side",
+      "headers": ["", "Array", "ArrayList"],
+      "rows": [
+        ["Size", "Fixed at creation, never changes", "Grows and shrinks automatically"],
+        ["Element access", "numbers[i]", "numbers.get(i)"],
+        ["Element update", "numbers[i] = x;", "numbers.set(i, x);"],
+        ["Element count", "numbers.length (a field)", "numbers.size() (a method)"],
+        ["Holds primitives?", "Yes — int[], double[], etc.", "No — must use wrapper types like Integer, Double"],
+        ["Adding an element", "Not possible after creation", "numbers.add(x);"],
+        ["Removing an element", "Not possible", "numbers.remove(x); or remove(index)"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Looping Over an ArrayList"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "ArrayList<String> fruits = new ArrayList<>();\nfruits.add(\"apple\");\nfruits.add(\"banana\");\n\nfor (String fruit : fruits) {\n    System.out.println(fruit);\n}"
+    },
+    {
+      "type": "note",
+      "text": "The enhanced for loop from Control Flow works exactly the same way on an ArrayList as it does on an array — this is one of the reasons ArrayList feels so familiar once you already know arrays."
+    },
+    {
+      "type": "heading",
+      "text": "5. When to Use Which"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Guideline",
+      "points": [
+        "Use an array when the size is genuinely fixed and known ahead of time, or when working with primitives directly for performance",
+        "Use ArrayList when the number of elements will change over the program's life — adding/removing items as you go",
+        "Most everyday DSA and application code leans on ArrayList and the rest of the Collections Framework — plain arrays are still foundational, but ArrayList is usually the more practical everyday tool"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Writing ArrayList<int> instead of ArrayList<Integer> — the Collections Framework requires wrapper types, not primitives.",
+        "Using numbers[i] syntax on an ArrayList — that only works for arrays; ArrayList requires numbers.get(i) and numbers.set(i, value).",
+        "Confusing .length (array field) with .size() (ArrayList method) — mixing these up is a very common source of compile errors.",
+        "Assuming ArrayList is always strictly better than array — for fixed-size primitive-heavy code, a plain array can still be simpler and faster."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the main advantage of ArrayList over a plain array?",
+          "answer": "ArrayList can grow and shrink dynamically — elements can be added or removed at any time — while an array's size is fixed forever once it's created."
+        },
+        {
+          "question": "Why can't you write ArrayList<int>?",
+          "answer": "The Java Collections Framework, including ArrayList, can only store reference types, not primitives directly. int's wrapper class, Integer, must be used instead: ArrayList<Integer>."
+        },
+        {
+          "question": "How do you get the number of elements in an array vs an ArrayList?",
+          "answer": "An array uses the .length field (no parentheses). An ArrayList uses the .size() method (with parentheses) — a common early source of confusion."
+        }
+      ],
+      "thirtySecondAnswer": "ArrayList is a resizable, growable list from the Java Collections Framework, solving the core limitation of arrays: a fixed size that can never change. Unlike array's numbers[i] and .length, ArrayList uses .get(i), .set(i, value), .add(), .remove(), and .size(). ArrayList can only hold reference types, not primitives, so ArrayList<Integer> is used instead of a raw int. Arrays remain useful for fixed-size, primitive-heavy code, but ArrayList is generally the more practical everyday tool when the number of elements will change over time."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Array = a fixed row of boxes, built once. ArrayList = a growing shelf — add.() a box, remove() a box, whenever you like. .length is an array FACT, .size() is an ArrayList ACTION."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is the main difference between an array and an ArrayList?",
+        "Why must you write ArrayList<Integer> instead of ArrayList<int>?",
+        "How do you get an ArrayList's element count, vs an array's?",
+        "When might a plain array still be preferable to ArrayList?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-arraylist-add", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> numbers = new ArrayList<>();\n\n        numbers.add(10);\n        numbers.add(20);\n        numbers.add(30);\n\n        System.out.println(numbers);\n        System.out.println(\"Size: \" + numbers.size());\n    }\n}", "output": "[10, 20, 30]\nSize: 3" },
+    { "id": "java-arraylist-modify", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<String> fruits = new ArrayList<>();\n        fruits.add(\"apple\");\n        fruits.add(\"banana\");\n        fruits.add(\"cherry\");\n\n        System.out.println(fruits.get(1));\n\n        fruits.set(1, \"blueberry\");\n        System.out.println(fruits);\n\n        fruits.remove(\"apple\");\n        System.out.println(fruits);\n    }\n}", "output": "banana\n[apple, blueberry, cherry]\n[blueberry, cherry]" }
+  ],
+  "retypePractice": [
+    { "id": "java-arraylist-add", "reference": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> numbers = new ArrayList<>();\n\n        numbers.add(10);\n        numbers.add(20);\n        numbers.add(30);\n\n        System.out.println(numbers);\n        System.out.println(\"Size: \" + numbers.size());\n    }\n}" },
+    { "id": "java-arraylist-modify", "reference": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<String> fruits = new ArrayList<>();\n        fruits.add(\"apple\");\n        fruits.add(\"banana\");\n        fruits.add(\"cherry\");\n\n        System.out.println(fruits.get(1));\n\n        fruits.set(1, \"blueberry\");\n        System.out.println(fruits);\n\n        fruits.remove(\"apple\");\n        System.out.println(fruits);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-arraylist-add", "java-arraylist-modify"]
+  }
+}

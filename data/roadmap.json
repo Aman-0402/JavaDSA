@@ -50,7 +50,8 @@
         { "id": "java-2d-arrays", "title": "2D Arrays", "lesson": "java-2d-arrays" },
         { "id": "java-strings-immutability", "title": "Strings and Immutability", "lesson": "java-strings-immutability" },
         { "id": "java-string-methods", "title": "Common String Methods", "lesson": "java-string-methods" },
-        { "id": "java-stringbuilder", "title": "StringBuilder", "lesson": "java-stringbuilder" }
+        { "id": "java-stringbuilder", "title": "StringBuilder", "lesson": "java-stringbuilder" },
+        { "id": "java-array-vs-arraylist", "title": "Array vs ArrayList (Intro)", "lesson": "java-array-vs-arraylist" }
       ]
     },
     { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },
