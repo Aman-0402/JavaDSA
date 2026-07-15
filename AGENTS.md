@@ -94,7 +94,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | # | Module | Status | Lessons done |
 |---|--------|--------|---------------|
 | 1 | Java Fundamentals | ✅ done | Introduction to Java, Variables, Data Types, Operators, Type Casting, Input and Output, Comments |
-| 2 | Control Flow | ⬜ | — |
+| 2 | Control Flow | ✅ done | Conditional Statements (if/else if/else), switch Statement, Loops (overview), for Loop, Enhanced for Loop, while Loop, do-while Loop, break, continue, Labeled Loops |
 | 3 | Methods | ⬜ | — |
 | 4 | Arrays & Strings | ⬜ | — |
 | 5 | Object-Oriented Programming | ⬜ | — |
