@@ -1,0 +1,189 @@
+{
+  "id": "java-map-implementations",
+  "moduleId": "collections-framework",
+  "title": "Map: HashMap, TreeMap, LinkedHashMap",
+  "description": "Key-value storage, fully explaining the map.put/map.get preview from the JCF Overview, plus the same three-way ordering choice we saw with Set.",
+  "objectives": [
+    "Understand Map as key-value storage with fast lookup by key",
+    "Use put(), get(), containsKey(), and iterate over entries",
+    "Compare HashMap, LinkedHashMap, and TreeMap's ordering, mirroring the Set lesson"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Map: Key-Value Storage"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the JCF Overview, we wrote map.put(\"apple\", 3); and map.get(\"apple\"); without full explanation. A Map stores pairs -- a key and a value -- letting you look up a value quickly using its key, instead of searching through a whole List one element at a time."
+    },
+    {
+      "type": "definition",
+      "term": "Map",
+      "text": "A collection of key-value pairs where each key is unique, providing fast lookup of a value given its associated key."
+    },
+    {
+      "type": "heading",
+      "text": "2. Basic Map Operations"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new HashMap<>();\n        ages.put(\"Aman\", 21);\n        ages.put(\"Priya\", 23);\n\n        System.out.println(ages.get(\"Aman\"));\n        System.out.println(ages.containsKey(\"Priya\"));\n        System.out.println(ages.containsKey(\"Rahul\"));\n\n        ages.put(\"Aman\", 22); // same key -- overwrites the old value\n        System.out.println(ages.get(\"Aman\"));\n    }\n}",
+      "output": "21\ntrue\nfalse\n22",
+      "retypePractice": true,
+      "retypeId": "java-map-basic-ops"
+    },
+    {
+      "type": "table",
+      "title": "Common Map methods",
+      "headers": ["Method", "Purpose"],
+      "rows": [
+        ["put(key, value)", "Adds a new pair, or overwrites the value if the key already exists"],
+        ["get(key)", "Returns the value for that key, or null if the key isn't present"],
+        ["containsKey(key)", "Returns true/false, whether that key exists"],
+        ["remove(key)", "Removes the pair with that key, if present"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "ages.put(\"Aman\", 22); does NOT create a second entry -- since keys must be unique, putting an existing key simply overwrites its value. This is the exact same 'keys: no duplicates' rule previewed in the JCF Overview's table."
+    },
+    {
+      "type": "heading",
+      "text": "3. Iterating Over a Map"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new HashMap<>();\n        ages.put(\"Aman\", 21);\n        ages.put(\"Priya\", 23);\n\n        for (Map.Entry<String, Integer> entry : ages.entrySet()) {\n            System.out.println(entry.getKey() + \" is \" + entry.getValue());\n        }\n    }\n}",
+      "output": "Aman is 21\nPriya is 23",
+      "retypePractice": true,
+      "retypeId": "java-map-iterate"
+    },
+    {
+      "type": "note",
+      "text": "entrySet() gives you every key-value pair as a Map.Entry object, letting you get both getKey() and getValue() together in one enhanced for loop -- this is the standard way to loop over an entire Map."
+    },
+    {
+      "type": "heading",
+      "text": "4. HashMap, LinkedHashMap, TreeMap -- Same Ordering Story as Set"
+    },
+    {
+      "type": "table",
+      "title": "Map implementations, mirroring the Set lesson exactly",
+      "headers": ["", "HashMap", "LinkedHashMap", "TreeMap"],
+      "rows": [
+        ["Key order", "No guarantee", "Insertion order", "Sorted by key"],
+        ["Speed", "Fastest", "Slightly slower", "Slower -- maintains sort order"],
+        ["Use when", "Order doesn't matter", "Need insertion order preserved", "Need keys sorted"]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Map;\nimport java.util.TreeMap;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new TreeMap<>();\n        ages.put(\"Priya\", 23);\n        ages.put(\"Aman\", 21);\n        ages.put(\"Rahul\", 25);\n\n        System.out.println(ages);\n    }\n}",
+      "output": "{Aman=21, Priya=23, Rahul=25}",
+      "retypePractice": true,
+      "retypeId": "java-map-treemap"
+    },
+    {
+      "type": "note",
+      "text": "TreeMap automatically sorts entries by KEY (alphabetically here), regardless of insertion order -- Aman was inserted second, but appears first, since keys are kept sorted at all times. This exactly mirrors TreeSet's behavior from the previous lesson."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together: Counting With a Map"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        String[] words = {\"apple\", \"banana\", \"apple\", \"cherry\", \"banana\", \"apple\"};\n        Map<String, Integer> counts = new HashMap<>();\n\n        for (String word : words) {\n            counts.put(word, counts.getOrDefault(word, 0) + 1);\n        }\n\n        System.out.println(counts.get(\"apple\"));\n        System.out.println(counts.get(\"banana\"));\n        System.out.println(counts.get(\"cherry\"));\n    }\n}",
+      "output": "3\n2\n1",
+      "retypePractice": true,
+      "retypeId": "java-map-word-count"
+    },
+    {
+      "type": "keyPoints",
+      "title": "getOrDefault, explained"
+      ,
+      "points": [
+        "counts.getOrDefault(word, 0) returns the current count for word, or 0 if word has never been seen before",
+        "+ 1 adds one to whatever that was",
+        "put(word, ...) stores the updated count back -- overwriting if the key existed, creating it fresh if not",
+        "This word-counting pattern is extremely common in DSA problems, and reappears directly in the Hashing lesson"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Calling get() on a missing key and being surprised by null instead of an exception -- always check containsKey() first, or use getOrDefault() to supply a fallback.",
+        "Assuming put() with an existing key adds a second entry -- it overwrites the existing value instead, since keys must be unique.",
+        "Relying on HashMap's iteration order being consistent -- exactly like HashSet, it makes no ordering guarantee at all.",
+        "Forgetting entrySet() is the standard way to get both key and value together while iterating, instead of separately iterating keySet() and calling get() repeatedly."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a Map, and what problem does it solve?",
+          "answer": "A Map stores key-value pairs with unique keys, providing fast lookup of a value given its key -- much faster than searching through a List element by element."
+        },
+        {
+          "question": "What happens if you call put() with a key that already exists in the Map?",
+          "answer": "The existing value for that key is overwritten with the new value -- no second entry is created, since Map keys must be unique."
+        },
+        {
+          "question": "What does getOrDefault(key, defaultValue) do, and why is it useful?",
+          "answer": "It returns the value for key if present, or defaultValue if the key doesn't exist -- commonly used for counting patterns, like counts.getOrDefault(word, 0) + 1, avoiding a separate containsKey() check."
+        },
+        {
+          "question": "How do HashMap, LinkedHashMap, and TreeMap differ in ordering, and how does this compare to Set?",
+          "answer": "HashMap gives no ordering guarantee, LinkedHashMap preserves insertion order, and TreeMap sorts by key -- exactly mirroring HashSet, LinkedHashSet, and TreeSet's behavior for their elements."
+        }
+      ],
+      "thirtySecondAnswer": "A Map stores unique keys mapped to values, giving fast lookup by key via get(key), with put(key, value) adding or overwriting an entry. entrySet() is the standard way to iterate both keys and values together. HashMap, LinkedHashMap, and TreeMap mirror the exact same ordering trade-offs as their Set counterparts: no guarantee, insertion order, and sorted-by-key respectively. getOrDefault(key, defaultValue) avoids null surprises and powers a very common DSA pattern -- counting occurrences with counts.put(key, counts.getOrDefault(key, 0) + 1) -- which reappears directly in the upcoming Hashing lesson."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Map = a labeled filing cabinet -- KEY finds the drawer, VALUE is what's inside. put() overwrites the same drawer if the key repeats. getOrDefault(key, 0) = \"open this drawer, or hand me a fresh empty one if it doesn't exist yet.\""
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What happens if you put() a key that already exists in a Map?",
+        "How do you safely get a value for a key that might not exist?",
+        "Which Map implementation preserves insertion order? Which keeps keys sorted?",
+        "How would you use a Map to count how many times each word appears in an array?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-map-basic-ops", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new HashMap<>();\n        ages.put(\"Aman\", 21);\n        ages.put(\"Priya\", 23);\n\n        System.out.println(ages.get(\"Aman\"));\n        System.out.println(ages.containsKey(\"Priya\"));\n        System.out.println(ages.containsKey(\"Rahul\"));\n\n        ages.put(\"Aman\", 22); // same key -- overwrites the old value\n        System.out.println(ages.get(\"Aman\"));\n    }\n}", "output": "21\ntrue\nfalse\n22" },
+    { "id": "java-map-iterate", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new HashMap<>();\n        ages.put(\"Aman\", 21);\n        ages.put(\"Priya\", 23);\n\n        for (Map.Entry<String, Integer> entry : ages.entrySet()) {\n            System.out.println(entry.getKey() + \" is \" + entry.getValue());\n        }\n    }\n}", "output": "Aman is 21\nPriya is 23" },
+    { "id": "java-map-treemap", "lang": "java", "filename": "Main.java", "code": "import java.util.Map;\nimport java.util.TreeMap;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new TreeMap<>();\n        ages.put(\"Priya\", 23);\n        ages.put(\"Aman\", 21);\n        ages.put(\"Rahul\", 25);\n\n        System.out.println(ages);\n    }\n}", "output": "{Aman=21, Priya=23, Rahul=25}" },
+    { "id": "java-map-word-count", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        String[] words = {\"apple\", \"banana\", \"apple\", \"cherry\", \"banana\", \"apple\"};\n        Map<String, Integer> counts = new HashMap<>();\n\n        for (String word : words) {\n            counts.put(word, counts.getOrDefault(word, 0) + 1);\n        }\n\n        System.out.println(counts.get(\"apple\"));\n        System.out.println(counts.get(\"banana\"));\n        System.out.println(counts.get(\"cherry\"));\n    }\n}", "output": "3\n2\n1" }
+  ],
+  "retypePractice": [
+    { "id": "java-map-basic-ops", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new HashMap<>();\n        ages.put(\"Aman\", 21);\n        ages.put(\"Priya\", 23);\n\n        System.out.println(ages.get(\"Aman\"));\n        System.out.println(ages.containsKey(\"Priya\"));\n        System.out.println(ages.containsKey(\"Rahul\"));\n\n        ages.put(\"Aman\", 22); // same key -- overwrites the old value\n        System.out.println(ages.get(\"Aman\"));\n    }\n}" },
+    { "id": "java-map-iterate", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new HashMap<>();\n        ages.put(\"Aman\", 21);\n        ages.put(\"Priya\", 23);\n\n        for (Map.Entry<String, Integer> entry : ages.entrySet()) {\n            System.out.println(entry.getKey() + \" is \" + entry.getValue());\n        }\n    }\n}" },
+    { "id": "java-map-treemap", "reference": "import java.util.Map;\nimport java.util.TreeMap;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> ages = new TreeMap<>();\n        ages.put(\"Priya\", 23);\n        ages.put(\"Aman\", 21);\n        ages.put(\"Rahul\", 25);\n\n        System.out.println(ages);\n    }\n}" },
+    { "id": "java-map-word-count", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        String[] words = {\"apple\", \"banana\", \"apple\", \"cherry\", \"banana\", \"apple\"};\n        Map<String, Integer> counts = new HashMap<>();\n\n        for (String word : words) {\n            counts.put(word, counts.getOrDefault(word, 0) + 1);\n        }\n\n        System.out.println(counts.get(\"apple\"));\n        System.out.println(counts.get(\"banana\"));\n        System.out.println(counts.get(\"cherry\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-map-basic-ops", "java-map-iterate", "java-map-treemap", "java-map-word-count"]
+  }
+}
