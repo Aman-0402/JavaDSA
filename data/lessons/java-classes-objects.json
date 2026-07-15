@@ -1,0 +1,173 @@
+{
+  "id": "java-classes-objects",
+  "moduleId": "oop",
+  "title": "Classes and Objects",
+  "description": "Finally explaining what a class truly is and what an object is — the foundation everything since Introduction to Java has been building toward.",
+  "objectives": [
+    "Understand a class as a blueprint and an object as a built instance of it",
+    "Declare a class with fields and create objects from it",
+    "Understand that each object gets its own copy of the class's fields"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Finally Explaining public class Main"
+    },
+    {
+      "type": "paragraph",
+      "text": "Since the Introduction lesson, every program has started with public class Main { ... }, treated as a fixed pattern. Today we explain exactly what a class is, and what it means to create an object from one."
+    },
+    {
+      "type": "definition",
+      "term": "Class",
+      "text": "A blueprint that defines what data (fields) and behavior (methods) its objects will have, without itself being a usable object."
+    },
+    {
+      "type": "definition",
+      "term": "Object",
+      "text": "A specific instance created from a class, with its own copy of the class's fields, existing in memory and usable in a program."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Blueprint and house analogy",
+      "text": "A house blueprint describes what every house built from it will have — rooms, doors, a certain layout — but you can't live inside a blueprint. Building an actual house from that blueprint gives you something real you can use. A class is the blueprint; an object is a built house — and you can build many houses from the same blueprint."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring a Class With Fields"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    String name;\n    int age;\n}"
+    },
+    {
+      "type": "definition",
+      "term": "Field",
+      "text": "A variable declared directly inside a class (outside any method) representing a piece of data every object of that class will have."
+    },
+    {
+      "type": "note",
+      "text": "name and age are fields — recall from Static vs Instance Methods that fields (unlike local variables inside a method) DO get automatic default values if not explicitly set: null for name (String is a reference type), 0 for age."
+    },
+    {
+      "type": "heading",
+      "text": "3. Creating an Object with new"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        System.out.println(s1.name + \" is \" + s1.age);\n    }\n}",
+      "output": "Aman is 21",
+      "retypePractice": true,
+      "retypeId": "java-classes-student-basic"
+    },
+    {
+      "type": "note",
+      "text": "We first used new back in Input and Output (new Scanner(System.in)) as a fixed pattern. Now it's fully explained: new Student() builds an actual object from the Student blueprint, and s1 holds a reference to it — dot notation (s1.name) accesses that object's fields."
+    },
+    {
+      "type": "heading",
+      "text": "4. Each Object Gets Its Own Fields"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        Student s2 = new Student();\n        s2.name = \"Priya\";\n        s2.age = 23;\n\n        System.out.println(s1.name + \" is \" + s1.age);\n        System.out.println(s2.name + \" is \" + s2.age);\n    }\n}",
+      "output": "Aman is 21\nPriya is 23",
+      "retypePractice": true,
+      "retypeId": "java-classes-two-students"
+    },
+    {
+      "type": "warning",
+      "text": "s1 and s2 are two completely separate objects, each with its own independent name and age — changing s2's fields has zero effect on s1's. This is the entire point of a class: one blueprint, many independent objects built from it."
+    },
+    {
+      "type": "heading",
+      "text": "5. Adding a Method to a Class"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    String name;\n    int age;\n\n    void introduce() {\n        System.out.println(\"Hi, I'm \" + name + \" and I'm \" + age + \" years old.\");\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        s1.introduce();\n    }\n}",
+      "output": "Hi, I'm Aman and I'm 21 years old.",
+      "retypePractice": true,
+      "retypeId": "java-classes-introduce"
+    },
+    {
+      "type": "note",
+      "text": "introduce() has no static here — this is exactly the instance method previewed in Static vs Instance Methods. It's called ON an object (s1.introduce()) because it needs THAT object's own name and age to do its job."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing a class (the blueprint) with an object (a built instance) — Student is the class; s1 is an object of that class.",
+        "Forgetting new when creating an object — Student s1; alone only declares a variable that can hold a Student reference, but doesn't build an actual object; it stays null until new Student() is assigned.",
+        "Assuming two objects of the same class automatically share field values — each object has its own completely independent copy of every field.",
+        "Putting static on every method out of old habit — instance methods that use an object's own fields, like introduce(), should not be static."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between a class and an object?",
+          "answer": "A class is a blueprint defining what fields and methods its objects will have. An object is an actual instance built from that class, with its own copy of the fields, created using new."
+        },
+        {
+          "question": "What is a field?",
+          "answer": "A variable declared directly inside a class, outside any method, representing a piece of data that every object of that class will have its own copy of."
+        },
+        {
+          "question": "If you create two objects from the same class and set different values on their fields, do they affect each other?",
+          "answer": "No. Each object has its own independent copy of the class's fields — changing one object's fields has no effect on any other object of the same class."
+        }
+      ],
+      "thirtySecondAnswer": "A class is a blueprint describing what data (fields) and behavior (methods) its objects will have. An object is an actual instance built from that class using new, with its own independent copy of every field. Two objects of the same class are entirely separate — changing one's fields never affects another's. Instance methods, unlike the static methods used until now, operate on a specific object's own data and are called through that object, like s1.introduce(), rather than directly on the class."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Class = the blueprint. Object = the actual house built from it, via new. Build 10 houses from one blueprint — each is independent, none share walls."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between a class and an object?",
+        "What keyword is used to create an object from a class?",
+        "If you have two Student objects, do changing one's fields affect the other?",
+        "What is a field?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-classes-student-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        System.out.println(s1.name + \" is \" + s1.age);\n    }\n}", "output": "Aman is 21" },
+    { "id": "java-classes-two-students", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        Student s2 = new Student();\n        s2.name = \"Priya\";\n        s2.age = 23;\n\n        System.out.println(s1.name + \" is \" + s1.age);\n        System.out.println(s2.name + \" is \" + s2.age);\n    }\n}", "output": "Aman is 21\nPriya is 23" },
+    { "id": "java-classes-introduce", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        s1.introduce();\n    }\n}", "output": "Hi, I'm Aman and I'm 21 years old." }
+  ],
+  "retypePractice": [
+    { "id": "java-classes-student-basic", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        System.out.println(s1.name + \" is \" + s1.age);\n    }\n}" },
+    { "id": "java-classes-two-students", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        Student s2 = new Student();\n        s2.name = \"Priya\";\n        s2.age = 23;\n\n        System.out.println(s1.name + \" is \" + s1.age);\n        System.out.println(s2.name + \" is \" + s2.age);\n    }\n}" },
+    { "id": "java-classes-introduce", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.name = \"Aman\";\n        s1.age = 21;\n\n        s1.introduce();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-classes-student-basic", "java-classes-two-students", "java-classes-introduce"]
+  }
+}
