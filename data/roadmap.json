@@ -48,7 +48,8 @@
       "topics": [
         { "id": "java-1d-arrays", "title": "1D Arrays", "lesson": "java-1d-arrays" },
         { "id": "java-2d-arrays", "title": "2D Arrays", "lesson": "java-2d-arrays" },
-        { "id": "java-strings-immutability", "title": "Strings and Immutability", "lesson": "java-strings-immutability" }
+        { "id": "java-strings-immutability", "title": "Strings and Immutability", "lesson": "java-strings-immutability" },
+        { "id": "java-string-methods", "title": "Common String Methods", "lesson": "java-string-methods" }
       ]
     },
     { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },

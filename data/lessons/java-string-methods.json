@@ -1,0 +1,190 @@
+{
+  "id": "java-string-methods",
+  "moduleId": "arrays-strings",
+  "title": "Common String Methods",
+  "description": "The String toolbox: length(), charAt(), substring(), indexOf(), contains(), split(), and more — every one of them returning a new String, per the Immutability lesson.",
+  "objectives": [
+    "Use the most common String instance methods",
+    "Understand substring's start-inclusive, end-exclusive range",
+    "Combine multiple String methods to solve a small text problem"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. String Methods, Not Fields"
+    },
+    {
+      "type": "paragraph",
+      "text": "In 1D Arrays, array.length was a field (no parentheses). String is different: its size comes from a METHOD, length() — note the parentheses. This is one of the most common early mix-ups."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String text = \"Hello\";\nSystem.out.println(text.length()); // 5"
+    },
+    {
+      "type": "warning",
+      "text": "text.length (no parentheses) does not compile for a String — that syntax only works for arrays. String requires text.length() with parentheses, since it's a method call, not a field access."
+    },
+    {
+      "type": "heading",
+      "text": "2. charAt() — Getting One Character"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String text = \"Hello\";\nSystem.out.println(text.charAt(0)); // H\nSystem.out.println(text.charAt(4)); // o"
+    },
+    {
+      "type": "note",
+      "text": "Like arrays, charAt uses a 0-based index — text.charAt(0) is the first character, and the last valid index is text.length() - 1."
+    },
+    {
+      "type": "heading",
+      "text": "3. substring() — Extracting Part of a String"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String text = \"Hello World\";\nSystem.out.println(text.substring(0, 5)); // Hello\nSystem.out.println(text.substring(6));    // World"
+    },
+    {
+      "type": "warning",
+      "text": "substring(start, end) includes the character at start but EXCLUDES the character at end — this is called \"start-inclusive, end-exclusive.\" substring(0, 5) grabs indices 0,1,2,3,4 (5 characters: \"Hello\"), not index 5. substring(6) (one argument) simply goes from index 6 to the end of the String."
+    },
+    {
+      "type": "heading",
+      "text": "4. indexOf() and contains() — Searching Inside a String"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String text = \"Hello World\";\nSystem.out.println(text.indexOf(\"World\"));  // 6\nSystem.out.println(text.indexOf(\"xyz\"));    // -1 (not found)\nSystem.out.println(text.contains(\"World\")); // true"
+    },
+    {
+      "type": "note",
+      "text": "indexOf returns the starting index of the first match, or -1 if the text isn't found at all. contains simply returns true or false — use it when you only care WHETHER something appears, not WHERE."
+    },
+    {
+      "type": "heading",
+      "text": "5. toUpperCase(), toLowerCase(), trim()"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String text = \"  Hello World  \";\nSystem.out.println(text.toUpperCase()); //   HELLO WORLD  \nSystem.out.println(text.toLowerCase()); //   hello world  \nSystem.out.println(text.trim());        // \"Hello World\" (no leading/trailing spaces)"
+    },
+    {
+      "type": "warning",
+      "text": "Per the Immutability lesson, none of these change text itself — each returns a brand new String that must be captured (or printed directly, as shown) to be used."
+    },
+    {
+      "type": "heading",
+      "text": "6. equals() and equalsIgnoreCase()"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String a = \"Hello\";\nString b = \"hello\";\n\nSystem.out.println(a.equals(b));           // false -- case matters\nSystem.out.println(a.equalsIgnoreCase(b)); // true"
+    },
+    {
+      "type": "heading",
+      "text": "7. split() — Breaking a String Into Pieces"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "String csv = \"apple,banana,cherry\";\nString[] fruits = csv.split(\",\");\n\nfor (String fruit : fruits) {\n    System.out.println(fruit);\n}",
+      "output": "apple\nbanana\ncherry",
+      "retypePractice": true,
+      "retypeId": "java-string-split"
+    },
+    {
+      "type": "note",
+      "text": "split() returns a String[] — an array, from the 1D Arrays lesson — so the enhanced for loop from that same module works here directly."
+    },
+    {
+      "type": "heading",
+      "text": "8. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        String email = \"  Aman.Raj@Example.com  \";\n\n        String cleaned = email.trim().toLowerCase();\n        System.out.println(cleaned);\n\n        int atIndex = cleaned.indexOf(\"@\");\n        String username = cleaned.substring(0, atIndex);\n        System.out.println(\"Username: \" + username);\n    }\n}",
+      "output": "aman.raj@example.com\nUsername: aman.raj",
+      "retypePractice": true,
+      "retypeId": "java-string-email-parse"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "email.trim() removes the leading/trailing spaces",
+        ".toLowerCase() on that result lowercases everything, giving cleaned",
+        "indexOf(\"@\") finds the @ symbol's position in cleaned",
+        "substring(0, atIndex) grabs everything before the @ — the username"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Writing text.length instead of text.length() for a String — String's size is a method call, unlike an array's .length field.",
+        "Miscounting substring(start, end) bounds — remember end is EXCLUSIVE, so substring(0, 5) gives 5 characters (indices 0-4), not 6.",
+        "Using == instead of .equals() (revisited from the Immutability lesson) when checking String content.",
+        "Forgetting every String method call returns a new String, and not capturing the result — text.trim(); alone, with no assignment, has no visible effect."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does substring(start, end) include and exclude?",
+          "answer": "It includes the character at index start and excludes the character at index end — \"start-inclusive, end-exclusive\" — so it returns end - start characters total."
+        },
+        {
+          "question": "What's the difference between indexOf() and contains() on a String?",
+          "answer": "indexOf() returns the starting index of the first match, or -1 if not found. contains() simply returns true or false, useful when you only need to know whether a substring is present, not where."
+        },
+        {
+          "question": "Why is text.length correct for an array but not for a String?",
+          "answer": "An array's size is exposed as a field (.length, no parentheses), while String's size is exposed as a method (.length(), with parentheses) — they look similar but are different kinds of members."
+        }
+      ],
+      "thirtySecondAnswer": "String provides a set of instance methods for common operations: length() for size, charAt(index) for a single character, substring(start, end) for extracting a range (start-inclusive, end-exclusive), indexOf()/contains() for searching, toUpperCase()/toLowerCase()/trim() for reformatting, equals()/equalsIgnoreCase() for comparison, and split() for breaking a String into an array of pieces. Since String is immutable, every one of these methods returns a brand new String (or array) rather than modifying the original — the result must be captured to actually use it."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "substring(start, end): start says HELLO, end says GOODBYE before it's included. length() needs parentheses (a String action), unlike an array's plain .length (a stored fact)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does \"Hello World\".substring(0, 5) return?",
+        "What's the difference between indexOf and contains?",
+        "Why doesn't text.length work for a String the way it does for an array?",
+        "Does trim() modify the original String?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-string-split", "lang": "java", "filename": "Main.java", "code": "String csv = \"apple,banana,cherry\";\nString[] fruits = csv.split(\",\");\n\nfor (String fruit : fruits) {\n    System.out.println(fruit);\n}", "output": "apple\nbanana\ncherry" },
+    { "id": "java-string-email-parse", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        String email = \"  Aman.Raj@Example.com  \";\n\n        String cleaned = email.trim().toLowerCase();\n        System.out.println(cleaned);\n\n        int atIndex = cleaned.indexOf(\"@\");\n        String username = cleaned.substring(0, atIndex);\n        System.out.println(\"Username: \" + username);\n    }\n}", "output": "aman.raj@example.com\nUsername: aman.raj" }
+  ],
+  "retypePractice": [
+    { "id": "java-string-split", "reference": "String csv = \"apple,banana,cherry\";\nString[] fruits = csv.split(\",\");\n\nfor (String fruit : fruits) {\n    System.out.println(fruit);\n}" },
+    { "id": "java-string-email-parse", "reference": "public class Main {\n    public static void main(String[] args) {\n        String email = \"  Aman.Raj@Example.com  \";\n\n        String cleaned = email.trim().toLowerCase();\n        System.out.println(cleaned);\n\n        int atIndex = cleaned.indexOf(\"@\");\n        String username = cleaned.substring(0, atIndex);\n        System.out.println(\"Username: \" + username);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-string-split", "java-string-email-parse"]
+  }
+}
