@@ -1,0 +1,158 @@
+{
+  "id": "java-return-types",
+  "moduleId": "methods",
+  "title": "Return Types",
+  "description": "The return statement, void methods that return nothing, and returning early to exit a method.",
+  "objectives": [
+    "Understand what a return type declares and how return sends a value back",
+    "Write void methods that perform an action without returning a value",
+    "Use return to exit a method early"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What a Return Type Declares"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every method's declaration starts with its return type — the type of value it promises to send back to whoever calls it. We've used int already; today we cover the other common case: no value at all."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int square(int number) {\n    return number * number; // must return an int\n}"
+    },
+    {
+      "type": "warning",
+      "text": "If a method's return type is int, EVERY possible path through its code must eventually hit a return that gives back an int. Java's compiler checks this — a method declared to return int but that has a path with no return statement will not compile."
+    },
+    {
+      "type": "heading",
+      "text": "2. void — No Return Value"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static void greet(String name) {\n        System.out.println(\"Hello, \" + name + \"!\");\n    }\n\n    public static void main(String[] args) {\n        greet(\"Aman\");\n    }\n}",
+      "output": "Hello, Aman!",
+      "retypePractice": true,
+      "retypeId": "java-return-void-greet"
+    },
+    {
+      "type": "definition",
+      "term": "void",
+      "text": "A special return type meaning the method performs an action but does not send any value back to its caller."
+    },
+    {
+      "type": "note",
+      "text": "main() itself has always been public static void main(...) — now you know exactly why: main doesn't hand a value back to anything, it's simply the entry point that runs."
+    },
+    {
+      "type": "warning",
+      "text": "A void method's result cannot be assigned to a variable — int x = greet(\"Aman\"); does not compile, because greet doesn't return anything to store."
+    },
+    {
+      "type": "heading",
+      "text": "3. return Inside a void Method"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static void printIfPositive(int number) {\n    if (number <= 0) {\n        return; // exits early, no value given back\n    }\n    System.out.println(number);\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "Even a void method can use a plain return; (with no value) to exit early, before reaching the end of the method's body. This is useful for skipping the rest of the method's logic when some condition makes continuing pointless."
+    },
+    {
+      "type": "heading",
+      "text": "4. return Exits Immediately"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static String checkAge(int age) {\n        if (age < 0) {\n            return \"Invalid age\";\n        }\n        if (age < 18) {\n            return \"Minor\";\n        }\n        return \"Adult\";\n    }\n\n    public static void main(String[] args) {\n        System.out.println(checkAge(25));\n        System.out.println(checkAge(15));\n        System.out.println(checkAge(-3));\n    }\n}",
+      "output": "Adult\nMinor\nInvalid age",
+      "retypePractice": true,
+      "retypeId": "java-return-check-age"
+    },
+    {
+      "type": "warning",
+      "text": "The instant a return statement runs, the method stops immediately — any code written after it in the same method call is never reached. For checkAge(25): age < 0 is false, so that return is skipped; age < 18 is also false (25 is not less than 18), so that return is skipped too; execution falls through to the final return \"Adult\";, which is the one that actually fires."
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing checkAge(15)",
+      "points": [
+        "age < 0? 15 < 0 is false — continue",
+        "age < 18? 15 < 18 is true — return \"Minor\" immediately",
+        "The final return \"Adult\"; is never reached for this call"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to assign a void method's call to a variable — void methods return nothing usable.",
+        "Forgetting a return statement on some path through a non-void method, causing a compile error (\"missing return statement\").",
+        "Writing code after a return statement in the same block, expecting it to still run — it's unreachable and some IDEs will even warn about it.",
+        "Confusing void (no return type at all) with returning null or 0 — void methods don't return any value, not even an empty one."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does a void return type mean?",
+          "answer": "It means the method performs some action but does not send any value back to its caller — its result cannot be assigned to a variable."
+        },
+        {
+          "question": "Can a void method use a return statement?",
+          "answer": "Yes — a plain return; with no value can be used inside a void method to exit early, before the method's body naturally ends."
+        },
+        {
+          "question": "What happens the instant a return statement executes?",
+          "answer": "The method exits immediately, sending back its value (if any) to the caller. Any remaining code in that method call is skipped entirely for that invocation."
+        },
+        {
+          "question": "What compile error occurs if a non-void method has a code path without a return?",
+          "answer": "Java reports a \"missing return statement\" error, since the compiler requires every possible execution path through a non-void method to return a value of the declared type."
+        }
+      ],
+      "thirtySecondAnswer": "A method's return type declares what kind of value it sends back to its caller; void means it sends back nothing at all, only performing an action. return exits a method immediately — for non-void methods it also carries a value back, while void methods can use a bare return; to exit early. Java's compiler enforces that every path through a non-void method must return a value of the declared type, catching missing-return bugs at compile time rather than at runtime."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "void = \"nothing comes back.\" return = the EXIT DOOR — the instant you walk through it, the method is over, value in hand (or empty-handed, for void)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does void mean as a return type?",
+        "Can a void method still use return?",
+        "What happens to the rest of a method's code after a return statement runs?",
+        "What compile error happens if a non-void method is missing a return on some path?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-return-void-greet", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static void greet(String name) {\n        System.out.println(\"Hello, \" + name + \"!\");\n    }\n\n    public static void main(String[] args) {\n        greet(\"Aman\");\n    }\n}", "output": "Hello, Aman!" },
+    { "id": "java-return-check-age", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static String checkAge(int age) {\n        if (age < 0) {\n            return \"Invalid age\";\n        }\n        if (age < 18) {\n            return \"Minor\";\n        }\n        return \"Adult\";\n    }\n\n    public static void main(String[] args) {\n        System.out.println(checkAge(25));\n        System.out.println(checkAge(15));\n        System.out.println(checkAge(-3));\n    }\n}", "output": "Adult\nMinor\nInvalid age" }
+  ],
+  "retypePractice": [
+    { "id": "java-return-void-greet", "reference": "public class Main {\n    static void greet(String name) {\n        System.out.println(\"Hello, \" + name + \"!\");\n    }\n\n    public static void main(String[] args) {\n        greet(\"Aman\");\n    }\n}" },
+    { "id": "java-return-check-age", "reference": "public class Main {\n    static String checkAge(int age) {\n        if (age < 0) {\n            return \"Invalid age\";\n        }\n        if (age < 18) {\n            return \"Minor\";\n        }\n        return \"Adult\";\n    }\n\n    public static void main(String[] args) {\n        System.out.println(checkAge(25));\n        System.out.println(checkAge(15));\n        System.out.println(checkAge(-3));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-return-void-greet", "java-return-check-age"]
+  }
+}
