@@ -1,0 +1,187 @@
+{
+  "id": "java-autoboxing-unboxing",
+  "moduleId": "advanced-java",
+  "title": "Autoboxing and Unboxing",
+  "description": "Wrapper classes and Java's automatic conversion between primitives and their object equivalents -- finally explaining why ArrayList<Integer> could still hold numbers.add(5).",
+  "objectives": [
+    "Understand wrapper classes as object equivalents of primitives",
+    "Understand autoboxing (primitive to wrapper) and unboxing (wrapper to primitive)",
+    "Recognize a common autoboxing pitfall with == comparisons"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Array vs ArrayList and Generics, we said generics require reference types, so ArrayList<Integer> is used instead of ArrayList<int>. But then how did numbers.add(10); (passing a plain int literal) ever work? This lesson explains exactly that."
+    },
+    {
+      "type": "definition",
+      "term": "Wrapper class",
+      "text": "A reference type that represents a primitive value as an object, allowing it to be used wherever an object is required, such as in generic collections."
+    },
+    {
+      "type": "table",
+      "title": "Every primitive has a wrapper class",
+      "headers": ["Primitive", "Wrapper class"],
+      "rows": [
+        ["int", "Integer"],
+        ["double", "Double"],
+        ["char", "Character"],
+        ["boolean", "Boolean"],
+        ["long", "Long"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "2. Autoboxing: Primitive Becomes Wrapper Automatically"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int primitiveNum = 10;\nInteger wrappedNum = primitiveNum; // autoboxing -- happens automatically"
+    },
+    {
+      "type": "definition",
+      "term": "Autoboxing",
+      "text": "Java's automatic conversion of a primitive value into its corresponding wrapper object, whenever a wrapper (or reference type) is expected but a primitive is given."
+    },
+    {
+      "type": "heading",
+      "text": "3. Unboxing: Wrapper Becomes Primitive Automatically"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "Integer wrappedNum = 42;\nint primitiveNum = wrappedNum; // unboxing -- happens automatically\n\nSystem.out.println(primitiveNum + 8);",
+      "output": "50",
+      "retypePractice": true,
+      "retypeId": "java-unboxing-basic"
+    },
+    {
+      "type": "definition",
+      "term": "Unboxing",
+      "text": "Java's automatic conversion of a wrapper object back into its underlying primitive value, whenever a primitive is expected but a wrapper object is given."
+    },
+    {
+      "type": "heading",
+      "text": "4. Autoboxing in Action: ArrayList<Integer>"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> numbers = new ArrayList<>();\n\n        numbers.add(10); // int 10 is autoboxed into Integer\n        numbers.add(20);\n\n        int first = numbers.get(0); // Integer is unboxed into int\n        System.out.println(first + 5);\n    }\n}",
+      "output": "15",
+      "retypePractice": true,
+      "retypeId": "java-autobox-arraylist"
+    },
+    {
+      "type": "note",
+      "text": "This is exactly what was happening, silently, back in Array vs ArrayList. numbers.add(10); works because Java automatically boxes the int literal 10 into an Integer object before storing it, and numbers.get(0) automatically unboxes the stored Integer back into a usable int."
+    },
+    {
+      "type": "heading",
+      "text": "5. A Common Pitfall: == With Wrapper Objects"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Integer a = 100;\nInteger b = 100;\nSystem.out.println(a == b); // true\n\nInteger c = 200;\nInteger d = 200;\nSystem.out.println(c == d); // false!"
+    },
+    {
+      "type": "warning",
+      "text": "This surprising inconsistency happens because Java caches (reuses) Integer objects for small values, roughly -128 to 127, but creates brand NEW objects for values outside that range. Recall from the Immutability lesson: == compares object references, not content. a and b (both 100) happen to share a cached object, but c and d (both 200) don't. The fix is the same as for String: always compare wrapper object VALUES with .equals(), not ==."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Integer c = 200;\nInteger d = 200;\nSystem.out.println(c.equals(d)); // true -- always reliable"
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> scores = new ArrayList<>();\n        scores.add(88);\n        scores.add(92);\n        scores.add(79);\n\n        int total = 0;\n        for (int score : scores) {\n            total += score;\n        }\n\n        System.out.println(\"Total: \" + total);\n    }\n}",
+      "output": "Total: 259",
+      "retypePractice": true,
+      "retypeId": "java-autobox-sum"
+    },
+    {
+      "type": "note",
+      "text": "for (int score : scores) works even though scores holds Integer objects -- each Integer is automatically unboxed into an int for the score variable on every iteration of this enhanced for loop (Control Flow)."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Comparing wrapper objects with == expecting it to always behave like comparing primitives -- it only appears to work for small cached values (roughly -128 to 127); always use .equals() instead.",
+        "Forgetting a wrapper object can be null, unlike a primitive -- unboxing a null Integer throws a NullPointerException, a risk that never exists with a plain int.",
+        "Assuming boxing/unboxing has zero cost -- each conversion creates or unwraps an object, which matters in performance-sensitive loops with heavy boxing.",
+        "Being surprised that ArrayList<Integer> 'just works' with int literals -- it's autoboxing happening silently, not the collection secretly supporting primitives directly."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is autoboxing?",
+          "answer": "Java's automatic conversion of a primitive value into its corresponding wrapper object, which happens whenever a reference type is expected but a primitive value is provided -- like passing an int literal into an ArrayList<Integer>."
+        },
+        {
+          "question": "What is unboxing?",
+          "answer": "Java's automatic conversion of a wrapper object back into its underlying primitive value, happening whenever a primitive is expected but a wrapper object is given -- like assigning an Integer to an int variable."
+        },
+        {
+          "question": "Why can Integer a = 100; Integer b = 100; a == b; return true, while Integer c = 200; Integer d = 200; c == d; returns false?",
+          "answer": "Java caches Integer objects for small values (roughly -128 to 127), so a and b happen to reference the same cached object. Values outside that range, like 200, create separate objects each time, so c == d compares two different object references and returns false. .equals() should always be used instead for reliable value comparison."
+        },
+        {
+          "question": "Why can unboxing a null Integer cause a problem that a plain int never has?",
+          "answer": "A wrapper object can hold null, since it's a reference type, but a primitive cannot. Unboxing a null wrapper (assigning it to a primitive variable) throws a NullPointerException at runtime."
+        }
+      ],
+      "thirtySecondAnswer": "Autoboxing is Java's automatic conversion of a primitive into its wrapper object (like int into Integer), and unboxing is the reverse -- both happen silently wherever needed, which is exactly why ArrayList<Integer> could accept plain int literals via .add() despite generics requiring reference types. A notorious pitfall: Integer == comparisons only appear reliable for small cached values (roughly -128 to 127); outside that range, == compares different object references and can unexpectedly return false, so .equals() should always be used for wrapper value comparisons. Wrapper objects can also be null, unlike primitives, so unboxing a null wrapper throws a NullPointerException."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Autobox = primitive puts on an object COSTUME automatically. Unbox = the costume comes off automatically. Small Integers (-128 to 127) share a costume from a shared closet -- == can lie outside that range. .equals() never lies."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is autoboxing? What is unboxing?",
+        "Why does Integer == comparison sometimes give surprising results?",
+        "What should you use instead of == to compare wrapper object values?",
+        "Why can unboxing throw a NullPointerException?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-unboxing-basic", "lang": "java", "filename": "Main.java", "code": "Integer wrappedNum = 42;\nint primitiveNum = wrappedNum; // unboxing -- happens automatically\n\nSystem.out.println(primitiveNum + 8);", "output": "50" },
+    { "id": "java-autobox-arraylist", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> numbers = new ArrayList<>();\n\n        numbers.add(10); // int 10 is autoboxed into Integer\n        numbers.add(20);\n\n        int first = numbers.get(0); // Integer is unboxed into int\n        System.out.println(first + 5);\n    }\n}", "output": "15" },
+    { "id": "java-autobox-sum", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> scores = new ArrayList<>();\n        scores.add(88);\n        scores.add(92);\n        scores.add(79);\n\n        int total = 0;\n        for (int score : scores) {\n            total += score;\n        }\n\n        System.out.println(\"Total: \" + total);\n    }\n}", "output": "Total: 259" }
+  ],
+  "retypePractice": [
+    { "id": "java-unboxing-basic", "reference": "Integer wrappedNum = 42;\nint primitiveNum = wrappedNum; // unboxing -- happens automatically\n\nSystem.out.println(primitiveNum + 8);" },
+    { "id": "java-autobox-arraylist", "reference": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> numbers = new ArrayList<>();\n\n        numbers.add(10); // int 10 is autoboxed into Integer\n        numbers.add(20);\n\n        int first = numbers.get(0); // Integer is unboxed into int\n        System.out.println(first + 5);\n    }\n}" },
+    { "id": "java-autobox-sum", "reference": "import java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> scores = new ArrayList<>();\n        scores.add(88);\n        scores.add(92);\n        scores.add(79);\n\n        int total = 0;\n        for (int score : scores) {\n            total += score;\n        }\n\n        System.out.println(\"Total: \" + total);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-unboxing-basic", "java-autobox-arraylist", "java-autobox-sum"]
+  }
+}
