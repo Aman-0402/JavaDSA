@@ -36,7 +36,8 @@
         { "id": "java-method-basics", "title": "Method Declaration and Calling", "lesson": "java-method-basics" },
         { "id": "java-parameters-arguments", "title": "Parameters and Arguments", "lesson": "java-parameters-arguments" },
         { "id": "java-return-types", "title": "Return Types", "lesson": "java-return-types" },
-        { "id": "java-method-overloading", "title": "Method Overloading", "lesson": "java-method-overloading" }
+        { "id": "java-method-overloading", "title": "Method Overloading", "lesson": "java-method-overloading" },
+        { "id": "java-varargs", "title": "Varargs", "lesson": "java-varargs" }
       ]
     },
     { "id": "arrays-strings", "title": "Arrays & Strings", "topics": [] },

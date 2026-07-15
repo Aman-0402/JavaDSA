@@ -1,0 +1,153 @@
+{
+  "id": "java-varargs",
+  "moduleId": "methods",
+  "title": "Varargs",
+  "description": "Variable-length argument lists with ..., letting a method accept any number of arguments of one type.",
+  "objectives": [
+    "Declare a method using varargs syntax",
+    "Understand that varargs are treated as an array inside the method",
+    "Know varargs' placement rule and its relationship to overloading"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem Varargs Solves"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Method Overloading, we wrote add(int, int) and add(int, int, int) as separate overloads. But what if someone wants to add 5 numbers, or 10? Writing an overload for every possible count isn't realistic. Varargs let one method accept ANY number of arguments of a given type."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int sum(int... numbers) {\n        int total = 0;\n        for (int n : numbers) {\n            total += n;\n        }\n        return total;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(sum(1, 2));\n        System.out.println(sum(1, 2, 3, 4, 5));\n        System.out.println(sum());\n    }\n}",
+      "output": "3\n15\n0",
+      "retypePractice": true,
+      "retypeId": "java-varargs-sum"
+    },
+    {
+      "type": "definition",
+      "term": "Varargs",
+      "text": "A parameter written as type... name that lets a method accept zero or more arguments of that type, which Java automatically collects into an array inside the method."
+    },
+    {
+      "type": "note",
+      "text": "int... numbers is read as \"an int varargs parameter named numbers.\" Inside the method, numbers behaves exactly like the int[] array we saw in Enhanced for Loop — that's why the for (int n : numbers) syntax from that lesson works here unchanged."
+    },
+    {
+      "type": "heading",
+      "text": "2. Varargs Can Accept Zero Arguments"
+    },
+    {
+      "type": "paragraph",
+      "text": "sum() with no arguments at all is valid — numbers becomes an empty array, the loop simply never runs, and total stays 0."
+    },
+    {
+      "type": "heading",
+      "text": "3. Placement Rule: Varargs Must Come Last"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// valid:\nstatic void printAll(String label, int... numbers) { }\n\n// invalid: varargs must be the LAST parameter\n// static void printAll(int... numbers, String label) { }"
+    },
+    {
+      "type": "warning",
+      "text": "A method can have ordinary parameters before a varargs parameter, but the varargs parameter must always come last, and there can only be one varargs parameter per method. Java needs to know unambiguously where the fixed parameters end and the variable-length part begins."
+    },
+    {
+      "type": "heading",
+      "text": "4. Varargs and Overloading"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int sum(int a, int b) {\n    return a + b;\n}\n\nstatic int sum(int... numbers) {\n    int total = 0;\n    for (int n : numbers) total += n;\n    return total;\n}\n\n// sum(1, 2) calls sum(int, int) -- the more specific match wins"
+    },
+    {
+      "type": "note",
+      "text": "If both an exact-parameter-count overload and a varargs version exist, Java prefers the exact match when one is available. This mirrors the overload resolution from the Method Overloading lesson — Java always picks the most specific fit."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static double average(double... values) {\n        if (values.length == 0) {\n            return 0.0;\n        }\n        double total = 0;\n        for (double v : values) {\n            total += v;\n        }\n        return total / values.length;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(average(10, 20, 30));\n        System.out.println(average());\n    }\n}",
+      "output": "20.0\n0.0",
+      "retypePractice": true,
+      "retypeId": "java-varargs-average"
+    },
+    {
+      "type": "warning",
+      "text": "Checking values.length == 0 before dividing is essential — dividing by 0 for an average of no values would otherwise cause a runtime error. Guarding against empty input like this is a common pattern with varargs, since zero arguments is always a valid call."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Placing a varargs parameter anywhere but last in the parameter list — it must always be the final parameter.",
+        "Declaring more than one varargs parameter in the same method — only one is allowed.",
+        "Forgetting that a varargs argument list can legally be empty, and not guarding against that case (like dividing by values.length without checking for 0).",
+        "Treating the varargs parameter as anything other than an array inside the method body — it behaves exactly like int[] or double[]."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a varargs parameter, and what's its syntax?",
+          "answer": "A parameter written as type... name that lets a method accept zero or more arguments of that type. Java collects the given arguments into an array inside the method automatically."
+        },
+        {
+          "question": "Where must a varargs parameter appear in a method's parameter list?",
+          "answer": "It must be the last parameter, and a method can only have one varargs parameter."
+        },
+        {
+          "question": "How does a varargs parameter behave inside the method body?",
+          "answer": "Exactly like an array of the declared type — you can use its .length, index into it, or loop over it with an enhanced for loop, same as any other array."
+        },
+        {
+          "question": "If both an overload with exact parameters and a varargs overload could match a call, which does Java prefer?",
+          "answer": "The overload with the exact parameter match — Java prefers the most specific applicable method before falling back to a varargs version."
+        }
+      ],
+      "thirtySecondAnswer": "Varargs, written as type... name, let a method accept any number of arguments of one type — including zero — without needing a separate overload for every possible count. Inside the method, the varargs parameter behaves exactly like an array of that type. It must be the last parameter in the method's list, and only one is allowed per method. When both an exact-match overload and a varargs version could apply to a call, Java prefers the exact match, consistent with normal overload resolution."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "type... name = \"however many you hand me, I'll catch them all in one array.\" Must go LAST, and zero arguments is always a valid call."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does int... numbers mean as a parameter?",
+        "Where must a varargs parameter be positioned in the parameter list?",
+        "What type does a varargs parameter behave as inside the method?",
+        "Is calling a varargs method with zero arguments valid?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-varargs-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int sum(int... numbers) {\n        int total = 0;\n        for (int n : numbers) {\n            total += n;\n        }\n        return total;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(sum(1, 2));\n        System.out.println(sum(1, 2, 3, 4, 5));\n        System.out.println(sum());\n    }\n}", "output": "3\n15\n0" },
+    { "id": "java-varargs-average", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static double average(double... values) {\n        if (values.length == 0) {\n            return 0.0;\n        }\n        double total = 0;\n        for (double v : values) {\n            total += v;\n        }\n        return total / values.length;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(average(10, 20, 30));\n        System.out.println(average());\n    }\n}", "output": "20.0\n0.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-varargs-sum", "reference": "public class Main {\n    static int sum(int... numbers) {\n        int total = 0;\n        for (int n : numbers) {\n            total += n;\n        }\n        return total;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(sum(1, 2));\n        System.out.println(sum(1, 2, 3, 4, 5));\n        System.out.println(sum());\n    }\n}" },
+    { "id": "java-varargs-average", "reference": "public class Main {\n    static double average(double... values) {\n        if (values.length == 0) {\n            return 0.0;\n        }\n        double total = 0;\n        for (double v : values) {\n            total += v;\n        }\n        return total / values.length;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(average(10, 20, 30));\n        System.out.println(average());\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-varargs-sum", "java-varargs-average"]
+  }
+}
