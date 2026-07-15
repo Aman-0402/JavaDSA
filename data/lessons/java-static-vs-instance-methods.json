@@ -1,0 +1,154 @@
+{
+  "id": "java-static-vs-instance-methods",
+  "moduleId": "methods",
+  "title": "Static vs Instance Methods",
+  "description": "Finally explaining the static keyword used on every method so far, by contrasting it with instance methods that need an object.",
+  "objectives": [
+    "Understand what static actually means, after using it as a fixed pattern until now",
+    "Preview instance methods and why they need an object to run",
+    "Know which kind of method to call directly vs through an object"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Finally Explaining static"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every method we've written so far starts with static — main() itself, square(), add(), factorial(). We used it as a fixed pattern without full explanation. Today we explain it, by contrast with what it isn't."
+    },
+    {
+      "type": "definition",
+      "term": "Static method",
+      "text": "A method that belongs to the class itself, not to any particular object of that class. It can be called directly using the class name, without needing to create an object first."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int square(int n) {\n    return n * n;\n}\n\n// Called directly, no object needed:\nsquare(5);"
+    },
+    {
+      "type": "heading",
+      "text": "2. Instance Methods (A Preview)"
+    },
+    {
+      "type": "paragraph",
+      "text": "We haven't formally covered classes and objects yet — that's the entire Object-Oriented Programming module coming up. But you've already USED an instance method: sc.nextInt() in the Input and Output lesson. Notice it wasn't called as a bare nextInt() — it was called ON sc, an object."
+    },
+    {
+      "type": "definition",
+      "term": "Instance method",
+      "text": "A method that belongs to a specific object (an \"instance\" of a class) and must be called through that object, since it typically operates on that object's own data."
+    },
+    {
+      "type": "table",
+      "title": "Static vs instance, at a glance",
+      "headers": ["", "Static method", "Instance method"],
+      "rows": [
+        ["Belongs to", "The class itself", "A specific object of the class"],
+        ["Called via", "ClassName.method() or bare method() from inside the same class", "object.method()"],
+        ["Example used so far", "square(5), main(...)", "sc.nextInt(), sc.nextLine()"],
+        ["Needs an object first?", "No", "Yes — you must create one, using new (previewed in Input and Output)"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "We are only previewing instance methods here to explain the contrast — writing your own instance methods, and understanding new Scanner(System.in) properly, is covered fully once we reach Object-Oriented Programming. For now, recognize the pattern: object.method() means instance method, bareMethod() means static."
+    },
+    {
+      "type": "heading",
+      "text": "3. Why main() Must Be static"
+    },
+    {
+      "type": "paragraph",
+      "text": "When your program starts, the JVM needs to run main() before any object of your class exists yet. If main() were an instance method, the JVM would need an object to call it on — but no object exists at that point. Declaring main() static lets the JVM call it directly on the class, with zero objects required."
+    },
+    {
+      "type": "heading",
+      "text": "4. Calling a Static Method from Another Class (Preview)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// From within the same class:\nsquare(5);\n\n// From a DIFFERENT class (using Main's square method):\nMain.square(5);"
+    },
+    {
+      "type": "note",
+      "text": "Inside the same class, you can call a static method by name alone. From outside that class, you prefix it with the class name — ClassName.methodName(...). You've actually already done exactly this: System.out.println(...) calls println as an instance method on the object out, which itself lives inside the class System."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int doubleIt(int n) {\n        return n * 2;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(doubleIt(21));\n        System.out.println(Main.doubleIt(21));\n    }\n}",
+      "output": "42\n42",
+      "retypePractice": true,
+      "retypeId": "java-static-double"
+    },
+    {
+      "type": "note",
+      "text": "Both doubleIt(21) and Main.doubleIt(21) call the exact same static method — writing Main. explicitly is optional from inside the Main class itself, but required if this method were called from a different class."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to call an instance method (like sc.nextInt()) without an object — e.g. writing nextInt() alone, without sc., does not compile.",
+        "Adding static to every method out of habit, without understanding when an instance method (needing an object) would actually be the correct choice — a distinction we return to properly in Object-Oriented Programming.",
+        "Forgetting main() must remain static, since the JVM calls it before any object of your class exists.",
+        "Assuming ClassName.method() is required even from inside the same class — it's optional there, only required when calling from a different class."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between a static method and an instance method?",
+          "answer": "A static method belongs to the class itself and can be called without creating an object. An instance method belongs to a specific object and must be called through that object, since it typically works with that object's own data."
+        },
+        {
+          "question": "Why must main() be declared static?",
+          "answer": "Because the JVM calls main() to start the program before any object of the class has been created — a static method can be called directly on the class with no object required, which an instance method cannot."
+        },
+        {
+          "question": "How do you call a static method from a different class than the one it's declared in?",
+          "answer": "Using the class name as a prefix: ClassName.methodName(arguments). From within the same class, the class name prefix is optional."
+        }
+      ],
+      "thirtySecondAnswer": "A static method belongs to the class itself and can be called directly, without any object — like main() and every method we've written so far. An instance method belongs to a specific object of a class and must be called through that object, like sc.nextInt() on a Scanner object. main() must be static because the JVM calls it to start the program before any object of the class exists yet. Static methods can be called by name alone from inside their own class, or with a ClassName. prefix from elsewhere; instance methods always need an object reference before the dot."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "static = belongs to the BLUEPRINT (the class) — call it directly. instance = belongs to a specific BUILT THING (an object) — you need that object in hand first, via object.method()."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the key difference between a static method and an instance method?",
+        "Why does main() have to be static?",
+        "Give an example of an instance method call we've already used.",
+        "When is the ClassName. prefix required for a static method call?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-static-double", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int doubleIt(int n) {\n        return n * 2;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(doubleIt(21));\n        System.out.println(Main.doubleIt(21));\n    }\n}", "output": "42\n42" }
+  ],
+  "retypePractice": [
+    { "id": "java-static-double", "reference": "public class Main {\n    static int doubleIt(int n) {\n        return n * 2;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(doubleIt(21));\n        System.out.println(Main.doubleIt(21));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-static-double"]
+  }
+}
