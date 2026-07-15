@@ -64,7 +64,8 @@
         { "id": "java-encapsulation-access-modifiers", "title": "Encapsulation and Access Modifiers", "lesson": "java-encapsulation-access-modifiers" },
         { "id": "java-inheritance", "title": "Inheritance", "lesson": "java-inheritance" },
         { "id": "java-polymorphism", "title": "Polymorphism", "lesson": "java-polymorphism" },
-        { "id": "java-abstract-classes", "title": "Abstract Classes", "lesson": "java-abstract-classes" }
+        { "id": "java-abstract-classes", "title": "Abstract Classes", "lesson": "java-abstract-classes" },
+        { "id": "java-interfaces", "title": "Interfaces", "lesson": "java-interfaces" }
       ]
     },
     { "id": "advanced-java", "title": "Advanced Java", "topics": [] },

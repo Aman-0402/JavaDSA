@@ -1,0 +1,180 @@
+{
+  "id": "java-interfaces",
+  "moduleId": "oop",
+  "title": "Interfaces",
+  "description": "A pure contract of behavior, solving Java's single-inheritance limit from the Inheritance lesson, plus default and static interface methods.",
+  "objectives": [
+    "Understand an interface as a contract of method signatures",
+    "Implement an interface with implements, and implement multiple interfaces at once",
+    "Use default and static methods inside an interface"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Inheritance, we noted a Java class can only extend ONE superclass. But what if Duck needs to be both Swimmer and Flyer, and Fish needs to be just Swimmer? These aren't a single-parent hierarchy -- they're independent CAPABILITIES. Interfaces express exactly this."
+    },
+    {
+      "type": "definition",
+      "term": "Interface",
+      "text": "A contract that declares method signatures (and constants) without providing bodies for most of them, which any implementing class must fulfill using the implements keyword."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring and Implementing an Interface"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Swimmer.java",
+      "code": "public interface Swimmer {\n    void swim(); // no body -- every method is implicitly abstract\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    interface Swimmer {\n        void swim();\n    }\n\n    static class Fish implements Swimmer {\n        @Override\n        public void swim() {\n            System.out.println(\"The fish swims.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Fish f = new Fish();\n        f.swim();\n    }\n}",
+      "output": "The fish swims.",
+      "retypePractice": true,
+      "retypeId": "java-interface-basic"
+    },
+    {
+      "type": "warning",
+      "text": "Every method inside an interface (like swim()) has NO body by default -- it's implicitly abstract, similar to an abstract method from the Abstract Classes lesson, but you don't even write the word abstract; it's assumed. Fish must implement swim() with public visibility -- interface methods are implicitly public, so overriding them requires public, not less."
+    },
+    {
+      "type": "heading",
+      "text": "3. Implementing Multiple Interfaces"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    interface Swimmer {\n        void swim();\n    }\n\n    interface Flyer {\n        void fly();\n    }\n\n    static class Duck implements Swimmer, Flyer {\n        @Override\n        public void swim() {\n            System.out.println(\"The duck swims.\");\n        }\n\n        @Override\n        public void fly() {\n            System.out.println(\"The duck flies.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Duck d = new Duck();\n        d.swim();\n        d.fly();\n    }\n}",
+      "output": "The duck swims.\nThe duck flies.",
+      "retypePractice": true,
+      "retypeId": "java-interface-multiple"
+    },
+    {
+      "type": "warning",
+      "text": "This is exactly what Inheritance's single-superclass limit couldn't do -- Duck implements BOTH Swimmer and Flyer at once, comma-separated. A class can implement as many interfaces as it needs, even though it can still extend only one class."
+    },
+    {
+      "type": "heading",
+      "text": "4. default Methods"
+    },
+    {
+      "type": "paragraph",
+      "text": "Modern Java lets an interface provide an actual, shared implementation for a method, using default -- implementing classes get this behavior automatically, without being forced to write it themselves."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    interface Greeter {\n        String getName();\n\n        default void greet() {\n            System.out.println(\"Hello, \" + getName() + \"!\");\n        }\n    }\n\n    static class Person implements Greeter {\n        private String name;\n\n        Person(String name) {\n            this.name = name;\n        }\n\n        @Override\n        public String getName() {\n            return name;\n        }\n    }\n\n    public static void main(String[] args) {\n        Person p = new Person(\"Aman\");\n        p.greet();\n    }\n}",
+      "output": "Hello, Aman!",
+      "retypePractice": true,
+      "retypeId": "java-interface-default"
+    },
+    {
+      "type": "note",
+      "text": "Person never wrote greet() itself -- it comes free from Greeter's default implementation, which calls getName() (which Person DID implement) via polymorphism, the same runtime behavior covered in the Polymorphism lesson."
+    },
+    {
+      "type": "heading",
+      "text": "5. static Methods in an Interface"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "interface MathHelper {\n    static int square(int x) {\n        return x * x;\n    }\n}\n\n// Called directly on the interface, like a static class method:\n// MathHelper.square(5) -> 25"
+    },
+    {
+      "type": "note",
+      "text": "A static method inside an interface behaves like the static methods from Static vs Instance Methods -- called directly on the interface name, not on any implementing object, and it's not inherited by implementing classes the way default methods are."
+    },
+    {
+      "type": "heading",
+      "text": "6. Interfaces vs Abstract Classes (Quick Comparison)"
+    },
+    {
+      "type": "table",
+      "title": "Interface vs abstract class",
+      "headers": ["", "Interface", "Abstract class"],
+      "rows": [
+        ["A class can have how many?", "Implement any number", "Extend only one"],
+        ["Fields", "Constants only (implicitly public static final)", "Any field, including mutable ones"],
+        ["Method bodies", "default/static methods can have bodies; the rest cannot", "Any mix of abstract and fully-implemented methods"],
+        ["Best for", "Defining a capability/contract shared across unrelated classes", "Sharing common code among closely related subclasses"]
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting public when implementing an interface method -- interface methods are implicitly public, and an overriding method cannot reduce that visibility.",
+        "Assuming an interface can only ever have abstract methods -- default and static methods are allowed to have real bodies.",
+        "Trying to extend multiple classes instead of realizing multiple interfaces is the correct Java tool for that need.",
+        "Confusing default methods (inherited automatically by implementing classes) with static methods (called directly on the interface, never inherited)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is an interface, and how is it different from a class?",
+          "answer": "An interface is a contract of method signatures (mostly without bodies) that implementing classes must fulfill, declared with implements. Unlike a class, most interface methods have no implementation, and a class can implement any number of interfaces, unlike single-class inheritance."
+        },
+        {
+          "question": "How does Java handle the lack of multiple inheritance using interfaces?",
+          "answer": "A class can implement multiple interfaces at once, even though it can only extend one superclass -- this lets a class combine multiple independent capabilities (like Swimmer and Flyer) without needing multiple parent classes."
+        },
+        {
+          "question": "What is a default method in an interface?",
+          "answer": "A method inside an interface that provides an actual, shared implementation, which implementing classes inherit automatically without being forced to write it themselves -- unlike the interface's other, body-less method signatures."
+        },
+        {
+          "question": "Can an interface have static methods? How are they called?",
+          "answer": "Yes. Interface static methods have a real body and are called directly on the interface name, like InterfaceName.methodName(), and are not inherited by implementing classes."
+        }
+      ],
+      "thirtySecondAnswer": "An interface is a contract of method signatures that implementing classes fulfill using implements -- most methods have no body and are implicitly public and abstract. Unlike single-inheritance classes, a class can implement any number of interfaces, solving the need for multiple independent capabilities like Swimmer and Flyer on the same class. Modern interfaces also support default methods, which provide a real, shared implementation inherited automatically by implementing classes, and static methods, called directly on the interface and never inherited. Interfaces suit unrelated classes sharing a capability; abstract classes suit closely related subclasses sharing common code."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "interface = a CONTRACT of capabilities, not a family tree -- implement as MANY as you need. default = free behavior baked into the contract. static = a plain utility method living on the contract itself."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "How many interfaces can a single class implement?",
+        "What is a default method, and why is it useful?",
+        "How do you call a static method declared inside an interface?",
+        "When would you choose an interface over an abstract class?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-interface-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    interface Swimmer {\n        void swim();\n    }\n\n    static class Fish implements Swimmer {\n        @Override\n        public void swim() {\n            System.out.println(\"The fish swims.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Fish f = new Fish();\n        f.swim();\n    }\n}", "output": "The fish swims." },
+    { "id": "java-interface-multiple", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    interface Swimmer {\n        void swim();\n    }\n\n    interface Flyer {\n        void fly();\n    }\n\n    static class Duck implements Swimmer, Flyer {\n        @Override\n        public void swim() {\n            System.out.println(\"The duck swims.\");\n        }\n\n        @Override\n        public void fly() {\n            System.out.println(\"The duck flies.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Duck d = new Duck();\n        d.swim();\n        d.fly();\n    }\n}", "output": "The duck swims.\nThe duck flies." },
+    { "id": "java-interface-default", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    interface Greeter {\n        String getName();\n\n        default void greet() {\n            System.out.println(\"Hello, \" + getName() + \"!\");\n        }\n    }\n\n    static class Person implements Greeter {\n        private String name;\n\n        Person(String name) {\n            this.name = name;\n        }\n\n        @Override\n        public String getName() {\n            return name;\n        }\n    }\n\n    public static void main(String[] args) {\n        Person p = new Person(\"Aman\");\n        p.greet();\n    }\n}", "output": "Hello, Aman!" }
+  ],
+  "retypePractice": [
+    { "id": "java-interface-basic", "reference": "public class Main {\n    interface Swimmer {\n        void swim();\n    }\n\n    static class Fish implements Swimmer {\n        @Override\n        public void swim() {\n            System.out.println(\"The fish swims.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Fish f = new Fish();\n        f.swim();\n    }\n}" },
+    { "id": "java-interface-multiple", "reference": "public class Main {\n    interface Swimmer {\n        void swim();\n    }\n\n    interface Flyer {\n        void fly();\n    }\n\n    static class Duck implements Swimmer, Flyer {\n        @Override\n        public void swim() {\n            System.out.println(\"The duck swims.\");\n        }\n\n        @Override\n        public void fly() {\n            System.out.println(\"The duck flies.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Duck d = new Duck();\n        d.swim();\n        d.fly();\n    }\n}" },
+    { "id": "java-interface-default", "reference": "public class Main {\n    interface Greeter {\n        String getName();\n\n        default void greet() {\n            System.out.println(\"Hello, \" + getName() + \"!\");\n        }\n    }\n\n    static class Person implements Greeter {\n        private String name;\n\n        Person(String name) {\n            this.name = name;\n        }\n\n        @Override\n        public String getName() {\n            return name;\n        }\n    }\n\n    public static void main(String[] args) {\n        Person p = new Person(\"Aman\");\n        p.greet();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-interface-basic", "java-interface-multiple", "java-interface-default"]
+  }
+}
