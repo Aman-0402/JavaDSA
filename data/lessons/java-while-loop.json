@@ -1,0 +1,164 @@
+{
+  "id": "java-while-loop",
+  "moduleId": "control-flow",
+  "title": "while Loop",
+  "description": "The while loop's condition-only syntax, used when the number of repetitions isn't known in advance.",
+  "objectives": [
+    "Write a while loop with a separately managed initialization and update",
+    "Choose between for and while for a given situation",
+    "Recognize and avoid an infinite while loop"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. while Loop Syntax"
+    },
+    {
+      "type": "paragraph",
+      "text": "A for loop bundles initialization, condition, and update into one header. A while loop only has a condition — you're responsible for the initialization (before the loop) and the update (inside the loop body) yourself."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int i = 1;\n\nwhile (i <= 5) {\n    System.out.println(i);\n    i++;\n}",
+      "output": "1\n2\n3\n4\n5",
+      "retypePractice": true,
+      "retypeId": "java-while-count-up"
+    },
+    {
+      "type": "definition",
+      "term": "while loop",
+      "text": "A loop that repeats its body as long as its condition remains true, checked before every iteration — with initialization and update left entirely to the surrounding code."
+    },
+    {
+      "type": "table",
+      "title": "for vs while — same loop, different shape",
+      "headers": ["for", "while"],
+      "rows": [
+        ["for (int i = 1; i <= 5; i++) { ... }", "int i = 1; while (i <= 5) { ...; i++; }"],
+        ["init/condition/update all in one header", "init before, update inside the body — your responsibility"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Forgetting i++; inside the while body here causes an infinite loop — i never changes, so i <= 5 stays true forever. This is the single most common while loop bug: the for loop's header structure makes it harder to forget the update; while does not protect you from forgetting it."
+    },
+    {
+      "type": "heading",
+      "text": "2. When to Prefer while Over for"
+    },
+    {
+      "type": "paragraph",
+      "text": "while shines when you don't know in advance how many times you'll loop — instead, you're waiting for some condition to become false, which might depend on user input or other runtime events."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int number = sc.nextInt();\n\n        while (number != 0) {\n            System.out.println(\"You entered: \" + number);\n            number = sc.nextInt();\n        }\n\n        System.out.println(\"Done — 0 was entered.\");\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "Here we have no idea how many numbers the user will type before entering 0 — a for loop's fixed init/condition/update header doesn't fit this naturally, but while's plain condition does."
+    },
+    {
+      "type": "heading",
+      "text": "3. A while Loop That Might Never Run"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int i = 10;\n\nwhile (i <= 5) {\n    System.out.println(i);\n    i++;\n}\n// prints nothing — condition is false from the start"
+    },
+    {
+      "type": "note",
+      "text": "Just like for, a while loop's condition is checked before the first iteration. If it's false immediately, the body never runs — not even once. If you need the body to run at least once regardless, that's exactly what the upcoming do-while lesson covers."
+    },
+    {
+      "type": "heading",
+      "text": "4. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int number = 20;\n        int steps = 0;\n\n        while (number > 1) {\n            if (number % 2 == 0) {\n                number = number / 2;\n            } else {\n                number = number * 3 + 1;\n            }\n            steps++;\n        }\n\n        System.out.println(\"Steps to reach 1: \" + steps);\n    }\n}",
+      "output": "Steps to reach 1: 7",
+      "retypePractice": true,
+      "retypeId": "java-while-collatz"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it (this is the classic Collatz sequence)",
+      "points": [
+        "20 → 10 (even, steps=1) → 5 (even, steps=2) → 16 (odd: 5*3+1, steps=3)",
+        "16 → 8 (even, steps=4) → 4 (even, steps=5) → 2 (even, steps=6) → 1 (even, steps=7)",
+        "number is now 1, so number > 1 is false — loop ends with steps = 7"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting to update the loop's controlling variable inside the body — while has no built-in update slot like for does, so it's easy to forget.",
+        "Writing the initialization inside the loop body instead of before it, accidentally resetting it every iteration.",
+        "Assuming a while loop's body always runs at least once — like for, it checks the condition first and may run zero times.",
+        "Using while when the number of iterations is actually known in advance — a for loop usually communicates that intent more clearly."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the main structural difference between for and while loops?",
+          "answer": "for bundles initialization, condition, and update into one header. while only has a condition — initialization must happen before the loop, and the update must be written explicitly inside the loop body."
+        },
+        {
+          "question": "When would you choose a while loop over a for loop?",
+          "answer": "When the number of iterations isn't known in advance and instead depends on a condition becoming false at runtime — such as reading input until a sentinel value appears."
+        },
+        {
+          "question": "Can a while loop's body run zero times?",
+          "answer": "Yes. Like a for loop, the condition is checked before the first iteration, so if it's false from the start, the body never executes."
+        },
+        {
+          "question": "Why is forgetting the update step more common in while loops than for loops?",
+          "answer": "A for loop's header has a dedicated update slot that draws attention to itself. A while loop's update lives inside the body as an ordinary statement, making it easier to accidentally omit, causing an infinite loop."
+        }
+      ],
+      "thirtySecondAnswer": "A while loop repeats its body as long as its condition is true, but unlike for, it only specifies the condition — initialization happens before the loop and the update must be written inside the body. This makes while ideal when the number of repetitions isn't known ahead of time, such as reading input until a sentinel value appears. Like for, its condition is checked before every iteration, so the body can run zero times. The most common while bug is forgetting the update inside the body, causing an infinite loop, since while's syntax doesn't force you to write one the way for's header does."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "while = \"bare\" loop — only the condition is built in. YOU must set up before, and YOU must update inside, or it may never stop."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the main difference between for and while syntax?",
+        "When is while a better fit than for?",
+        "Can a while loop's body run zero times?",
+        "Why is it easier to forget the update step in a while loop than a for loop?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-while-count-up", "lang": "java", "filename": "Main.java", "code": "int i = 1;\n\nwhile (i <= 5) {\n    System.out.println(i);\n    i++;\n}", "output": "1\n2\n3\n4\n5" },
+    { "id": "java-while-collatz", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int number = 20;\n        int steps = 0;\n\n        while (number > 1) {\n            if (number % 2 == 0) {\n                number = number / 2;\n            } else {\n                number = number * 3 + 1;\n            }\n            steps++;\n        }\n\n        System.out.println(\"Steps to reach 1: \" + steps);\n    }\n}", "output": "Steps to reach 1: 7" }
+  ],
+  "retypePractice": [
+    { "id": "java-while-count-up", "reference": "int i = 1;\n\nwhile (i <= 5) {\n    System.out.println(i);\n    i++;\n}" },
+    { "id": "java-while-collatz", "reference": "public class Main {\n    public static void main(String[] args) {\n        int number = 20;\n        int steps = 0;\n\n        while (number > 1) {\n            if (number % 2 == 0) {\n                number = number / 2;\n            } else {\n                number = number * 3 + 1;\n            }\n            steps++;\n        }\n\n        System.out.println(\"Steps to reach 1: \" + steps);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-while-count-up", "java-while-collatz"]
+  }
+}

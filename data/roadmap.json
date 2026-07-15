@@ -21,7 +21,8 @@
         { "id": "java-switch-statement", "title": "switch Statement", "lesson": "java-switch-statement" },
         { "id": "java-loops", "title": "Loops", "lesson": "java-loops" },
         { "id": "java-for-loop", "title": "for Loop", "lesson": "java-for-loop" },
-        { "id": "java-enhanced-for-loop", "title": "Enhanced for Loop (for-each)", "lesson": "java-enhanced-for-loop" }
+        { "id": "java-enhanced-for-loop", "title": "Enhanced for Loop (for-each)", "lesson": "java-enhanced-for-loop" },
+        { "id": "java-while-loop", "title": "while Loop", "lesson": "java-while-loop" }
       ]
     },
     { "id": "methods", "title": "Methods", "topics": [] },
