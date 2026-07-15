@@ -1,0 +1,171 @@
+{
+  "id": "java-packages",
+  "moduleId": "oop",
+  "title": "Packages",
+  "description": "Organizing classes into namespaces with package, and finally fully explaining package-private access from the Encapsulation lesson.",
+  "objectives": [
+    "Understand what a package is and why classes are organized into them",
+    "Declare a package and import classes from another package",
+    "Understand package-private access, previewed in Encapsulation"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Organize Classes Into Packages?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every program in this course has had exactly one class, Main, living loosely by itself. Real projects have dozens or hundreds of classes -- Student, BankAccount, Shape, and many more. Packages are Java's way of organizing classes into named groups, similar to folders organizing files."
+    },
+    {
+      "type": "definition",
+      "term": "Package",
+      "text": "A namespace that groups related classes together, declared at the top of a file with package packageName;, and physically corresponding to a folder structure on disk."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring a Package"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "com/school/Student.java",
+      "code": "package com.school;\n\npublic class Student {\n    public String name;\n\n    public Student(String name) {\n        this.name = name;\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "package com.school; must be the very FIRST line in the file (only comments may come before it). It declares that Student belongs to the com.school package, and the file itself must physically live in a matching com/school/ folder."
+    },
+    {
+      "type": "heading",
+      "text": "3. Importing a Class From Another Package"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "com/app/Main.java",
+      "code": "package com.app;\n\nimport com.school.Student;\n\npublic class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\");\n        System.out.println(s.name);\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "We've already used import without full explanation -- import java.util.Scanner; back in the Input and Output lesson, and import java.util.ArrayList; in Array vs ArrayList. Both are the exact same mechanism: pulling a class from another package (here, java.util, a package built into Java itself) into scope so it can be used by its short name."
+    },
+    {
+      "type": "heading",
+      "text": "4. Using the Fully Qualified Name Instead of import"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "com.school.Student s = new com.school.Student(\"Aman\");"
+    },
+    {
+      "type": "note",
+      "text": "import is really just a shorthand -- you could always write a class's FULLY QUALIFIED name (package + class name) instead, everywhere it's used, but that gets verbose fast. import lets you write the short name (Student) after declaring it once at the top of the file."
+    },
+    {
+      "type": "heading",
+      "text": "5. Package-Private Access, Fully Explained"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Encapsulation, we previewed that writing NO access modifier at all is a distinct level called package-private -- visible to any class in the same package, but not to classes in other packages. Now that packages are explained, this makes complete sense."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "com/school/Student.java",
+      "code": "package com.school;\n\npublic class Student {\n    String note; // no modifier -- package-private\n}"
+    },
+    {
+      "type": "table",
+      "title": "Access modifiers revisited, now with packages in the picture",
+      "headers": ["Modifier", "Visible from"],
+      "rows": [
+        ["private", "Only inside the same class"],
+        ["(no modifier)", "Any class in the SAME package (com.school here) -- but not com.app"],
+        ["protected", "Same package, plus subclasses in ANY package"],
+        ["public", "Any class, in any package, anywhere"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "A class in com.app trying to access note directly (student.note) would fail to compile, since com.app is a different package than com.school where Student lives. This is package-private access working exactly as intended."
+    },
+    {
+      "type": "heading",
+      "text": "6. Common Built-In Packages You've Already Used"
+    },
+    {
+      "type": "table",
+      "title": "Familiar classes and their packages",
+      "headers": ["Class", "Package", "Where we used it"],
+      "rows": [
+        ["Scanner", "java.util", "Input and Output lesson"],
+        ["ArrayList", "java.util", "Array vs ArrayList lesson"],
+        ["String, System", "java.lang", "Used everywhere -- java.lang is imported automatically, no import needed"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Classes in java.lang (like String and System) are the only ones available without any import statement at all -- every other package, including java.util, must be explicitly imported."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Placing the package statement anywhere other than the very first line of the file (aside from comments).",
+        "Forgetting to import a class from a different package, then wondering why the compiler can't find a class that clearly exists.",
+        "Assuming no access modifier means public -- it's actually the more restrictive package-private level.",
+        "Forgetting java.lang classes (String, System) don't need an import, while almost everything else does."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a package in Java?",
+          "answer": "A namespace that groups related classes together, declared with package packageName; as the first line of a file, and corresponding to a matching folder structure on disk."
+        },
+        {
+          "question": "What does import actually do?",
+          "answer": "It lets you refer to a class from another package by its short name instead of writing its full package-qualified name everywhere it's used in the file."
+        },
+        {
+          "question": "What does package-private (no access modifier) mean?",
+          "answer": "The member is accessible from any class within the same package, but not from classes in other packages -- more restrictive than public, less restrictive than private."
+        },
+        {
+          "question": "Which package is automatically available without an import statement?",
+          "answer": "java.lang, which contains fundamental classes like String and System. Every other package, including java.util, must be explicitly imported."
+        }
+      ],
+      "thirtySecondAnswer": "A package is a namespace that groups related classes, declared as the first line of a file with package packageName;, matching a physical folder structure. import lets code refer to a class from another package by its short name instead of its full package-qualified path -- this is exactly what java.util.Scanner and java.util.ArrayList relied on in earlier lessons. Package-private access (no modifier at all) makes a member visible to any class in the same package but not elsewhere, sitting between private and protected in restrictiveness. java.lang is the one package available automatically, with no import required."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "package = the folder a class lives in. import = borrowing a class from someone else's folder, using its short name instead of the full address. java.lang is the ONE folder Java always leaves unlocked for you automatically."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Where must the package statement appear in a file?",
+        "What does import actually accomplish?",
+        "What does package-private (no access modifier) mean, now that packages are explained?",
+        "Which package doesn't require an explicit import?"
+      ]
+    }
+  ],
+  "codeExamples": [],
+  "retypePractice": [],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": []
+  }
+}
