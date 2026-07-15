@@ -1,0 +1,181 @@
+{
+  "id": "java-set-implementations",
+  "moduleId": "collections-framework",
+  "title": "Set: HashSet, TreeSet, LinkedHashSet",
+  "description": "Fully explaining Set's no-duplicates behavior from the JCF Overview, and the three implementations that each order elements differently.",
+  "objectives": [
+    "Understand Set as a collection with guaranteed no duplicates",
+    "Compare HashSet, LinkedHashSet, and TreeSet's ordering behavior",
+    "Choose the right Set implementation based on ordering needs"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Set: No Duplicates, Guaranteed"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the JCF Overview, we saw a HashSet silently ignore a duplicate \"apple\". Today we look at why, and at Set's three common implementations, which differ only in ORDER."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> names = new HashSet<>();\n        names.add(\"Aman\");\n        names.add(\"Priya\");\n        names.add(\"Aman\"); // duplicate -- ignored\n\n        System.out.println(names.size());\n        System.out.println(names.contains(\"Priya\"));\n    }\n}",
+      "output": "2\ntrue",
+      "retypePractice": true,
+      "retypeId": "java-set-hashset-basic"
+    },
+    {
+      "type": "definition",
+      "term": "Set",
+      "text": "A collection that contains no duplicate elements -- attempting to add() a value already present has no effect."
+    },
+    {
+      "type": "heading",
+      "text": "2. HashSet: No Guaranteed Order"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Set<String> set = new HashSet<>();\nset.add(\"banana\");\nset.add(\"apple\");\nset.add(\"cherry\");\nSystem.out.println(set); // order is NOT guaranteed to match insertion order"
+    },
+    {
+      "type": "warning",
+      "text": "HashSet gives NO guarantee about iteration order -- it might print [banana, cherry, apple] or any other arrangement, based on internal hashing (recall hashing was mentioned back in the JCF Overview's table). Never rely on HashSet's printed order being consistent or matching insertion order."
+    },
+    {
+      "type": "heading",
+      "text": "3. LinkedHashSet: Preserves Insertion Order"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.LinkedHashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> set = new LinkedHashSet<>();\n        set.add(\"banana\");\n        set.add(\"apple\");\n        set.add(\"cherry\");\n\n        System.out.println(set);\n    }\n}",
+      "output": "[banana, apple, cherry]",
+      "retypePractice": true,
+      "retypeId": "java-set-linkedhashset"
+    },
+    {
+      "type": "note",
+      "text": "LinkedHashSet still guarantees no duplicates, exactly like HashSet, but ALSO remembers and preserves the order elements were originally inserted -- the best choice when you need both no-duplicates AND predictable order."
+    },
+    {
+      "type": "heading",
+      "text": "4. TreeSet: Always Sorted"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.TreeSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> set = new TreeSet<>();\n        set.add(\"banana\");\n        set.add(\"apple\");\n        set.add(\"cherry\");\n\n        System.out.println(set);\n    }\n}",
+      "output": "[apple, banana, cherry]",
+      "retypePractice": true,
+      "retypeId": "java-set-treeset"
+    },
+    {
+      "type": "note",
+      "text": "TreeSet automatically keeps its elements in sorted order at all times, regardless of insertion order -- alphabetically for Strings, numerically for numbers. This is the natural ordering these types provide; TreeSet can also accept a custom Comparator for other orderings, covered in the Comparable vs Comparator lesson."
+    },
+    {
+      "type": "heading",
+      "text": "5. Choosing the Right Set"
+    },
+    {
+      "type": "table",
+      "title": "Set implementations, side by side",
+      "headers": ["", "HashSet", "LinkedHashSet", "TreeSet"],
+      "rows": [
+        ["Order", "No guarantee", "Insertion order", "Sorted order"],
+        ["Speed", "Fastest", "Slightly slower than HashSet", "Slower -- maintains sort order on every insert"],
+        ["Use when", "Order doesn't matter, just need no duplicates", "Need no duplicates AND insertion order", "Need no duplicates AND sorted order"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 2, 2, 3, 3, 3, 4};\n        Set<Integer> unique = new HashSet<>();\n\n        for (int n : numbers) {\n            unique.add(n);\n        }\n\n        System.out.println(\"Unique count: \" + unique.size());\n    }\n}",
+      "output": "Unique count: 4",
+      "retypePractice": true,
+      "retypeId": "java-set-unique-count"
+    },
+    {
+      "type": "keyPoints",
+      "title": "A very common DSA pattern",
+      "points": [
+        "Adding every element of an array to a Set is one of the fastest ways to count DISTINCT values",
+        "Here, {1, 2, 2, 3, 3, 3, 4} has exactly 4 distinct values: 1, 2, 3, 4",
+        "This exact pattern reappears constantly in the DSA Foundations module, especially in the Hashing lesson"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Relying on HashSet's iteration order being consistent or matching insertion order -- it makes no such guarantee.",
+        "Reaching for TreeSet by default when sorted order isn't actually needed, paying its extra overhead for nothing.",
+        "Forgetting that adding a duplicate to a Set doesn't throw an error -- it just silently has no effect.",
+        "Choosing HashSet when insertion order actually matters -- LinkedHashSet is the correct choice for that specific need."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What happens when you add a duplicate element to a Set?",
+          "answer": "Nothing changes -- the add() call has no effect, since a Set enforces no duplicate elements. It does not throw an error."
+        },
+        {
+          "question": "What's the difference between HashSet, LinkedHashSet, and TreeSet?",
+          "answer": "HashSet gives no ordering guarantee at all, and is the fastest. LinkedHashSet preserves insertion order. TreeSet always keeps elements in sorted order, at the cost of extra overhead on each insertion."
+        },
+        {
+          "question": "How can a Set be used to count distinct values in an array?",
+          "answer": "Adding every element to a Set automatically discards duplicates, so the Set's final size() gives the count of distinct values -- a common, fast pattern in DSA problems."
+        }
+      ],
+      "thirtySecondAnswer": "A Set guarantees no duplicate elements -- adding a value already present silently has no effect. HashSet offers no ordering guarantee and the fastest performance; LinkedHashSet preserves insertion order at slightly more cost; TreeSet keeps elements continuously sorted, at the highest overhead. A very common pattern: adding every element of an array to a Set and checking its size() gives the count of distinct values, since duplicates are automatically discarded -- this reappears constantly in DSA hashing problems."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Set = a guest list where NAMES CAN'T REPEAT. HashSet = names in random order. LinkedHashSet = names in the order they arrived. TreeSet = names always alphabetized."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What happens if you add a duplicate value to a Set?",
+        "Which Set implementation preserves insertion order?",
+        "Which Set implementation keeps elements sorted?",
+        "How can a Set be used to count distinct values in an array?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-set-hashset-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> names = new HashSet<>();\n        names.add(\"Aman\");\n        names.add(\"Priya\");\n        names.add(\"Aman\"); // duplicate -- ignored\n\n        System.out.println(names.size());\n        System.out.println(names.contains(\"Priya\"));\n    }\n}", "output": "2\ntrue" },
+    { "id": "java-set-linkedhashset", "lang": "java", "filename": "Main.java", "code": "import java.util.LinkedHashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> set = new LinkedHashSet<>();\n        set.add(\"banana\");\n        set.add(\"apple\");\n        set.add(\"cherry\");\n\n        System.out.println(set);\n    }\n}", "output": "[banana, apple, cherry]" },
+    { "id": "java-set-treeset", "lang": "java", "filename": "Main.java", "code": "import java.util.TreeSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> set = new TreeSet<>();\n        set.add(\"banana\");\n        set.add(\"apple\");\n        set.add(\"cherry\");\n\n        System.out.println(set);\n    }\n}", "output": "[apple, banana, cherry]" },
+    { "id": "java-set-unique-count", "lang": "java", "filename": "Main.java", "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 2, 2, 3, 3, 3, 4};\n        Set<Integer> unique = new HashSet<>();\n\n        for (int n : numbers) {\n            unique.add(n);\n        }\n\n        System.out.println(\"Unique count: \" + unique.size());\n    }\n}", "output": "Unique count: 4" }
+  ],
+  "retypePractice": [
+    { "id": "java-set-hashset-basic", "reference": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> names = new HashSet<>();\n        names.add(\"Aman\");\n        names.add(\"Priya\");\n        names.add(\"Aman\"); // duplicate -- ignored\n\n        System.out.println(names.size());\n        System.out.println(names.contains(\"Priya\"));\n    }\n}" },
+    { "id": "java-set-linkedhashset", "reference": "import java.util.LinkedHashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> set = new LinkedHashSet<>();\n        set.add(\"banana\");\n        set.add(\"apple\");\n        set.add(\"cherry\");\n\n        System.out.println(set);\n    }\n}" },
+    { "id": "java-set-treeset", "reference": "import java.util.TreeSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<String> set = new TreeSet<>();\n        set.add(\"banana\");\n        set.add(\"apple\");\n        set.add(\"cherry\");\n\n        System.out.println(set);\n    }\n}" },
+    { "id": "java-set-unique-count", "reference": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 2, 2, 3, 3, 3, 4};\n        Set<Integer> unique = new HashSet<>();\n\n        for (int n : numbers) {\n            unique.add(n);\n        }\n\n        System.out.println(\"Unique count: \" + unique.size());\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-set-hashset-basic", "java-set-linkedhashset", "java-set-treeset", "java-set-unique-count"]
+  }
+}

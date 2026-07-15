@@ -85,7 +85,8 @@
       "title": "Java Collections Framework",
       "topics": [
         { "id": "java-jcf-overview", "title": "Java Collections Framework Overview", "lesson": "java-jcf-overview" },
-        { "id": "java-list-arraylist-linkedlist", "title": "List: ArrayList vs LinkedList", "lesson": "java-list-arraylist-linkedlist" }
+        { "id": "java-list-arraylist-linkedlist", "title": "List: ArrayList vs LinkedList", "lesson": "java-list-arraylist-linkedlist" },
+        { "id": "java-set-implementations", "title": "Set: HashSet, TreeSet, LinkedHashSet", "lesson": "java-set-implementations" }
       ]
     },
     { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
