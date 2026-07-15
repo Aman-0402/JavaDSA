@@ -4,7 +4,8 @@
       "id": "java-fundamentals",
       "title": "Java Fundamentals",
       "topics": [
-        { "id": "java-introduction", "title": "Introduction to Java", "lesson": "java-introduction" }
+        { "id": "java-introduction", "title": "Introduction to Java", "lesson": "java-introduction" },
+        { "id": "java-variables", "title": "Variables", "lesson": "java-variables" }
       ]
     },
     { "id": "control-flow", "title": "Control Flow", "topics": [] },

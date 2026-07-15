@@ -1,0 +1,304 @@
+{
+  "id": "java-variables",
+  "moduleId": "java-fundamentals",
+  "title": "Variables",
+  "description": "What a variable is, declaring vs initializing, naming rules, reassignment, and using variables with System.out.println — building on the Hello World preview from the intro lesson.",
+  "objectives": [
+    "Understand what a variable is and why programs need them",
+    "Declare and initialize a variable, and tell the two apart",
+    "Follow Java's variable naming rules and common conventions",
+    "Reassign a variable's value after it's declared",
+    "Use a variable together with System.out.println"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What is a Variable?"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Introduction lesson we saw int a = 10; without explaining it. Today we explain it properly."
+    },
+    {
+      "type": "definition",
+      "term": "Variable",
+      "text": "A variable is a named storage location that holds a value a program can use, change, and refer to by name."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "The labeled locker analogy",
+      "text": "Think of a variable like a labeled locker: the label (name) stays the same, but what's inside (the value) can be swapped out. age is the label; 25 is what's currently inside."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring a Variable"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age;"
+    },
+    {
+      "type": "paragraph",
+      "text": "This declares a variable named age that can hold a value of type int (a whole number). At this point, age exists, but we haven't given it a value yet."
+    },
+    {
+      "type": "definition",
+      "term": "Declaring a variable",
+      "text": "Declaring a variable means telling the compiler its name and type, reserving a place to store a value of that type."
+    },
+    {
+      "type": "heading",
+      "text": "3. Initializing a Variable"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age = 25;"
+    },
+    {
+      "type": "paragraph",
+      "text": "This declares age and gives it a starting value in the same line — that's called initialization."
+    },
+    {
+      "type": "table",
+      "headers": ["Term", "Meaning"],
+      "rows": [
+        ["Declaration", "int age; — reserves the variable, no value yet"],
+        ["Initialization", "int age = 25; — reserves the variable and gives it a starting value"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Unlike a value you initialize yourself, a local variable in Java (one declared inside a method, like main) will not even compile if you try to read it before assigning it a value — Java's compiler tracks this and gives a \"variable might not have been initialized\" error. This is actually safer than languages that let you silently read garbage memory. Always initialize a variable before reading it."
+    },
+    {
+      "type": "heading",
+      "text": "4. Assigning a New Value"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "age = 26;"
+    },
+    {
+      "type": "paragraph",
+      "text": "Once declared, a variable's value can be changed by assigning a new one — no int keyword this time, since it's already declared."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "age = age + 1;"
+    },
+    {
+      "type": "note",
+      "text": "This reads age's current value, adds 1, and stores the result back into age — a very common pattern for updating a value based on itself."
+    },
+    {
+      "type": "heading",
+      "text": "5. Naming Rules for Variables"
+    },
+    {
+      "type": "keyPoints",
+      "title": "A variable name in Java",
+      "points": [
+        "Must start with a letter, underscore (_), or dollar sign ($) — not a digit",
+        "Can contain letters, digits, underscores, and dollar signs after that",
+        "Cannot contain spaces or symbols like -, @, or #",
+        "Cannot be a reserved Java keyword (like int, return, or class)",
+        "Is case-sensitive — age and Age are different names"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age;      // valid\nint _score;   // valid\nint total1;   // valid\n\nint 1total;   // invalid — starts with a digit\nint my age;   // invalid — contains a space"
+    },
+    {
+      "type": "note",
+      "text": "Recall from the Introduction lesson: Java is case-sensitive, which is why Main and main would be different names. The same rule applies to every identifier, including variable names."
+    },
+    {
+      "type": "heading",
+      "text": "6. Naming Conventions"
+    },
+    {
+      "type": "paragraph",
+      "text": "Beyond what the compiler requires, good variable names are a habit worth building early."
+    },
+    {
+      "type": "keyPoints",
+      "title": "Common conventions",
+      "points": [
+        "Use meaningful names — age, not x, when the value represents someone's age",
+        "camelCase is the standard convention in Java: totalMarks, studentName",
+        "Avoid single letters except for very short-lived, obvious cases (loop counters, covered later)"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "7. Multiple Variables in One Line"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int a, b, c;"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int a = 1, b = 2, c = 3;"
+    },
+    {
+      "type": "note",
+      "text": "Several variables of the same type can be declared — and optionally initialized — in a single statement, separated by commas."
+    },
+    {
+      "type": "heading",
+      "text": "8. Variables Need a Type"
+    },
+    {
+      "type": "paragraph",
+      "text": "int is just one type — it means a whole number. Every variable in Java must have a type, which determines what kind of value it can hold."
+    },
+    {
+      "type": "warning",
+      "text": "We have not covered Java's other data types yet (like decimals, text, or true/false values) — that's the next topic. For now, we're only using int so the idea of a variable is clear."
+    },
+    {
+      "type": "heading",
+      "text": "9. A Variable That Never Changes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sometimes you want a value that must never change after it's set — like the number of days in a week. Java has a keyword called final for this."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "final int DAYS_IN_WEEK = 7;"
+    },
+    {
+      "type": "warning",
+      "text": "We are only previewing final here. Constants and when to use them properly are a dedicated later topic — for now, just recognize the word if you see it."
+    },
+    {
+      "type": "heading",
+      "text": "10. Where Are Variables Declared?"
+    },
+    {
+      "type": "paragraph",
+      "text": "So far, we've only declared variables inside main()'s braces { }, which is where our program's statements live."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        System.out.println(age);\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "A variable generally must be declared before it's used — the compiler reads top to bottom, so System.out.println(age); needs age to already exist above it. Where exactly a variable can be seen and used from is called its scope, which we'll study properly in a dedicated topic."
+    },
+    {
+      "type": "heading",
+      "text": "11. Using a Variable with System.out.println"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        System.out.println(\"Age: \" + age);\n\n        age = age + 1;\n        System.out.println(\"Age after birthday: \" + age);\n    }\n}",
+      "output": "Age: 25\nAge after birthday: 26",
+      "retypePractice": true,
+      "retypeId": "java-variables-age"
+    },
+    {
+      "type": "note",
+      "text": "The + between \"Age: \" and age is not addition here — when at least one side is text (a String), + joins them together. This is called string concatenation, and we'll cover it properly in the Strings topic. For now, just know it lets us mix text and variable values in one println."
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "age is declared and initialized to 25",
+        "First println prints Age: 25",
+        "age = age + 1; updates age to 26",
+        "Second println prints Age after birthday: 26"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using a variable before declaring it — the compiler reads top to bottom and won't recognize a name it hasn't seen yet.",
+        "Trying to read a local variable's value before initializing it — Java's compiler blocks this with an error instead of silently giving garbage.",
+        "Redeclaring a variable with int again after it already exists in the same scope — int age; ... int age = 5; in the same block is invalid.",
+        "Starting a name with a digit, or using spaces/symbols — 1total and my age are invalid names.",
+        "Forgetting variable names are case-sensitive — age and Age are two different variables, not the same one.",
+        "Forgetting the semicolon after a declaration — int age = 25 (missing ;) is a compilation error, same rule as any statement."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a variable?",
+          "answer": "A variable is a named storage location that holds a value a program can use, change, and refer to by name."
+        },
+        {
+          "question": "What is the difference between declaring and initializing a variable?",
+          "answer": "Declaring reserves a variable with a name and type but no value yet (int age;), while initializing gives it a starting value at the same time (int age = 25;)."
+        },
+        {
+          "question": "What happens if you read a local variable in Java before initializing it?",
+          "answer": "The code will not compile — Java's compiler detects that the local variable might not have been initialized and reports an error, unlike languages that silently allow reading garbage memory."
+        },
+        {
+          "question": "What are the rules for naming a variable in Java?",
+          "answer": "A name must start with a letter, underscore, or dollar sign, can contain letters/digits/underscores/dollar signs after that, cannot contain spaces or most symbols, cannot be a reserved keyword, and is case-sensitive."
+        },
+        {
+          "question": "Can multiple variables be declared in one statement?",
+          "answer": "Yes — for example, int a, b, c; or int a = 1, b = 2;, separating each with a comma."
+        },
+        {
+          "question": "Why does a variable need a type?",
+          "answer": "The type tells the compiler what kind of value the variable can hold and how much memory to reserve for it."
+        }
+      ],
+      "thirtySecondAnswer": "A variable is a named storage location that holds a value a program can use and change. Declaring a variable, like int age;, reserves it with a name and type but no value; initializing it, like int age = 25;, gives it a starting value right away. Variable names must start with a letter, underscore, or dollar sign, can't contain spaces, can't be reserved keywords, and are case-sensitive. Once declared, a variable's value can be reassigned, like age = age + 1;, and variables are commonly used together with System.out.println to display their values, often combined with text using string concatenation."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember Variables",
+      "text": "Variable = Labeled locker. Declare = put the label on an empty locker. Initialize = put something inside right away. Assign = swap what's inside later."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is a variable in your own words?",
+        "What's the difference between declaring and initializing a variable?",
+        "Name three rules for valid Java variable names.",
+        "Why won't Java let you read an uninitialized local variable?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-variables-age", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        System.out.println(\"Age: \" + age);\n\n        age = age + 1;\n        System.out.println(\"Age after birthday: \" + age);\n    }\n}", "output": "Age: 25\nAge after birthday: 26" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-variables-age",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        System.out.println(\"Age: \" + age);\n\n        age = age + 1;\n        System.out.println(\"Age after birthday: \" + age);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-variables-age"]
+  }
+}
