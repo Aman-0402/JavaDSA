@@ -1,0 +1,179 @@
+{
+  "id": "java-polymorphism",
+  "moduleId": "oop",
+  "title": "Polymorphism",
+  "description": "Runtime (overriding) and compile-time (overloading) polymorphism -- fully explaining the @Override preview from Inheritance.",
+  "objectives": [
+    "Understand polymorphism as one interface, many forms",
+    "Distinguish method overriding (runtime) from overloading (compile-time)",
+    "Use a superclass reference to call overridden subclass behavior"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. One Interface, Many Forms"
+    },
+    {
+      "type": "paragraph",
+      "text": "Polymorphism literally means \"many forms.\" In Java, it shows up in two different ways we've actually already touched: method overloading (Methods module) and method overriding (previewed in Inheritance) -- today we connect both under one name and go deeper on overriding."
+    },
+    {
+      "type": "definition",
+      "term": "Polymorphism",
+      "text": "The ability for the same method call or method name to behave differently depending on the actual object it's operating on, or the arguments it's given."
+    },
+    {
+      "type": "heading",
+      "text": "2. Overriding, Fully Explained"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Animal {\n        void makeSound() {\n            System.out.println(\"Some generic animal sound\");\n        }\n    }\n\n    static class Dog extends Animal {\n        @Override\n        void makeSound() {\n            System.out.println(\"Woof!\");\n        }\n    }\n\n    static class Cat extends Animal {\n        @Override\n        void makeSound() {\n            System.out.println(\"Meow!\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Animal a1 = new Dog();\n        Animal a2 = new Cat();\n\n        a1.makeSound();\n        a2.makeSound();\n    }\n}",
+      "output": "Woof!\nMeow!",
+      "retypePractice": true,
+      "retypeId": "java-polymorphism-override"
+    },
+    {
+      "type": "definition",
+      "term": "Method overriding",
+      "text": "A subclass providing its own implementation of a method already defined in its superclass, replacing that behavior when called on an object of the subclass."
+    },
+    {
+      "type": "warning",
+      "text": "Both a1 and a2 are declared as type Animal, yet a1.makeSound() prints \"Woof!\" and a2.makeSound() prints \"Meow!\" -- NOT the generic Animal message. Java looks at the ACTUAL object (Dog or Cat) at runtime to decide which makeSound() to run, not the declared variable type. This is called runtime polymorphism (or dynamic dispatch)."
+    },
+    {
+      "type": "heading",
+      "text": "3. The @Override Annotation"
+    },
+    {
+      "type": "note",
+      "text": "@Override, first shown in Inheritance, isn't strictly required for overriding to work -- but it's strongly recommended. It tells the compiler \"I intend to override a superclass method,\" and the compiler will produce an error if no matching method actually exists to override (e.g. a typo in the method name), catching mistakes early."
+    },
+    {
+      "type": "heading",
+      "text": "4. Overriding Rules"
+    },
+    {
+      "type": "keyPoints",
+      "title": "For a method to properly override a superclass method",
+      "points": [
+        "Same method name",
+        "Same parameter list (same number and types of parameters)",
+        "Same or a more specific return type",
+        "Cannot reduce visibility -- e.g. can't override a public method with a private one"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Overloading, Recapped as the Other Kind of Polymorphism"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int add(int a, int b) {\n    return a + b;\n}\n\nstatic double add(double a, double b) {\n    return a + b;\n}"
+    },
+    {
+      "type": "note",
+      "text": "This is method overloading, fully covered back in the Methods module. It's called compile-time polymorphism because Java decides which add() to call while COMPILING the code, based on argument types -- unlike overriding, which is decided at RUNTIME based on the actual object."
+    },
+    {
+      "type": "table",
+      "title": "Overriding vs overloading, side by side",
+      "headers": ["", "Overriding", "Overloading"],
+      "rows": [
+        ["Involves", "A subclass and its superclass", "Multiple methods in the same class"],
+        ["Parameter list", "Must be identical", "Must differ"],
+        ["Decided", "At runtime, based on the actual object", "At compile time, based on argument types"],
+        ["Also called", "Runtime polymorphism", "Compile-time polymorphism"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Shape {\n        double area() {\n            return 0;\n        }\n    }\n\n    static class Circle extends Shape {\n        private double radius;\n\n        Circle(double radius) {\n            this.radius = radius;\n        }\n\n        @Override\n        double area() {\n            return 3.14159 * radius * radius;\n        }\n    }\n\n    static class Square extends Shape {\n        private double side;\n\n        Square(double side) {\n            this.side = side;\n        }\n\n        @Override\n        double area() {\n            return side * side;\n        }\n    }\n\n    public static void main(String[] args) {\n        Shape[] shapes = { new Circle(3), new Square(4) };\n\n        for (Shape s : shapes) {\n            System.out.println(\"Area: \" + s.area());\n        }\n    }\n}",
+      "output": "Area: 28.27431\nArea: 16.0",
+      "retypePractice": true,
+      "retypeId": "java-polymorphism-shapes"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this matters",
+      "points": [
+        "shapes is an array of Shape (recall 1D Arrays), but each element is actually a Circle or a Square",
+        "s.area() calls the correct overridden version for each object automatically, without any if/else checking \"is this a Circle or a Square\"",
+        "New shapes (like a future Triangle) could be added later without changing this loop at all -- it works with any Shape"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing overriding (subclass replaces inherited behavior, same signature) with overloading (same class, different parameter lists).",
+        "Changing the parameter list when intending to override -- this accidentally creates an overload instead, and the superclass version is not actually replaced.",
+        "Forgetting @Override, then making a typo in the method name -- without the annotation, the compiler won't catch that no overriding actually happened.",
+        "Assuming the declared variable type determines which overridden method runs -- it's always the actual object's type that decides, at runtime."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is polymorphism?",
+          "answer": "The ability for the same method call or method name to behave differently depending on the actual object it operates on (overriding) or the arguments given (overloading)."
+        },
+        {
+          "question": "What is the difference between method overriding and method overloading?",
+          "answer": "Overriding involves a subclass providing its own implementation of an inherited method with an identical signature, resolved at runtime based on the actual object. Overloading involves multiple methods in the same class sharing a name but differing in parameter lists, resolved at compile time based on argument types."
+        },
+        {
+          "question": "If Animal a = new Dog(); and Dog overrides makeSound(), which version runs when a.makeSound() is called?",
+          "answer": "Dog's overridden version runs, because Java determines which overridden method to call based on the object's actual runtime type (Dog), not the declared variable type (Animal)."
+        },
+        {
+          "question": "What does the @Override annotation do?",
+          "answer": "It signals the intent to override a superclass method, letting the compiler verify a matching method actually exists to override -- catching mistakes like typos that would otherwise silently create an unrelated new method instead."
+        }
+      ],
+      "thirtySecondAnswer": "Polymorphism means the same method call can behave differently depending on context. Method overriding lets a subclass replace an inherited method's behavior with an identical signature, resolved at runtime based on the object's actual type -- this is why a Shape[] array holding both Circle and Square objects can call s.area() on each and automatically get the correct calculation, with no manual type-checking. Method overloading, covered earlier, is the compile-time counterpart: multiple same-named methods in one class, distinguished by differing parameter lists and resolved based on argument types at compile time. @Override helps catch mistakes by verifying a matching superclass method genuinely exists."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Overriding = SUBCLASS swaps out the parent's move, decided at RUNTIME by the real object. Overloading = SAME class, SAME name, DIFFERENT signature, decided at COMPILE TIME."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the key difference between overriding and overloading?",
+        "If a superclass reference points to a subclass object, which version of an overridden method runs?",
+        "What does @Override help catch?",
+        "Why can a loop over Shape[] correctly call the right area() for each Circle or Square?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-polymorphism-override", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Animal {\n        void makeSound() {\n            System.out.println(\"Some generic animal sound\");\n        }\n    }\n\n    static class Dog extends Animal {\n        @Override\n        void makeSound() {\n            System.out.println(\"Woof!\");\n        }\n    }\n\n    static class Cat extends Animal {\n        @Override\n        void makeSound() {\n            System.out.println(\"Meow!\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Animal a1 = new Dog();\n        Animal a2 = new Cat();\n\n        a1.makeSound();\n        a2.makeSound();\n    }\n}", "output": "Woof!\nMeow!" },
+    { "id": "java-polymorphism-shapes", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Shape {\n        double area() {\n            return 0;\n        }\n    }\n\n    static class Circle extends Shape {\n        private double radius;\n\n        Circle(double radius) {\n            this.radius = radius;\n        }\n\n        @Override\n        double area() {\n            return 3.14159 * radius * radius;\n        }\n    }\n\n    static class Square extends Shape {\n        private double side;\n\n        Square(double side) {\n            this.side = side;\n        }\n\n        @Override\n        double area() {\n            return side * side;\n        }\n    }\n\n    public static void main(String[] args) {\n        Shape[] shapes = { new Circle(3), new Square(4) };\n\n        for (Shape s : shapes) {\n            System.out.println(\"Area: \" + s.area());\n        }\n    }\n}", "output": "Area: 28.27431\nArea: 16.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-polymorphism-override", "reference": "public class Main {\n    static class Animal {\n        void makeSound() {\n            System.out.println(\"Some generic animal sound\");\n        }\n    }\n\n    static class Dog extends Animal {\n        @Override\n        void makeSound() {\n            System.out.println(\"Woof!\");\n        }\n    }\n\n    static class Cat extends Animal {\n        @Override\n        void makeSound() {\n            System.out.println(\"Meow!\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Animal a1 = new Dog();\n        Animal a2 = new Cat();\n\n        a1.makeSound();\n        a2.makeSound();\n    }\n}" },
+    { "id": "java-polymorphism-shapes", "reference": "public class Main {\n    static class Shape {\n        double area() {\n            return 0;\n        }\n    }\n\n    static class Circle extends Shape {\n        private double radius;\n\n        Circle(double radius) {\n            this.radius = radius;\n        }\n\n        @Override\n        double area() {\n            return 3.14159 * radius * radius;\n        }\n    }\n\n    static class Square extends Shape {\n        private double side;\n\n        Square(double side) {\n            this.side = side;\n        }\n\n        @Override\n        double area() {\n            return side * side;\n        }\n    }\n\n    public static void main(String[] args) {\n        Shape[] shapes = { new Circle(3), new Square(4) };\n\n        for (Shape s : shapes) {\n            System.out.println(\"Area: \" + s.area());\n        }\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-polymorphism-override", "java-polymorphism-shapes"]
+  }
+}
