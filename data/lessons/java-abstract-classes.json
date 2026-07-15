@@ -1,0 +1,157 @@
+{
+  "id": "java-abstract-classes",
+  "moduleId": "oop",
+  "title": "Abstract Classes",
+  "description": "Classes that can never be instantiated directly, forcing subclasses to provide their own implementation of certain methods -- solving the Shape.area() = 0 placeholder from Polymorphism.",
+  "objectives": [
+    "Understand what an abstract class is and why it can't be instantiated",
+    "Declare abstract methods that subclasses must implement",
+    "Recognize when abstract classes fit better than a plain superclass"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem With Shape's area()"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Polymorphism, Shape had area() return 0 as a meaningless placeholder, purely so Circle and Square had something to override. But what does a bare Shape's area even mean? Nothing, really -- Shape is a concept that should never exist on its own. Abstract classes express exactly this."
+    },
+    {
+      "type": "definition",
+      "term": "Abstract class",
+      "text": "A class declared with the abstract keyword that cannot be instantiated directly (no new AbstractClass() is allowed) and may contain abstract methods -- method signatures with no body, that subclasses are required to implement."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring an Abstract Class"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Shape.java",
+      "code": "public abstract class Shape {\n    abstract double area(); // no body -- just a signature\n\n    void printInfo() {\n        System.out.println(\"This shape's area is: \" + area());\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "abstract double area(); has NO curly braces, no body -- just a semicolon. This is only legal inside an abstract class. A subclass is REQUIRED to implement area() with an actual body, or it must also be declared abstract itself."
+    },
+    {
+      "type": "heading",
+      "text": "3. Abstract Classes Cannot Be Instantiated"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// Shape s = new Shape(); // does not compile -- Shape is abstract"
+    },
+    {
+      "type": "warning",
+      "text": "There is no way to create a bare Shape object -- Java's compiler enforces this directly. This matches the real-world intent: an abstract Shape concept alone doesn't have a computable area; only a concrete shape like Circle or Square does."
+    },
+    {
+      "type": "heading",
+      "text": "4. Implementing Abstract Methods in Subclasses"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static abstract class Shape {\n        abstract double area();\n\n        void printInfo() {\n            System.out.println(\"This shape's area is: \" + area());\n        }\n    }\n\n    static class Circle extends Shape {\n        private double radius;\n\n        Circle(double radius) {\n            this.radius = radius;\n        }\n\n        @Override\n        double area() {\n            return 3.14159 * radius * radius;\n        }\n    }\n\n    public static void main(String[] args) {\n        Circle c = new Circle(2);\n        c.printInfo();\n    }\n}",
+      "output": "This shape's area is: 12.56636",
+      "retypePractice": true,
+      "retypeId": "java-abstract-circle"
+    },
+    {
+      "type": "keyPoints",
+      "title": "What's happening here",
+      "points": [
+        "Circle extends Shape and provides a real body for area() -- required, since Shape declared it abstract",
+        "printInfo() lives in Shape itself, fully implemented, and Circle inherits it unchanged",
+        "printInfo() calls area() -- and thanks to polymorphism (previous lesson), it correctly runs Circle's version, even though printInfo() was written in Shape before Circle even existed"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Mixing Abstract and Concrete Methods"
+    },
+    {
+      "type": "paragraph",
+      "text": "An abstract class can freely mix abstract methods (no body, must be overridden) with regular, fully-implemented methods (like printInfo() above) that subclasses simply inherit as-is. This lets a superclass provide shared behavior while still forcing subclasses to fill in the parts that genuinely differ."
+    },
+    {
+      "type": "heading",
+      "text": "6. When to Use an Abstract Class"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Guideline",
+      "points": [
+        "The superclass represents a concept that should never exist as a standalone object (a generic 'Shape' or 'Animal')",
+        "You want to force every subclass to provide its own version of specific behavior (every shape MUST define its own area())",
+        "You also have some genuinely shared, ready-to-use behavior to give subclasses for free (like printInfo())"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to create an object directly from an abstract class -- new Shape() never compiles, regardless of what Shape contains.",
+        "Giving an abstract method a body -- abstract double area() { return 0; } is invalid; abstract methods must end with a semicolon and no braces at all.",
+        "Extending an abstract class without implementing all its abstract methods, and forgetting the subclass itself must then also be declared abstract.",
+        "Confusing 'abstract method with no body' with an ordinary method that merely happens to return a placeholder value like 0 -- these are very different things."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is an abstract class?",
+          "answer": "A class declared with abstract that cannot be instantiated directly and may contain abstract methods -- method signatures with no body -- that any concrete subclass must implement."
+        },
+        {
+          "question": "Can you create an object directly from an abstract class?",
+          "answer": "No. Java's compiler prevents new AbstractClassName() entirely, regardless of what the class contains."
+        },
+        {
+          "question": "What happens if a subclass doesn't implement all of an abstract superclass's abstract methods?",
+          "answer": "That subclass must itself be declared abstract as well; only a class that implements every inherited abstract method can be instantiated with new."
+        },
+        {
+          "question": "Can an abstract class contain fully-implemented (non-abstract) methods?",
+          "answer": "Yes. Abstract classes commonly mix abstract methods (forcing subclasses to implement specific behavior) with regular methods that provide shared, ready-to-use behavior inherited as-is."
+        }
+      ],
+      "thirtySecondAnswer": "An abstract class, declared with abstract, can never be instantiated directly -- there's no new AbstractClass(). It can declare abstract methods, which have a signature but no body, forcing every concrete subclass to provide its own implementation, while still mixing in regular, fully-implemented methods that subclasses inherit for free. This fits situations like Shape: the concept alone has no meaningful area(), but Circle and Square, as concrete subclasses, must each define their own. If a subclass doesn't implement every inherited abstract method, it must also be declared abstract itself."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "abstract class = an incomplete blueprint -- you can't build a house from it directly. abstract method = a blank the blueprint leaves for each specific subclass to fill in themselves."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Can you instantiate an abstract class directly?",
+        "What must an abstract method's body look like?",
+        "What happens if a subclass doesn't implement all inherited abstract methods?",
+        "Can an abstract class have regular, fully-implemented methods too?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-abstract-circle", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static abstract class Shape {\n        abstract double area();\n\n        void printInfo() {\n            System.out.println(\"This shape's area is: \" + area());\n        }\n    }\n\n    static class Circle extends Shape {\n        private double radius;\n\n        Circle(double radius) {\n            this.radius = radius;\n        }\n\n        @Override\n        double area() {\n            return 3.14159 * radius * radius;\n        }\n    }\n\n    public static void main(String[] args) {\n        Circle c = new Circle(2);\n        c.printInfo();\n    }\n}", "output": "This shape's area is: 12.56636" }
+  ],
+  "retypePractice": [
+    { "id": "java-abstract-circle", "reference": "public class Main {\n    static abstract class Shape {\n        abstract double area();\n\n        void printInfo() {\n            System.out.println(\"This shape's area is: \" + area());\n        }\n    }\n\n    static class Circle extends Shape {\n        private double radius;\n\n        Circle(double radius) {\n            this.radius = radius;\n        }\n\n        @Override\n        double area() {\n            return 3.14159 * radius * radius;\n        }\n    }\n\n    public static void main(String[] args) {\n        Circle c = new Circle(2);\n        c.printInfo();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-abstract-circle"]
+  }
+}
