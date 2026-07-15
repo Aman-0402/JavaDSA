@@ -80,7 +80,13 @@
         { "id": "java-annotations-basics", "title": "Annotations Basics", "lesson": "java-annotations-basics" }
       ]
     },
-    { "id": "collections-framework", "title": "Java Collections Framework", "topics": [] },
+    {
+      "id": "collections-framework",
+      "title": "Java Collections Framework",
+      "topics": [
+        { "id": "java-jcf-overview", "title": "Java Collections Framework Overview", "lesson": "java-jcf-overview" }
+      ]
+    },
     { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
     { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },

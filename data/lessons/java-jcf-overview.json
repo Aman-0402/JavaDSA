@@ -1,0 +1,146 @@
+{
+  "id": "java-jcf-overview",
+  "moduleId": "collections-framework",
+  "title": "Java Collections Framework Overview",
+  "description": "The big picture of List, Set, Map, and Queue before diving into each individually -- Java's answer to organizing groups of data, building on ArrayList from Arrays & Strings.",
+  "objectives": [
+    "Understand the Java Collections Framework as a family of interfaces and implementations",
+    "Distinguish List, Set, Map, and Queue at a conceptual level",
+    "Know why we use interface types (List, Map) to declare variables, not concrete classes"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Beyond ArrayList"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Array vs ArrayList, we met ArrayList as a resizable alternative to arrays. ArrayList is actually just ONE small piece of a much larger toolbox: the Java Collections Framework (JCF) -- a family of interfaces and classes for storing and organizing groups of objects."
+    },
+    {
+      "type": "definition",
+      "term": "Java Collections Framework (JCF)",
+      "text": "A unified set of interfaces and classes in java.util for storing, organizing, and manipulating groups of objects, including List, Set, Map, and Queue."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Four Main Categories"
+    },
+    {
+      "type": "table",
+      "title": "JCF at a glance",
+      "headers": ["Category", "What it represents", "Allows duplicates?", "Keeps order?"],
+      "rows": [
+        ["List", "An ordered sequence, accessible by index -- like ArrayList", "Yes", "Yes, insertion order"],
+        ["Set", "A collection with NO duplicate elements", "No", "Depends on implementation"],
+        ["Map", "Key-value pairs -- looking up a value by its key", "Keys: no. Values: yes", "Depends on implementation"],
+        ["Queue / Deque", "Elements processed in a specific order -- first-in-first-out, or both ends", "Yes", "Yes, processing order"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. A Quick Taste of Each"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> list = new ArrayList<>();\n        list.add(\"apple\");\n        list.add(\"apple\"); // duplicates allowed\n        System.out.println(list);\n\n        Set<String> set = new HashSet<>();\n        set.add(\"apple\");\n        set.add(\"apple\"); // duplicate ignored\n        System.out.println(set);\n\n        Map<String, Integer> map = new HashMap<>();\n        map.put(\"apple\", 3);\n        System.out.println(map.get(\"apple\"));\n    }\n}",
+      "output": "[apple, apple]\n[apple]\n3",
+      "retypePractice": true,
+      "retypeId": "java-jcf-taste"
+    },
+    {
+      "type": "note",
+      "text": "import java.util.*; imports every class in java.util at once, rather than listing each one individually with separate import lines -- useful when using several JCF types together, as here. We only preview List, Set, and Map here; each gets its own dedicated lesson next."
+    },
+    {
+      "type": "heading",
+      "text": "4. Declaring Variables by Interface Type"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "List<String> names = new ArrayList<>(); // recommended\nArrayList<String> names2 = new ArrayList<>(); // works, but less flexible"
+    },
+    {
+      "type": "note",
+      "text": "List<String> names = new ArrayList<>(); declares names as the INTERFACE type (List), even though the actual object is an ArrayList. This is a widely followed convention: it lets you swap the concrete implementation later (e.g. to a LinkedList, covered in the Linked List module) by changing only the right side of the declaration, without touching any code that uses names."
+    },
+    {
+      "type": "heading",
+      "text": "5. Why So Many Different Implementations?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Different tools for different jobs",
+      "points": [
+        "ArrayList -- fast random access by index, common everyday default for List",
+        "HashSet -- fast duplicate-checking, no guaranteed order",
+        "HashMap -- fast key-based lookup, no guaranteed order",
+        "Each is covered with its own lesson, showing exactly when to reach for it and why"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "This lesson is only the map of the territory -- List (ArrayList, LinkedList), Set (HashSet, TreeSet, LinkedHashSet), Map (HashMap, TreeMap, LinkedHashMap), and Queue/Deque (ArrayDeque, PriorityQueue) are each covered in their own dedicated upcoming lessons, along with Iterator and Comparable vs Comparator."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Declaring variables with the concrete class type (ArrayList<String> names) instead of the interface type (List<String> names), making it harder to later swap implementations.",
+        "Assuming every JCF collection maintains insertion order -- HashSet and HashMap do NOT guarantee any particular order, unlike List or LinkedHashSet/LinkedHashMap.",
+        "Forgetting Set eliminates duplicates automatically, while List does not -- adding the same value twice behaves very differently depending on which you use.",
+        "Overusing import java.util.*; out of habit in every file, when only importing the specific classes actually used is often clearer."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the Java Collections Framework?",
+          "answer": "A unified set of interfaces and classes in java.util for storing, organizing, and manipulating groups of objects, including List, Set, Map, and Queue, each with multiple concrete implementations suited to different needs."
+        },
+        {
+          "question": "What is the key difference between a List and a Set?",
+          "answer": "A List is an ordered sequence that allows duplicate elements and access by index. A Set does not allow duplicate elements at all -- adding a duplicate is simply ignored."
+        },
+        {
+          "question": "Why is it recommended to declare a variable using the interface type (List<String>) rather than the concrete class (ArrayList<String>)?",
+          "answer": "It keeps code flexible -- the concrete implementation can be changed later (e.g. to LinkedList) by only updating the right side of the declaration, without needing to change any code that uses the variable."
+        }
+      ],
+      "thirtySecondAnswer": "The Java Collections Framework is a family of interfaces (List, Set, Map, Queue) and concrete implementations (ArrayList, HashSet, HashMap, ArrayDeque, and more) for storing and organizing groups of objects. List keeps an ordered sequence and allows duplicates; Set disallows duplicates entirely; Map stores key-value pairs for fast lookup by key; Queue/Deque process elements in a specific order. The convention is to declare variables using the interface type (List<String> names = new ArrayList<>();) rather than the concrete class, keeping code flexible to swap implementations later."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "List = an ordered LINE, duplicates welcome. Set = a bouncer that rejects duplicates at the door. Map = a labeled filing cabinet, lookup by KEY. Queue = a line that processes in a specific ORDER."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are the four main categories in the Java Collections Framework?",
+        "Does a Set allow duplicate elements?",
+        "Why declare a variable as List<String> instead of ArrayList<String>?",
+        "Which collections make no guarantee about element order?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-jcf-taste", "lang": "java", "filename": "Main.java", "code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> list = new ArrayList<>();\n        list.add(\"apple\");\n        list.add(\"apple\"); // duplicates allowed\n        System.out.println(list);\n\n        Set<String> set = new HashSet<>();\n        set.add(\"apple\");\n        set.add(\"apple\"); // duplicate ignored\n        System.out.println(set);\n\n        Map<String, Integer> map = new HashMap<>();\n        map.put(\"apple\", 3);\n        System.out.println(map.get(\"apple\"));\n    }\n}", "output": "[apple, apple]\n[apple]\n3" }
+  ],
+  "retypePractice": [
+    { "id": "java-jcf-taste", "reference": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> list = new ArrayList<>();\n        list.add(\"apple\");\n        list.add(\"apple\"); // duplicates allowed\n        System.out.println(list);\n\n        Set<String> set = new HashSet<>();\n        set.add(\"apple\");\n        set.add(\"apple\"); // duplicate ignored\n        System.out.println(set);\n\n        Map<String, Integer> map = new HashMap<>();\n        map.put(\"apple\", 3);\n        System.out.println(map.get(\"apple\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-jcf-taste"]
+  }
+}
