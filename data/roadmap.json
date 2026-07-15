@@ -33,7 +33,8 @@
       "id": "methods",
       "title": "Methods",
       "topics": [
-        { "id": "java-method-basics", "title": "Method Declaration and Calling", "lesson": "java-method-basics" }
+        { "id": "java-method-basics", "title": "Method Declaration and Calling", "lesson": "java-method-basics" },
+        { "id": "java-parameters-arguments", "title": "Parameters and Arguments", "lesson": "java-parameters-arguments" }
       ]
     },
     { "id": "arrays-strings", "title": "Arrays & Strings", "topics": [] },

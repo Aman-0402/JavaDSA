@@ -1,0 +1,172 @@
+{
+  "id": "java-parameters-arguments",
+  "moduleId": "methods",
+  "title": "Parameters and Arguments",
+  "description": "The difference between a parameter and an argument, multiple parameters, and Java's pass-by-value behavior.",
+  "objectives": [
+    "Distinguish a parameter from an argument",
+    "Declare and use methods with multiple parameters",
+    "Understand that Java always passes primitive arguments by value"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Parameter vs Argument"
+    },
+    {
+      "type": "paragraph",
+      "text": "These two words are often used interchangeably in casual conversation, but they mean slightly different things."
+    },
+    {
+      "type": "table",
+      "headers": ["Term", "Meaning", "In square(int number)... square(5)"],
+      "rows": [
+        ["Parameter", "The variable listed in the method's declaration", "number"],
+        ["Argument", "The actual value passed in when the method is called", "5"]
+      ]
+    },
+    {
+      "type": "definition",
+      "term": "Parameter",
+      "text": "A variable declared in a method's signature that receives a value when the method is called."
+    },
+    {
+      "type": "definition",
+      "term": "Argument",
+      "text": "The actual value supplied for a parameter at the point a method is called."
+    },
+    {
+      "type": "heading",
+      "text": "2. Multiple Parameters"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int add(int a, int b) {\n        return a + b;\n    }\n\n    public static void main(String[] args) {\n        int sum = add(3, 4);\n        System.out.println(sum);\n    }\n}",
+      "output": "7",
+      "retypePractice": true,
+      "retypeId": "java-params-add"
+    },
+    {
+      "type": "warning",
+      "text": "Arguments are matched to parameters by POSITION, not name. add(3, 4) sets a = 3 and b = 4 because 3 is first and a is first — not because of any name matching."
+    },
+    {
+      "type": "heading",
+      "text": "3. Parameter Types Must Match"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int add(int a, int b) {\n    return a + b;\n}\n\n// add(3, 4)      -> works\n// add(3.5, 4)    -> does not compile: 3.5 is a double, not an int\n// add(\"3\", 4)     -> does not compile: \"3\" is a String, not an int"
+    },
+    {
+      "type": "note",
+      "text": "Recall widening from the Type Casting lesson: an int argument automatically widens to fit a double parameter, but not the reverse. Passing a double where an int parameter is expected requires an explicit cast, same as any narrowing conversion."
+    },
+    {
+      "type": "heading",
+      "text": "4. Java Passes Arguments by Value"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static void tryToChange(int x) {\n        x = 100;\n    }\n\n    public static void main(String[] args) {\n        int number = 5;\n        tryToChange(number);\n        System.out.println(number);\n    }\n}",
+      "output": "5",
+      "retypePractice": true,
+      "retypeId": "java-params-pass-by-value"
+    },
+    {
+      "type": "warning",
+      "text": "number still prints 5, NOT 100! When number is passed to tryToChange, Java copies its value into the parameter x. Changing x inside the method only changes that local copy — it has no effect on the original number back in main()."
+    },
+    {
+      "type": "definition",
+      "term": "Pass-by-value",
+      "text": "Java's parameter-passing behavior: a copy of the argument's value is given to the method, so changes to the parameter inside the method do not affect the original variable outside it."
+    },
+    {
+      "type": "note",
+      "text": "This applies to primitives (int, double, boolean, etc.) exactly as shown. Reference types (like arrays and objects, previewed in Data Types and covered fully in Object-Oriented Programming) behave subtly differently — what's copied is the reference itself, which is a topic we return to once objects are properly introduced."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static double average(int a, int b, int c) {\n        return (a + b + c) / 3.0;\n    }\n\n    public static void main(String[] args) {\n        double result = average(10, 20, 30);\n        System.out.println(\"Average: \" + result);\n    }\n}",
+      "output": "Average: 20.0",
+      "retypePractice": true,
+      "retypeId": "java-params-average"
+    },
+    {
+      "type": "note",
+      "text": "(a + b + c) / 3.0 uses the (double) division trick from Type Casting — dividing by 3.0 instead of 3 forces decimal division, so the average isn't truncated to a whole number."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming arguments are matched by name — they're matched strictly by position and type in the parameter list.",
+        "Expecting changes to a primitive parameter inside a method to affect the original variable passed in — pass-by-value copies the value, it doesn't share it.",
+        "Passing the wrong number or type of arguments — a method call must supply exactly as many arguments as there are parameters, each of a compatible type.",
+        "Confusing the terms parameter (in the declaration) and argument (at the call site) in interview answers."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between a parameter and an argument?",
+          "answer": "A parameter is the variable listed in a method's declaration. An argument is the actual value supplied for that parameter when the method is called."
+        },
+        {
+          "question": "Does Java pass primitive arguments by value or by reference?",
+          "answer": "By value. A copy of the argument's value is assigned to the method's parameter, so modifying the parameter inside the method does not affect the original variable at the call site."
+        },
+        {
+          "question": "How are multiple arguments matched to a method's parameters?",
+          "answer": "By position — the first argument fills the first parameter, the second fills the second, and so on — and each argument's type must be compatible with its corresponding parameter's type."
+        }
+      ],
+      "thirtySecondAnswer": "A parameter is the variable declared in a method's signature; an argument is the actual value passed in when the method is called, matched to parameters by position, not name. Java passes primitive arguments by value — the method receives a copy, so reassigning a parameter inside the method never affects the original variable back at the call site. Argument types must be compatible with their parameters' types, following the same widening/narrowing rules covered in Type Casting."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Parameter = the empty seat reserved in the method's signature. Argument = the passenger who actually sits there when you call it. Java hands over a PHOTOCOPY of that passenger, not the original."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between a parameter and an argument?",
+        "If you change a parameter's value inside a method, does the original variable change too?",
+        "Are arguments matched to parameters by name or by position?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-params-add", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int add(int a, int b) {\n        return a + b;\n    }\n\n    public static void main(String[] args) {\n        int sum = add(3, 4);\n        System.out.println(sum);\n    }\n}", "output": "7" },
+    { "id": "java-params-pass-by-value", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static void tryToChange(int x) {\n        x = 100;\n    }\n\n    public static void main(String[] args) {\n        int number = 5;\n        tryToChange(number);\n        System.out.println(number);\n    }\n}", "output": "5" },
+    { "id": "java-params-average", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static double average(int a, int b, int c) {\n        return (a + b + c) / 3.0;\n    }\n\n    public static void main(String[] args) {\n        double result = average(10, 20, 30);\n        System.out.println(\"Average: \" + result);\n    }\n}", "output": "Average: 20.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-params-add", "reference": "public class Main {\n    static int add(int a, int b) {\n        return a + b;\n    }\n\n    public static void main(String[] args) {\n        int sum = add(3, 4);\n        System.out.println(sum);\n    }\n}" },
+    { "id": "java-params-pass-by-value", "reference": "public class Main {\n    static void tryToChange(int x) {\n        x = 100;\n    }\n\n    public static void main(String[] args) {\n        int number = 5;\n        tryToChange(number);\n        System.out.println(number);\n    }\n}" },
+    { "id": "java-params-average", "reference": "public class Main {\n    static double average(int a, int b, int c) {\n        return (a + b + c) / 3.0;\n    }\n\n    public static void main(String[] args) {\n        double result = average(10, 20, 30);\n        System.out.println(\"Average: \" + result);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-params-add", "java-params-pass-by-value", "java-params-average"]
+  }
+}
