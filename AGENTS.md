@@ -98,7 +98,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 3 | Methods | ✅ done | Method Declaration and Calling, Parameters and Arguments, Return Types, Method Overloading, Varargs, Recursion Basics, Static vs Instance Methods |
 | 4 | Arrays & Strings | ✅ done | 1D Arrays, 2D Arrays, Strings and Immutability, Common String Methods, StringBuilder, Array vs ArrayList (Intro) |
 | 5 | Object-Oriented Programming | ✅ done | Classes and Objects, Constructors, this Keyword, Encapsulation and Access Modifiers, Inheritance, Polymorphism, Abstract Classes, Interfaces, Packages |
-| 6 | Advanced Java | ⬜ | — |
+| 6 | Advanced Java | ✅ done | Exception Handling, Generics, Enums, Autoboxing and Unboxing, Annotations Basics |
 | 7 | Java Collections Framework | ⬜ | — |
 | 8 | DSA Foundations | ⬜ | — |
 | 9 | Linked List | ⬜ | — |
