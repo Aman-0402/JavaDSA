@@ -1,0 +1,158 @@
+{
+  "id": "java-annotations-basics",
+  "moduleId": "advanced-java",
+  "title": "Annotations Basics",
+  "description": "Metadata attached to code with @ -- fully explaining @Override from the Polymorphism lesson, plus a few other common built-in annotations.",
+  "objectives": [
+    "Understand an annotation as metadata attached to code, not executable logic itself",
+    "Fully explain @Override, previously used as a preview",
+    "Recognize @Deprecated and @SuppressWarnings as other common built-in annotations"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've written @Override many times since Inheritance and Polymorphism, always as a fixed pattern. Today we explain exactly what it -- and annotations generally -- actually are."
+    },
+    {
+      "type": "definition",
+      "term": "Annotation",
+      "text": "Metadata attached to code (a class, method, or field) using @Name syntax, providing information to the compiler or tools without being executable code itself."
+    },
+    {
+      "type": "warning",
+      "text": "An annotation does not run like a statement -- it doesn't DO anything at the moment your program executes. It's information ABOUT the code, read by the compiler or other tools, similar in spirit to a comment, but one the compiler can actually understand and act on."
+    },
+    {
+      "type": "heading",
+      "text": "2. @Override, Fully Explained"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "class Animal {\n    void makeSound() {\n        System.out.println(\"Some sound\");\n    }\n}\n\nclass Dog extends Animal {\n    @Override\n    void makeSound() {\n        System.out.println(\"Woof!\");\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "@Override tells the compiler: \"I intend for this method to override a method from the superclass.\" If no matching method actually exists to override in the superclass -- often due to a typo like makeSond() -- the compiler produces an error immediately, instead of silently creating an unrelated new method, as we first mentioned in the Polymorphism lesson."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "class Dog extends Animal {\n    @Override\n    void makeSond() { // TYPO: doesn't match any Animal method\n        System.out.println(\"Woof!\");\n    }\n}\n// Compile error: method does not override a method from its superclass"
+    },
+    {
+      "type": "heading",
+      "text": "3. @Deprecated -- Marking Old Code"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "class Calculator {\n    @Deprecated\n    int oldAdd(int a, int b) {\n        return a + b;\n    }\n\n    int add(int a, int b) {\n        return a + b;\n    }\n}"
+    },
+    {
+      "type": "definition",
+      "term": "@Deprecated",
+      "text": "An annotation marking a method, class, or field as outdated and discouraged from further use, typically because a better alternative exists -- using it produces a compiler warning, not an error."
+    },
+    {
+      "type": "note",
+      "text": "@Deprecated doesn't prevent oldAdd(...) from being called -- the code still compiles and runs. It only warns anyone using it that this method is on its way out and add(...) should be used instead."
+    },
+    {
+      "type": "heading",
+      "text": "4. @SuppressWarnings -- Silencing a Specific Warning"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "@SuppressWarnings(\"unchecked\")\nvoid someMethod() {\n    // code that would otherwise trigger an \"unchecked\" compiler warning\n}"
+    },
+    {
+      "type": "note",
+      "text": "@SuppressWarnings tells the compiler to hide a specific category of warning for the annotated code, when the developer has already reviewed it and is confident it's fine. It should be used sparingly and deliberately, not as a way to silence warnings without understanding them."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Shape {\n        double area() {\n            return 0;\n        }\n\n        @Deprecated\n        double oldArea() {\n            return area();\n        }\n    }\n\n    static class Square extends Shape {\n        private double side;\n\n        Square(double side) {\n            this.side = side;\n        }\n\n        @Override\n        double area() {\n            return side * side;\n        }\n    }\n\n    public static void main(String[] args) {\n        Square s = new Square(5);\n        System.out.println(\"Area: \" + s.area());\n    }\n}",
+      "output": "Area: 25.0",
+      "retypePractice": true,
+      "retypeId": "java-annotations-shape"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Annotations at work here",
+      "points": [
+        "@Override on Square's area() confirms it genuinely overrides Shape's area() -- caught by the compiler if it didn't",
+        "@Deprecated on Shape's oldArea() marks it as outdated, without preventing it from still working if called",
+        "Neither annotation changes what the program actually prints -- they're purely metadata for the compiler and future readers"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Thinking an annotation executes like a statement -- annotations are metadata, read by the compiler or tools, not executable logic themselves.",
+        "Skipping @Override out of laziness, and only discovering a typo'd method name at runtime instead of at compile time.",
+        "Assuming @Deprecated prevents code from compiling or running -- it only produces a warning, code still works.",
+        "Overusing @SuppressWarnings to silence warnings without understanding or fixing their underlying cause."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is an annotation in Java?",
+          "answer": "Metadata attached to code -- a class, method, or field -- using @Name syntax, providing information to the compiler or tools without itself being executable logic."
+        },
+        {
+          "question": "What does @Override actually do, and why is it useful?",
+          "answer": "It tells the compiler this method is intended to override a superclass method. If no matching method exists to override (often due to a typo), the compiler produces an error immediately, rather than silently creating an unrelated new method."
+        },
+        {
+          "question": "What is the difference between @Deprecated and a compile error?",
+          "answer": "@Deprecated only produces a compiler warning, marking something as outdated -- the annotated code still compiles and runs normally, unlike an actual compile error which prevents compilation entirely."
+        }
+      ],
+      "thirtySecondAnswer": "An annotation is metadata attached to code using @Name syntax, read by the compiler or tools rather than executed as logic. @Override, used since Inheritance and Polymorphism, confirms a method genuinely overrides a superclass method, catching mistakes like typos at compile time instead of silently creating an unrelated method. @Deprecated marks outdated code with just a warning, not an error -- it still compiles and runs. @SuppressWarnings selectively silences specific compiler warnings when a developer has deliberately reviewed and accepted the underlying situation."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Annotation = a sticky note ON the code, for the compiler to read -- it never runs itself. @Override = \"double-check this actually overrides something.\" @Deprecated = \"still works, but please stop using this.\""
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Does an annotation execute like a normal statement?",
+        "What does @Override actually check for?",
+        "Does @Deprecated prevent code from compiling?",
+        "What is @SuppressWarnings used for?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-annotations-shape", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Shape {\n        double area() {\n            return 0;\n        }\n\n        @Deprecated\n        double oldArea() {\n            return area();\n        }\n    }\n\n    static class Square extends Shape {\n        private double side;\n\n        Square(double side) {\n            this.side = side;\n        }\n\n        @Override\n        double area() {\n            return side * side;\n        }\n    }\n\n    public static void main(String[] args) {\n        Square s = new Square(5);\n        System.out.println(\"Area: \" + s.area());\n    }\n}", "output": "Area: 25.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-annotations-shape", "reference": "public class Main {\n    static class Shape {\n        double area() {\n            return 0;\n        }\n\n        @Deprecated\n        double oldArea() {\n            return area();\n        }\n    }\n\n    static class Square extends Shape {\n        private double side;\n\n        Square(double side) {\n            this.side = side;\n        }\n\n        @Override\n        double area() {\n            return side * side;\n        }\n    }\n\n    public static void main(String[] args) {\n        Square s = new Square(5);\n        System.out.println(\"Area: \" + s.area());\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-annotations-shape"]
+  }
+}
