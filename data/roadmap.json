@@ -17,7 +17,8 @@
       "id": "control-flow",
       "title": "Control Flow",
       "topics": [
-        { "id": "java-conditional-statements", "title": "Conditional Statements (if / else if / else)", "lesson": "java-conditional-statements" }
+        { "id": "java-conditional-statements", "title": "Conditional Statements (if / else if / else)", "lesson": "java-conditional-statements" },
+        { "id": "java-switch-statement", "title": "switch Statement", "lesson": "java-switch-statement" }
       ]
     },
     { "id": "methods", "title": "Methods", "topics": [] },

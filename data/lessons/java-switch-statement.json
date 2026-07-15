@@ -1,0 +1,209 @@
+{
+  "id": "java-switch-statement",
+  "moduleId": "control-flow",
+  "title": "switch Statement",
+  "description": "Multi-way branching with switch, the fallthrough trap with traditional case/break, and modern Java switch expressions with arrow syntax.",
+  "objectives": [
+    "Use a traditional switch statement with case and break",
+    "Understand fallthrough and why break matters",
+    "Use the modern Java switch expression with -> syntax",
+    "Choose between if/else if and switch appropriately"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why switch, When We Already Have if/else if?"
+    },
+    {
+      "type": "paragraph",
+      "text": "When you're comparing ONE variable against many exact values, a long else if chain gets repetitive. switch offers a cleaner way to express \"do one of several things, based on this value.\""
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int day = 3;\n\nif (day == 1) {\n    System.out.println(\"Monday\");\n} else if (day == 2) {\n    System.out.println(\"Tuesday\");\n} else if (day == 3) {\n    System.out.println(\"Wednesday\");\n} else {\n    System.out.println(\"Unknown day\");\n}"
+    },
+    {
+      "type": "heading",
+      "text": "2. The Traditional switch Statement"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int day = 3;\n\nswitch (day) {\n    case 1:\n        System.out.println(\"Monday\");\n        break;\n    case 2:\n        System.out.println(\"Tuesday\");\n        break;\n    case 3:\n        System.out.println(\"Wednesday\");\n        break;\n    default:\n        System.out.println(\"Unknown day\");\n}",
+      "output": "Wednesday"
+    },
+    {
+      "type": "definition",
+      "term": "switch statement",
+      "text": "A control-flow statement that compares one value against several possible cases and runs the code for whichever case matches, falling back to default if none do."
+    },
+    {
+      "type": "table",
+      "title": "switch pieces",
+      "headers": ["Keyword", "Meaning"],
+      "rows": [
+        ["switch (day)", "The value being compared — here, day"],
+        ["case 1:", "Runs if day equals 1"],
+        ["break;", "Exits the switch immediately, so no later cases run"],
+        ["default:", "Runs only if no case matched — like an else at the end"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. The Fallthrough Trap"
+    },
+    {
+      "type": "paragraph",
+      "text": "Without break, execution doesn't stop at the matching case — it keeps running every case below it too, until it hits a break or the end of the switch. This is called fallthrough, and it's one of the most notorious switch bugs."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int day = 2;\n\nswitch (day) {\n    case 1:\n        System.out.println(\"Monday\");\n    case 2:\n        System.out.println(\"Tuesday\");\n    case 3:\n        System.out.println(\"Wednesday\");\n    default:\n        System.out.println(\"Unknown day\");\n}\n// Output:\n// Tuesday\n// Wednesday\n// Unknown day"
+    },
+    {
+      "type": "warning",
+      "text": "Even though day == 2 only matches case 2, ALL of \"Tuesday\", \"Wednesday\", and \"Unknown day\" print, because there's no break anywhere to stop it. Java falls straight through every case below the matching one. Forgetting break is a classic, hard-to-spot bug."
+    },
+    {
+      "type": "tip",
+      "text": "Fallthrough is occasionally used intentionally — e.g. grouping multiple case labels together with no code between them to share one block, like case 6: case 7: System.out.println(\"Weekend\"); break;. That's the only fallthrough pattern generally considered acceptable style."
+    },
+    {
+      "type": "heading",
+      "text": "4. Modern switch Expressions (Java 14+)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Newer Java versions (14+) introduce a cleaner switch expression using ->, which fixes the fallthrough problem entirely — each case runs only its own code, automatically, with no break needed."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int day = 3;\n\nString dayName = switch (day) {\n    case 1 -> \"Monday\";\n    case 2 -> \"Tuesday\";\n    case 3 -> \"Wednesday\";\n    default -> \"Unknown day\";\n};\n\nSystem.out.println(dayName);",
+      "output": "Wednesday",
+      "retypePractice": true,
+      "retypeId": "java-switch-expression"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this is an improvement",
+      "points": [
+        "No fallthrough risk — each -> arm runs only its own code, break is not needed or allowed",
+        "It's an expression, not just a statement — it directly produces a value (dayName) that you can assign",
+        "Multiple values can share one arm: case 6, 7 -> \"Weekend\"; without repeating code"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int day = 6;\n\nString type = switch (day) {\n    case 1, 2, 3, 4, 5 -> \"Weekday\";\n    case 6, 7 -> \"Weekend\";\n    default -> \"Invalid day\";\n};\n\nSystem.out.println(type); // Weekend"
+    },
+    {
+      "type": "note",
+      "text": "Comma-separated values in one case (case 6, 7 ->) is new switch-expression syntax — the older switch statement instead relies on intentional fallthrough (case 6: case 7:) to group values, as shown in section 3."
+    },
+    {
+      "type": "heading",
+      "text": "5. Which Should You Use?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Guideline",
+      "points": [
+        "Use a switch expression (->) when you're producing a value from one of several fixed options — it's shorter and immune to fallthrough bugs",
+        "Use the traditional switch (case:/break;) when you need to run several statements per case, or need fallthrough behavior on purpose",
+        "Use if/else if when conditions involve ranges or comparisons (like marks >= 75) rather than exact-value matching"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "switch (traditional or expression form) compares for exact equality against int, char, String, and enum values (enum is a later topic). It cannot check ranges like age >= 18 — that's still if/else if's job."
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int month = 4;\n\n        String season = switch (month) {\n            case 12, 1, 2 -> \"Winter\";\n            case 3, 4, 5 -> \"Spring\";\n            case 6, 7, 8 -> \"Summer\";\n            case 9, 10, 11 -> \"Autumn\";\n            default -> \"Invalid month\";\n        };\n\n        System.out.println(\"Season: \" + season);\n    }\n}",
+      "output": "Season: Spring",
+      "retypePractice": true,
+      "retypeId": "java-switch-season"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting break in a traditional switch statement, causing unintended fallthrough into later cases.",
+        "Trying to use switch to check a range (like age >= 18) instead of an exact value — switch only matches exact values.",
+        "Mixing up the traditional case X: ... break; syntax with the modern case X -> ... arrow syntax in the same switch — pick one style per switch.",
+        "Forgetting the default case, leaving no fallback when a value matches nothing."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is fallthrough in a switch statement, and how do you prevent it?",
+          "answer": "Fallthrough is when execution continues into the next case's code after a matching case, because there's no break to stop it. Adding break; at the end of each case's code prevents it; the modern switch expression (->) prevents it automatically."
+        },
+        {
+          "question": "What is the difference between a traditional switch statement and a modern switch expression?",
+          "answer": "A traditional switch uses case X: ... break; and can suffer from fallthrough if break is omitted. A switch expression (Java 14+) uses case X -> ..., directly produces a value that can be assigned to a variable, and has no fallthrough risk since each arm runs independently."
+        },
+        {
+          "question": "Can switch check a range of values, like age >= 18?",
+          "answer": "No. switch only compares for exact equality against a value (int, char, String, or enum). Range or comparison-based conditions require if/else if."
+        },
+        {
+          "question": "What does default do in a switch?",
+          "answer": "It provides a fallback block that runs only when none of the case values matched — similar to a final else in an if/else if chain."
+        }
+      ],
+      "thirtySecondAnswer": "switch offers a cleaner alternative to a long else if chain when comparing one value against several exact options. The traditional form uses case X: ... break;, and forgetting break causes fallthrough — execution continuing into the next case unintentionally. Modern Java (14+) switch expressions use case X -> ... instead, directly produce a value, support comma-separated case labels, and have no fallthrough risk since each arm is independent. switch only matches exact values though — range checks like age >= 18 still need if/else if."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Old switch: case + break, or it LEAKS into the next case (fallthrough). New switch (->): each arm is SEALED off — no leaking possible."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What happens if you forget break in a traditional switch statement?",
+        "How does the modern switch expression avoid fallthrough?",
+        "Can switch check age >= 18? Why or why not?",
+        "What does default do?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-switch-expression", "lang": "java", "filename": "Main.java", "code": "int day = 3;\n\nString dayName = switch (day) {\n    case 1 -> \"Monday\";\n    case 2 -> \"Tuesday\";\n    case 3 -> \"Wednesday\";\n    default -> \"Unknown day\";\n};\n\nSystem.out.println(dayName);", "output": "Wednesday" },
+    { "id": "java-switch-season", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int month = 4;\n\n        String season = switch (month) {\n            case 12, 1, 2 -> \"Winter\";\n            case 3, 4, 5 -> \"Spring\";\n            case 6, 7, 8 -> \"Summer\";\n            case 9, 10, 11 -> \"Autumn\";\n            default -> \"Invalid month\";\n        };\n\n        System.out.println(\"Season: \" + season);\n    }\n}", "output": "Season: Spring" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-switch-expression",
+      "reference": "int day = 3;\n\nString dayName = switch (day) {\n    case 1 -> \"Monday\";\n    case 2 -> \"Tuesday\";\n    case 3 -> \"Wednesday\";\n    default -> \"Unknown day\";\n};\n\nSystem.out.println(dayName);"
+    },
+    {
+      "id": "java-switch-season",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        int month = 4;\n\n        String season = switch (month) {\n            case 12, 1, 2 -> \"Winter\";\n            case 3, 4, 5 -> \"Spring\";\n            case 6, 7, 8 -> \"Summer\";\n            case 9, 10, 11 -> \"Autumn\";\n            default -> \"Invalid month\";\n        };\n\n        System.out.println(\"Season: \" + season);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-switch-expression", "java-switch-season"]
+  }
+}
