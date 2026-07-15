@@ -112,6 +112,9 @@
 .key-points-list { margin: 0; padding-left: 20px; }
 .key-points-list li { margin-bottom: 6px; font-size: 14.5px; }
 
+.dry-run-list { margin: 0; padding-left: 20px; font-family: 'JetBrains Mono', monospace; }
+.dry-run-list li { margin-bottom: 8px; font-size: 13.5px; line-height: 1.6; }
+
 .memory-trick {
   background: linear-gradient(135deg, var(--accent-soft), var(--bg-elevated));
   border: 1px solid var(--accent);

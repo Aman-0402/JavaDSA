@@ -213,6 +213,15 @@ function renderSection(section, lesson) {
           .join("")}</ul>`
       );
 
+    case "dryRun":
+      return el(
+        "div",
+        "card dry-run lesson-section",
+        `<div class="cm-title">${section.title || "Tracing It"}</div><ol class="dry-run-list">${section.steps
+          .map((s) => `<li>${s}</li>`)
+          .join("")}</ol>`
+      );
+
     case "memoryTrick":
       return el(
         "div",

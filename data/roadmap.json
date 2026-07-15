@@ -19,7 +19,8 @@
       "topics": [
         { "id": "java-conditional-statements", "title": "Conditional Statements (if / else if / else)", "lesson": "java-conditional-statements" },
         { "id": "java-switch-statement", "title": "switch Statement", "lesson": "java-switch-statement" },
-        { "id": "java-loops", "title": "Loops", "lesson": "java-loops" }
+        { "id": "java-loops", "title": "Loops", "lesson": "java-loops" },
+        { "id": "java-for-loop", "title": "for Loop", "lesson": "java-for-loop" }
       ]
     },
     { "id": "methods", "title": "Methods", "topics": [] },

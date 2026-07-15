@@ -1,0 +1,189 @@
+{
+  "id": "java-for-loop",
+  "moduleId": "control-flow",
+  "title": "for Loop",
+  "description": "The for loop's init; condition; update syntax, tracing an execution, and counting up or down.",
+  "objectives": [
+    "Write a for loop with initialization, condition, and update",
+    "Trace a for loop's execution step by step",
+    "Count upward and downward with a for loop"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. for Loop Syntax"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Loops overview, we said every loop needs initialization, a condition, and an update. The for loop puts all three directly in its header, in that exact order."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "for (int i = 1; i <= 5; i++) {\n    System.out.println(i);\n}",
+      "output": "1\n2\n3\n4\n5",
+      "retypePractice": true,
+      "retypeId": "java-for-count-up"
+    },
+    {
+      "type": "table",
+      "title": "The three parts of for (init; condition; update)",
+      "headers": ["Part", "Here", "Meaning"],
+      "rows": [
+        ["Initialization", "int i = 1", "Runs once, before the loop starts"],
+        ["Condition", "i <= 5", "Checked before every iteration; loop continues only while true"],
+        ["Update", "i++", "Runs after every iteration's body finishes"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "2. Tracing It Step by Step"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing for (int i = 1; i <= 5; i++)",
+      "steps": [
+        "i = 1 (initialization runs once)",
+        "Check: 1 <= 5? true → print 1 → update: i becomes 2",
+        "Check: 2 <= 5? true → print 2 → update: i becomes 3",
+        "Check: 3 <= 5? true → print 3 → update: i becomes 4",
+        "Check: 4 <= 5? true → print 4 → update: i becomes 5",
+        "Check: 5 <= 5? true → print 5 → update: i becomes 6",
+        "Check: 6 <= 5? false → loop stops"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "The condition is checked BEFORE each iteration, including the very first one. If the condition starts out false (e.g. int i = 10; i <= 5), the loop body never runs at all — not even once."
+    },
+    {
+      "type": "heading",
+      "text": "3. Counting Downward"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 5; i >= 1; i--) {\n    System.out.println(i);\n}\n// 5 4 3 2 1"
+    },
+    {
+      "type": "warning",
+      "text": "The update must move i toward making the condition false. Counting down needs i-- with a >= condition; using i++ here (going up) while checking i >= 1 would never become false, causing an infinite loop."
+    },
+    {
+      "type": "heading",
+      "text": "4. The Loop Variable's Scope"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 1; i <= 5; i++) {\n    System.out.println(i);\n}\n// System.out.println(i); // ERROR: i doesn't exist here"
+    },
+    {
+      "type": "note",
+      "text": "A variable declared inside the for's parentheses (int i = ...) only exists inside the loop — this is that scope concept previewed back in Variables, now shown concretely. Trying to use i after the loop's closing } fails to compile."
+    },
+    {
+      "type": "heading",
+      "text": "5. Stepping by More Than One"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 0; i <= 10; i += 2) {\n    System.out.println(i);\n}\n// 0 2 4 6 8 10"
+    },
+    {
+      "type": "paragraph",
+      "text": "The update step doesn't have to be i++ or i--. Any expression that changes i works — i += 2 skips by twos, useful for even numbers, or any fixed step size."
+    },
+    {
+      "type": "heading",
+      "text": "6. Summing Numbers with a for Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int sum = 0;\n\n        for (int i = 1; i <= 5; i++) {\n            sum = sum + i;\n        }\n\n        System.out.println(\"Sum: \" + sum);\n    }\n}",
+      "output": "Sum: 15",
+      "retypePractice": true,
+      "retypeId": "java-for-sum"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "sum starts at 0, before the loop",
+        "i = 1: sum = 0 + 1 = 1",
+        "i = 2: sum = 1 + 2 = 3",
+        "i = 3: sum = 3 + 3 = 6",
+        "i = 4: sum = 6 + 4 = 10",
+        "i = 5: sum = 10 + 5 = 15",
+        "i = 6: condition 6 <= 5 is false, loop ends, sum is 15"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using i++ with a decreasing target condition (or i-- with an increasing one), causing the condition to never become false — an infinite loop.",
+        "Off-by-one errors — using i < 5 when you meant i <= 5 (or vice versa), running one iteration too few or too many.",
+        "Trying to use the loop variable (i) after the loop's closing brace — it only exists inside the loop.",
+        "Forgetting to declare sum = 0 (or similar accumulator) before the loop starts, instead of inside it."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What are the three parts of a for loop's header, and in what order do they run?",
+          "answer": "Initialization runs once before the loop starts. Then the loop repeats: check the condition — if true, run the body, then run the update — until the condition becomes false."
+        },
+        {
+          "question": "If the condition is false from the start, how many times does the loop body run?",
+          "answer": "Zero times. The condition is checked before every iteration, including the first, so a false starting condition skips the body entirely."
+        },
+        {
+          "question": "What causes an infinite for loop?",
+          "answer": "An update step that never makes the condition false — for example, using i++ while the condition requires i to decrease, or an update that doesn't actually affect the condition's variable."
+        },
+        {
+          "question": "Can the loop variable declared in a for header be used after the loop ends?",
+          "answer": "No. A variable declared in the for header's initialization is scoped to the loop and does not exist once the loop's closing brace is reached."
+        }
+      ],
+      "thirtySecondAnswer": "A for loop bundles initialization, a condition, and an update into one header: for (init; condition; update). Initialization runs once; then Java checks the condition before every iteration — if true, the body runs, then the update runs, and the cycle repeats until the condition is false. This makes for ideal when you know roughly how many times to repeat. Common bugs include off-by-one errors in the condition and forgetting that the update must actually move the loop toward the condition becoming false, or it becomes infinite."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "for (Init; Check; Change) — INITIALIZE once, CHECK before every lap, CHANGE after every lap. Stop when CHECK fails."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "In for (int i = 1; i <= 5; i++), when is the condition checked?",
+        "How many times does the body run if the condition is false from the start?",
+        "How would you loop from 10 down to 1?",
+        "Why can't you use the loop's i variable after the loop ends?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-for-count-up", "lang": "java", "filename": "Main.java", "code": "for (int i = 1; i <= 5; i++) {\n    System.out.println(i);\n}", "output": "1\n2\n3\n4\n5" },
+    { "id": "java-for-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int sum = 0;\n\n        for (int i = 1; i <= 5; i++) {\n            sum = sum + i;\n        }\n\n        System.out.println(\"Sum: \" + sum);\n    }\n}", "output": "Sum: 15" }
+  ],
+  "retypePractice": [
+    { "id": "java-for-count-up", "reference": "for (int i = 1; i <= 5; i++) {\n    System.out.println(i);\n}" },
+    { "id": "java-for-sum", "reference": "public class Main {\n    public static void main(String[] args) {\n        int sum = 0;\n\n        for (int i = 1; i <= 5; i++) {\n            sum = sum + i;\n        }\n\n        System.out.println(\"Sum: \" + sum);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-for-count-up", "java-for-sum"]
+  }
+}
