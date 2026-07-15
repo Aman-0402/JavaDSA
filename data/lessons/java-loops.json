@@ -1,0 +1,130 @@
+{
+  "id": "java-loops",
+  "moduleId": "control-flow",
+  "title": "Loops",
+  "description": "What a loop is and why we need repetition, before diving into for, while, do-while, and enhanced for individually.",
+  "objectives": [
+    "Understand why repetition needs a loop instead of copy-pasted code",
+    "Identify the three parts every loop needs: init, condition, update",
+    "Preview the four loop types Java offers"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Do We Need Loops?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we want to print numbers 1 through 5. Without loops, we'd have to write System.out.println for each number separately."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "System.out.println(1);\nSystem.out.println(2);\nSystem.out.println(3);\nSystem.out.println(4);\nSystem.out.println(5);"
+    },
+    {
+      "type": "warning",
+      "text": "This works for 5 numbers. What about 1,000 numbers, or a number decided at runtime by the user? Copy-pasting isn't a real solution."
+    },
+    {
+      "type": "definition",
+      "term": "Loop",
+      "text": "A control-flow structure that repeats a block of code as long as a condition remains true, avoiding the need to duplicate code manually."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Three Parts of a Loop"
+    },
+    {
+      "type": "paragraph",
+      "text": "Almost every loop needs three ingredients, even if they're written in different places depending on the loop type."
+    },
+    {
+      "type": "keyPoints",
+      "title": "The three ingredients",
+      "points": [
+        "Initialization — set up a starting point (e.g. int i = 1;)",
+        "Condition — check whether to keep looping (e.g. i <= 5)",
+        "Update — change something each time through, so the loop eventually stops (e.g. i++)"
+      ]
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Staircase analogy",
+      "text": "Climbing stairs: start at step 1 (initialization), keep climbing while you haven't reached the top (condition), and move up one step each time (update). Miss any of these three and you either never start, never stop, or never move."
+    },
+    {
+      "type": "warning",
+      "text": "Forgetting the update step (or writing one that never makes the condition false) causes an infinite loop — a loop that never stops, usually freezing or crashing the program. We'll see concrete examples of this in the upcoming for and while lessons."
+    },
+    {
+      "type": "heading",
+      "text": "3. Java's Four Loop Types"
+    },
+    {
+      "type": "table",
+      "headers": ["Loop", "Best for"],
+      "rows": [
+        ["for", "When you know how many times to repeat in advance"],
+        ["enhanced for (for-each)", "Looping over every element of a collection or array (arrays covered soon)"],
+        ["while", "When you don't know the exact count, but you have a condition to check first"],
+        ["do-while", "Like while, but the body always runs at least once before checking the condition"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "This lesson is only a preview table — each loop type gets its own full lesson right after this one, with real code, tracing, and common mistakes."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the update step, causing an infinite loop that never terminates.",
+        "Writing a condition that's false from the very start, so the loop body never runs even once.",
+        "Copy-pasting repeated code instead of recognizing a pattern a loop could express in a few lines."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why do we use loops instead of writing repeated code?",
+          "answer": "Loops avoid duplicating code for repetitive tasks, work correctly regardless of how many repetitions are needed (even a number decided at runtime), and are easier to read and maintain than copy-pasted statements."
+        },
+        {
+          "question": "What are the three essential parts of a loop?",
+          "answer": "Initialization (set up a starting point), a condition (checked before or after each repetition, deciding whether to continue), and an update (a change each time through, so the loop eventually stops)."
+        },
+        {
+          "question": "What causes an infinite loop?",
+          "answer": "A loop whose condition never becomes false — typically because the update step is missing, incorrect, or doesn't actually move the loop toward the condition failing."
+        }
+      ],
+      "thirtySecondAnswer": "A loop repeats a block of code while a condition holds true, so we don't have to manually duplicate statements for repetitive tasks. Every loop needs initialization (a starting point), a condition (checked to decide whether to keep going), and an update (a change each iteration that eventually makes the condition false). Java offers four loop types — for, enhanced for, while, and do-while — each suited to slightly different situations, covered individually in the lessons that follow. Forgetting the update step is the classic cause of an infinite loop."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Every loop needs I.C.U. — Initialize, Condition, Update. Miss the U and you might never get out."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are the three essential parts of any loop?",
+        "What typically causes an infinite loop?",
+        "Name Java's four loop types."
+      ]
+    }
+  ],
+  "codeExamples": [],
+  "retypePractice": [],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": []
+  }
+}
