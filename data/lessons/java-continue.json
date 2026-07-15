@@ -1,0 +1,162 @@
+{
+  "id": "java-continue",
+  "moduleId": "control-flow",
+  "title": "continue",
+  "description": "Skipping the rest of the current iteration with continue, and how it differs from break.",
+  "objectives": [
+    "Use continue to skip the remainder of the current loop iteration",
+    "Clearly distinguish continue from break",
+    "Recognize continue's effect inside for vs while loops"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Skipping, Not Stopping"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the break lesson, we exited a loop entirely. continue is different: it skips only the REST of the current iteration and moves on to the next one — the loop itself keeps going."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "for (int i = 1; i <= 5; i++) {\n    if (i == 3) {\n        continue;\n    }\n    System.out.println(i);\n}",
+      "output": "1\n2\n4\n5",
+      "retypePractice": true,
+      "retypeId": "java-continue-skip"
+    },
+    {
+      "type": "definition",
+      "term": "continue",
+      "text": "A statement that immediately skips the rest of the current loop iteration and jumps to the next one, without exiting the loop."
+    },
+    {
+      "type": "table",
+      "title": "break vs continue",
+      "headers": ["", "break", "continue"],
+      "rows": [
+        ["Effect", "Exits the loop entirely", "Skips only the current iteration"],
+        ["Remaining iterations", "None run", "Still run normally"],
+        ["Common use", "Stop once you've found what you need", "Skip values that don't apply, keep processing the rest"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "3 is missing from the output — not because the loop stopped, but because that one iteration's remaining code (the println) was skipped. The loop then moved on and printed 4 and 5 normally."
+    },
+    {
+      "type": "heading",
+      "text": "2. A Realistic Use Case: Filtering Values"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8};\nint sumOfEvens = 0;\n\nfor (int num : numbers) {\n    if (num % 2 != 0) {\n        continue;\n    }\n    sumOfEvens += num;\n}\n\nSystem.out.println(\"Sum of evens: \" + sumOfEvens);",
+      "output": "Sum of evens: 20",
+      "retypePractice": true,
+      "retypeId": "java-continue-sum-evens"
+    },
+    {
+      "type": "note",
+      "text": "Whenever num is odd, continue skips the sumOfEvens += num; line for that value and moves straight to the next num — only even numbers (2, 4, 6, 8) ever reach the addition, giving 20."
+    },
+    {
+      "type": "heading",
+      "text": "3. continue Inside a while Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int i = 0;\n\nwhile (i < 5) {\n    i++;\n    if (i == 3) {\n        continue;\n    }\n    System.out.println(i);\n}\n// 1 2 4 5"
+    },
+    {
+      "type": "warning",
+      "text": "In a while loop, the update step (i++ here) must run BEFORE the continue check, or continue will skip the update every time it triggers — causing an infinite loop, since i would never reach the value that eventually stops the loop. This is a subtle but important difference from for, where the update runs automatically in the header regardless of continue."
+    },
+    {
+      "type": "heading",
+      "text": "4. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int count = 0;\n\n        for (int i = 1; i <= 20; i++) {\n            if (i % 3 != 0) {\n                continue;\n            }\n            count++;\n        }\n\n        System.out.println(\"Multiples of 3 from 1 to 20: \" + count);\n    }\n}",
+      "output": "Multiples of 3 from 1 to 20: 6",
+      "retypePractice": true,
+      "retypeId": "java-continue-multiples"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "The multiples of 3 from 1 to 20 are: 3, 6, 9, 12, 15, 18 — that's 6 values",
+        "For every other i, continue skips count++ and moves to the next i",
+        "count only increases on those 6 matching iterations, ending at 6"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing continue with break — continue skips to the next iteration, break exits the loop entirely.",
+        "Placing continue before the update step in a while loop, causing the update to be skipped and potentially creating an infinite loop.",
+        "Using continue when a simple if/else restructuring of the same block would be just as clear, adding unnecessary indirection.",
+        "Expecting code after continue in the same iteration to still run — it never does; continue jumps immediately to the next iteration check."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does continue do inside a loop?",
+          "answer": "It immediately skips the remaining code in the current iteration and moves on to the loop's next iteration — the loop itself keeps running, unlike break which exits it entirely."
+        },
+        {
+          "question": "What's the key difference between break and continue?",
+          "answer": "break exits the loop completely, so no further iterations run. continue only skips the rest of the current iteration; the loop continues normally afterward."
+        },
+        {
+          "question": "Why can continue cause an infinite loop inside a while loop specifically?",
+          "answer": "If the update step (like i++) is written after the continue check, continue skips it whenever it triggers, so the loop's controlling variable never changes on those iterations — potentially preventing the condition from ever becoming false."
+        }
+      ],
+      "thirtySecondAnswer": "continue skips the remaining code in the current loop iteration and jumps straight to the next one, while the loop itself keeps running — this is the key difference from break, which exits the loop entirely. It's commonly used to filter out values that don't apply, like skipping odd numbers while summing evens. In a while loop specifically, continue is dangerous if the update step is written after the continue check, since it would then be skipped on every triggering iteration, potentially causing an infinite loop; a for loop's built-in update step avoids this risk."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "break = STOP the whole loop. continue = SKIP just this lap, keep running. Same family, very different jobs — don't mix them up."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between break and continue?",
+        "In for (int i=1; i<=5; i++) { if (i==3) continue; System.out.println(i); }, which numbers print?",
+        "Why must a while loop's update step come before its continue check?",
+        "Give a real use case where continue is the natural choice."
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-continue-skip", "lang": "java", "filename": "Main.java", "code": "for (int i = 1; i <= 5; i++) {\n    if (i == 3) {\n        continue;\n    }\n    System.out.println(i);\n}", "output": "1\n2\n4\n5" },
+    { "id": "java-continue-sum-evens", "lang": "java", "filename": "Main.java", "code": "int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8};\nint sumOfEvens = 0;\n\nfor (int num : numbers) {\n    if (num % 2 != 0) {\n        continue;\n    }\n    sumOfEvens += num;\n}\n\nSystem.out.println(\"Sum of evens: \" + sumOfEvens);", "output": "Sum of evens: 20" },
+    { "id": "java-continue-multiples", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int count = 0;\n\n        for (int i = 1; i <= 20; i++) {\n            if (i % 3 != 0) {\n                continue;\n            }\n            count++;\n        }\n\n        System.out.println(\"Multiples of 3 from 1 to 20: \" + count);\n    }\n}", "output": "Multiples of 3 from 1 to 20: 6" }
+  ],
+  "retypePractice": [
+    { "id": "java-continue-skip", "reference": "for (int i = 1; i <= 5; i++) {\n    if (i == 3) {\n        continue;\n    }\n    System.out.println(i);\n}" },
+    { "id": "java-continue-sum-evens", "reference": "int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8};\nint sumOfEvens = 0;\n\nfor (int num : numbers) {\n    if (num % 2 != 0) {\n        continue;\n    }\n    sumOfEvens += num;\n}\n\nSystem.out.println(\"Sum of evens: \" + sumOfEvens);" },
+    { "id": "java-continue-multiples", "reference": "public class Main {\n    public static void main(String[] args) {\n        int count = 0;\n\n        for (int i = 1; i <= 20; i++) {\n            if (i % 3 != 0) {\n                continue;\n            }\n            count++;\n        }\n\n        System.out.println(\"Multiples of 3 from 1 to 20: \" + count);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-continue-skip", "java-continue-sum-evens", "java-continue-multiples"]
+  }
+}
