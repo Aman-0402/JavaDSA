@@ -13,7 +13,13 @@
         { "id": "java-comments", "title": "Comments", "lesson": "java-comments" }
       ]
     },
-    { "id": "control-flow", "title": "Control Flow", "topics": [] },
+    {
+      "id": "control-flow",
+      "title": "Control Flow",
+      "topics": [
+        { "id": "java-conditional-statements", "title": "Conditional Statements (if / else if / else)", "lesson": "java-conditional-statements" }
+      ]
+    },
     { "id": "methods", "title": "Methods", "topics": [] },
     { "id": "arrays-strings", "title": "Arrays & Strings", "topics": [] },
     { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },

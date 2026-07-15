@@ -1,0 +1,191 @@
+{
+  "id": "java-conditional-statements",
+  "moduleId": "control-flow",
+  "title": "Conditional Statements (if / else if / else)",
+  "description": "Making decisions in code with if, else if, and else, building on the boolean and relational/logical operators from Java Fundamentals.",
+  "objectives": [
+    "Use if to run code only when a condition is true",
+    "Use else to run alternative code when the condition is false",
+    "Chain multiple conditions with else if",
+    "Trace which branch of an if/else if/else chain executes"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Do We Need Decisions?"
+    },
+    {
+      "type": "paragraph",
+      "text": "So far, every program we've written runs every line, top to bottom, no matter what. Real programs need to make decisions — like showing a discount only if a purchase is over a certain amount. In the Operators lesson, we built boolean expressions like age >= 18 without a way to act on them. Today we act on them."
+    },
+    {
+      "type": "definition",
+      "term": "if statement",
+      "text": "A statement that runs a block of code only when a given boolean condition evaluates to true."
+    },
+    {
+      "type": "heading",
+      "text": "2. The if Statement"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age = 20;\n\nif (age >= 18) {\n    System.out.println(\"You can vote.\");\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "The condition (age >= 18) is a boolean expression, exactly like the ones from the Operators lesson. If it evaluates to true, the code inside { } runs. If it's false, that block is skipped entirely."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Umbrella analogy",
+      "text": "\"IF it's raining, take an umbrella.\" If it's not raining, you simply don't take one — nothing else happens. That's exactly how a plain if statement without else behaves."
+    },
+    {
+      "type": "heading",
+      "text": "3. The else Statement"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age = 15;\n\nif (age >= 18) {\n    System.out.println(\"You can vote.\");\n} else {\n    System.out.println(\"You cannot vote yet.\");\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "else provides a block that runs only when the if condition was false. Exactly one of the two blocks runs — never both, never neither."
+    },
+    {
+      "type": "heading",
+      "text": "4. The else if Statement"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sometimes there are more than two possible outcomes. else if lets you chain additional conditions."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int marks = 75;\n\nif (marks >= 90) {\n    System.out.println(\"Grade: A\");\n} else if (marks >= 75) {\n    System.out.println(\"Grade: B\");\n} else if (marks >= 60) {\n    System.out.println(\"Grade: C\");\n} else {\n    System.out.println(\"Grade: F\");\n}"
+    },
+    {
+      "type": "warning",
+      "text": "Java checks conditions top to bottom and stops at the FIRST one that's true. Here, marks = 75 satisfies both marks >= 75 and marks >= 60, but only \"Grade: B\" prints, because Java never even looks at the later else if once an earlier branch matched."
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing the grade example",
+      "points": [
+        "marks >= 90? 75 >= 90 is false — skip",
+        "marks >= 75? 75 >= 75 is true — run this block, print \"Grade: B\", skip everything else in the chain",
+        "The final else never runs, because an earlier branch already matched"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Nested if Statements"
+    },
+    {
+      "type": "paragraph",
+      "text": "An if statement can contain another if statement inside its block — this is called nesting."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int age = 20;\nboolean hasId = true;\n\nif (age >= 18) {\n    if (hasId) {\n        System.out.println(\"Entry allowed.\");\n    } else {\n        System.out.println(\"ID required.\");\n    }\n} else {\n    System.out.println(\"Too young to enter.\");\n}"
+    },
+    {
+      "type": "note",
+      "text": "This nested version is logically equivalent to if (age >= 18 && hasId) using the && logical operator from the Operators lesson — but nesting can be clearer when each condition needs its own distinct else message, like here."
+    },
+    {
+      "type": "heading",
+      "text": "6. Curly Braces Are Optional for Single Statements"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "if (age >= 18)\n    System.out.println(\"You can vote.\");"
+    },
+    {
+      "type": "warning",
+      "text": "If an if or else has only ONE statement, the { } are technically optional. This is strongly discouraged — it's easy to accidentally think a second line is part of the if block when it isn't, causing confusing bugs. Always use { } in this course, even for one-line blocks."
+    },
+    {
+      "type": "heading",
+      "text": "7. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int marks = 82;\n\n        if (marks >= 90) {\n            System.out.println(\"Grade: A\");\n        } else if (marks >= 75) {\n            System.out.println(\"Grade: B\");\n        } else if (marks >= 60) {\n            System.out.println(\"Grade: C\");\n        } else {\n            System.out.println(\"Grade: F\");\n        }\n    }\n}",
+      "output": "Grade: B",
+      "retypePractice": true,
+      "retypeId": "java-conditional-grades"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using = instead of == inside a condition — if (age = 18) is an assignment, not a comparison, and generally won't even compile for a non-boolean variable in Java.",
+        "Ordering else if conditions so a broader one comes before a narrower one — e.g. checking marks >= 60 before marks >= 90 means the >= 90 branch can never be reached.",
+        "Assuming multiple else if blocks can all run — only the first one whose condition is true runs; the rest are skipped automatically.",
+        "Omitting { } on multi-line blocks by accident, causing only the first line to actually belong to the if."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the purpose of an if statement?",
+          "answer": "It runs a block of code only when a given boolean condition evaluates to true, allowing a program to make decisions instead of always running the same instructions."
+        },
+        {
+          "question": "In an if / else if / else chain, how many blocks actually execute?",
+          "answer": "Exactly one — Java evaluates the conditions top to bottom and executes the block belonging to the first true condition, skipping the rest of the chain entirely, including the final else."
+        },
+        {
+          "question": "Why does condition order matter in an else if chain?",
+          "answer": "Because Java stops at the first true condition. If a broader condition (like marks >= 60) is placed before a narrower one (like marks >= 90), the narrower branch may never be reached even when it should logically apply."
+        },
+        {
+          "question": "What is a nested if statement?",
+          "answer": "An if statement placed inside the block of another if (or else) statement, used when a decision depends on more than one condition evaluated in sequence."
+        }
+      ],
+      "thirtySecondAnswer": "if, else if, and else let a Java program make decisions instead of always executing the same code. An if runs its block only when its boolean condition is true; else provides a fallback block for when it's false; else if chains additional conditions, checked top to bottom, with only the first true branch's block executing. Conditions can be nested inside each other for multi-factor decisions, and curly braces should always be used even for single-statement blocks to avoid ambiguity."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "if/else if/else is a ladder — Java climbs down rung by rung and stops at the FIRST true rung. Once it stops, it never checks the rungs below."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "In an if/else if/else chain, how many blocks run at most?",
+        "Why does condition order matter in an else if chain?",
+        "What happens if you omit { } around a single-statement if block?",
+        "What's a nested if statement?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-conditional-grades", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int marks = 82;\n\n        if (marks >= 90) {\n            System.out.println(\"Grade: A\");\n        } else if (marks >= 75) {\n            System.out.println(\"Grade: B\");\n        } else if (marks >= 60) {\n            System.out.println(\"Grade: C\");\n        } else {\n            System.out.println(\"Grade: F\");\n        }\n    }\n}", "output": "Grade: B" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-conditional-grades",
+      "reference": "public class Main {\n    public static void main(String[] args) {\n        int marks = 82;\n\n        if (marks >= 90) {\n            System.out.println(\"Grade: A\");\n        } else if (marks >= 75) {\n            System.out.println(\"Grade: B\");\n        } else if (marks >= 60) {\n            System.out.println(\"Grade: C\");\n        } else {\n            System.out.println(\"Grade: F\");\n        }\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-conditional-grades"]
+  }
+}
