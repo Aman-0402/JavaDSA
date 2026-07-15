@@ -1,0 +1,190 @@
+{
+  "id": "java-encapsulation-access-modifiers",
+  "moduleId": "oop",
+  "title": "Encapsulation and Access Modifiers",
+  "description": "Hiding a class's internal fields behind private and controlled getter/setter methods, plus the four access modifier levels.",
+  "objectives": [
+    "Understand encapsulation as bundling data with controlled access",
+    "Use private fields with public getter and setter methods",
+    "Know all four Java access modifiers and when each applies"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem With Open Fields"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Classes and Objects, we wrote s1.age = 21; directly. But nothing stops someone from also writing s1.age = -50;, which makes no sense for a person's age. Encapsulation is how we prevent this."
+    },
+    {
+      "type": "definition",
+      "term": "Encapsulation",
+      "text": "Bundling an object's data (fields) together with the methods that operate on it, while restricting direct outside access to that data — typically by making fields private and exposing controlled access through public methods."
+    },
+    {
+      "type": "heading",
+      "text": "2. Making Fields private"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    private String name;\n    private int age;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "Once name and age are private, code OUTSIDE this class (like Main) can no longer write s1.name or s1.age at all — that line would fail to compile. We need another way in: getters and setters."
+    },
+    {
+      "type": "heading",
+      "text": "3. Getters and Setters"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    private String name;\n    private int age;\n\n    public String getName() {\n        return name;\n    }\n\n    public void setName(String newName) {\n        name = newName;\n    }\n\n    public int getAge() {\n        return age;\n    }\n\n    public void setAge(int newAge) {\n        if (newAge >= 0) {\n            age = newAge;\n        }\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.setName(\"Aman\");\n        s1.setAge(21);\n\n        System.out.println(s1.getName() + \" is \" + s1.getAge());\n\n        s1.setAge(-5); // rejected -- age stays 21\n        System.out.println(s1.getAge());\n    }\n}",
+      "output": "Aman is 21\n21",
+      "retypePractice": true,
+      "retypeId": "java-encapsulation-getters-setters"
+    },
+    {
+      "type": "definition",
+      "term": "Getter",
+      "text": "A public method (conventionally named getFieldName) that returns the current value of a private field."
+    },
+    {
+      "type": "definition",
+      "term": "Setter",
+      "text": "A public method (conventionally named setFieldName) that updates a private field's value, optionally validating the new value first."
+    },
+    {
+      "type": "note",
+      "text": "setAge(-5) silently does nothing here, since -5 fails the newAge >= 0 check — this is the entire benefit of encapsulation: setAge decides what counts as a valid age, something a plain public field could never enforce."
+    },
+    {
+      "type": "heading",
+      "text": "4. Java's Four Access Modifiers"
+    },
+    {
+      "type": "table",
+      "title": "Access modifiers, from most to least restrictive",
+      "headers": ["Modifier", "Visible from"],
+      "rows": [
+        ["private", "Only inside the same class"],
+        ["(no modifier / package-private)", "Same class and any class in the same package (packages covered soon)"],
+        ["protected", "Same package, plus subclasses in other packages (subclasses covered in Inheritance)"],
+        ["public", "Anywhere — any class, any package"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Writing no modifier at all is itself a real, distinct access level (package-private) — it is not automatically public. We fully use public and private in this course for now; protected and package-private become relevant once Inheritance and Packages are covered."
+    },
+    {
+      "type": "heading",
+      "text": "5. Why Bother With Encapsulation?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Benefits",
+      "points": [
+        "Validation — a setter can reject invalid values (like a negative age) that a plain public field could never stop",
+        "Flexibility — the internal representation can change later without breaking outside code, as long as the getter/setter behavior stays the same",
+        "Read-only fields — provide only a getter, no setter, to make a field visible but not directly changeable from outside"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class BankAccount {\n        private double balance;\n\n        public double getBalance() {\n            return balance;\n        }\n\n        public void deposit(double amount) {\n            if (amount > 0) {\n                balance += amount;\n            }\n        }\n\n        public void withdraw(double amount) {\n            if (amount > 0 && amount <= balance) {\n                balance -= amount;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        BankAccount account = new BankAccount();\n        account.deposit(100);\n        account.withdraw(30);\n        account.withdraw(1000); // rejected -- not enough balance\n\n        System.out.println(\"Balance: \" + account.getBalance());\n    }\n}",
+      "output": "Balance: 70.0",
+      "retypePractice": true,
+      "retypeId": "java-encapsulation-bank-account"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this design matters",
+      "points": [
+        "balance is private -- no outside code can set it directly to an arbitrary value",
+        "deposit() and withdraw() are the only ways to change it, and both validate the amount",
+        "withdraw(1000) is silently rejected since it exceeds the current balance -- an invalid state is prevented entirely"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Making fields private but forgetting to write any getters/setters at all, making the field completely inaccessible from outside.",
+        "Writing a setter with no validation logic, defeating the entire purpose of encapsulation -- it becomes no safer than a public field.",
+        "Assuming no access modifier means public -- it actually means package-private, a distinct, more restrictive level.",
+        "Making everything public out of convenience, skipping encapsulation entirely, even for fields that genuinely need validation or protection."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is encapsulation?",
+          "answer": "Bundling an object's data together with the methods that operate on it, while restricting direct outside access to that data -- typically by making fields private and exposing controlled access through public getter and setter methods."
+        },
+        {
+          "question": "What are the four access modifiers in Java, from most to least restrictive?",
+          "answer": "private (same class only), package-private / no modifier (same package), protected (same package plus subclasses elsewhere), and public (accessible from anywhere)."
+        },
+        {
+          "question": "Why use a setter instead of making a field public?",
+          "answer": "A setter can validate incoming values before applying them, rejecting invalid states (like a negative age or an over-limit withdrawal) that a plain public field could never prevent."
+        },
+        {
+          "question": "How would you make a field readable from outside a class but not directly modifiable?",
+          "answer": "Make the field private and provide only a public getter for it, with no corresponding setter."
+        }
+      ],
+      "thirtySecondAnswer": "Encapsulation bundles an object's data with the methods that operate on it, hiding fields as private and exposing controlled access through public getter and setter methods. This lets a setter validate incoming values -- rejecting a negative age or an over-limit withdrawal -- something a plain public field could never enforce. Java has four access levels, from most to least restrictive: private (same class), package-private/no modifier (same package), protected (same package plus subclasses), and public (everywhere). Providing only a getter with no setter creates an effectively read-only field from the outside."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Encapsulation = a locked box (private field) with a controlled slot (public getter/setter). The slot decides what's allowed in or out -- nobody reaches directly into the box."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is encapsulation, in your own words?",
+        "List Java's four access modifiers from most to least restrictive.",
+        "Why is a setter better than a public field when validation matters?",
+        "How do you make a field readable but not writable from outside its class?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-encapsulation-getters-setters", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.setName(\"Aman\");\n        s1.setAge(21);\n\n        System.out.println(s1.getName() + \" is \" + s1.getAge());\n\n        s1.setAge(-5); // rejected -- age stays 21\n        System.out.println(s1.getAge());\n    }\n}", "output": "Aman is 21\n21" },
+    { "id": "java-encapsulation-bank-account", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class BankAccount {\n        private double balance;\n\n        public double getBalance() {\n            return balance;\n        }\n\n        public void deposit(double amount) {\n            if (amount > 0) {\n                balance += amount;\n            }\n        }\n\n        public void withdraw(double amount) {\n            if (amount > 0 && amount <= balance) {\n                balance -= amount;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        BankAccount account = new BankAccount();\n        account.deposit(100);\n        account.withdraw(30);\n        account.withdraw(1000); // rejected -- not enough balance\n\n        System.out.println(\"Balance: \" + account.getBalance());\n    }\n}", "output": "Balance: 70.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-encapsulation-getters-setters", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        s1.setName(\"Aman\");\n        s1.setAge(21);\n\n        System.out.println(s1.getName() + \" is \" + s1.getAge());\n\n        s1.setAge(-5); // rejected -- age stays 21\n        System.out.println(s1.getAge());\n    }\n}" },
+    { "id": "java-encapsulation-bank-account", "reference": "public class Main {\n    static class BankAccount {\n        private double balance;\n\n        public double getBalance() {\n            return balance;\n        }\n\n        public void deposit(double amount) {\n            if (amount > 0) {\n                balance += amount;\n            }\n        }\n\n        public void withdraw(double amount) {\n            if (amount > 0 && amount <= balance) {\n                balance -= amount;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        BankAccount account = new BankAccount();\n        account.deposit(100);\n        account.withdraw(30);\n        account.withdraw(1000); // rejected -- not enough balance\n\n        System.out.println(\"Balance: \" + account.getBalance());\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-encapsulation-getters-setters", "java-encapsulation-bank-account"]
+  }
+}
