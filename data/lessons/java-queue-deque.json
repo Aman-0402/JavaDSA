@@ -1,0 +1,193 @@
+{
+  "id": "java-queue-deque",
+  "moduleId": "collections-framework",
+  "title": "Queue and Deque: ArrayDeque, PriorityQueue",
+  "description": "Processing elements in a specific order -- FIFO with Queue, both ends with Deque, and priority order with PriorityQueue.",
+  "objectives": [
+    "Understand Queue's first-in-first-out (FIFO) behavior",
+    "Use ArrayDeque for double-ended operations, including as a stack",
+    "Understand PriorityQueue's always-smallest-first ordering"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Queue: First In, First Out"
+    },
+    {
+      "type": "paragraph",
+      "text": "A List (List: ArrayList vs LinkedList) lets you access any position freely. A Queue is more restrictive on purpose: elements are added at one end and removed from the other, in the exact order they arrived -- like a real-world line at a checkout counter."
+    },
+    {
+      "type": "definition",
+      "term": "Queue",
+      "text": "A collection that processes elements in first-in-first-out (FIFO) order -- the first element added is the first one removed."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.LinkedList;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<String> queue = new LinkedList<>();\n        queue.offer(\"Aman\");\n        queue.offer(\"Priya\");\n        queue.offer(\"Rahul\");\n\n        System.out.println(queue.poll());\n        System.out.println(queue.poll());\n        System.out.println(queue);\n    }\n}",
+      "output": "Aman\nPriya\n[Rahul]",
+      "retypePractice": true,
+      "retypeId": "java-queue-basic"
+    },
+    {
+      "type": "table",
+      "title": "Common Queue methods",
+      "headers": ["Method", "Purpose"],
+      "rows": [
+        ["offer(x)", "Adds x to the back of the queue"],
+        ["poll()", "Removes and returns the element at the front"],
+        ["peek()", "Returns the front element WITHOUT removing it"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Queue is declared here using LinkedList as the concrete implementation -- LinkedList (List: ArrayList vs LinkedList) implements both List and Queue/Deque, which is why it fits here too."
+    },
+    {
+      "type": "heading",
+      "text": "2. Deque: Double-Ended Queue"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> deque = new ArrayDeque<>();\n        deque.addFirst(1);\n        deque.addLast(2);\n        deque.addFirst(0);\n\n        System.out.println(deque);\n        System.out.println(deque.removeFirst());\n        System.out.println(deque.removeLast());\n    }\n}",
+      "output": "[0, 1, 2]\n0\n2",
+      "retypePractice": true,
+      "retypeId": "java-deque-basic"
+    },
+    {
+      "type": "definition",
+      "term": "Deque",
+      "text": "A double-ended queue supporting insertion and removal at BOTH ends efficiently -- ArrayDeque is the standard general-purpose implementation."
+    },
+    {
+      "type": "heading",
+      "text": "3. Using Deque as a Stack"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(1);\n        stack.push(2);\n        stack.push(3);\n\n        System.out.println(stack.pop());\n        System.out.println(stack.pop());\n        System.out.println(stack);\n    }\n}",
+      "output": "3\n2\n[1]",
+      "retypePractice": true,
+      "retypeId": "java-deque-as-stack"
+    },
+    {
+      "type": "warning",
+      "text": "push()/pop() give Deque last-in-first-out (LIFO) behavior -- the OPPOSITE order from Queue's offer()/poll(). Java's official recommendation is to use ArrayDeque (via Deque) instead of the older java.util.Stack class for stack behavior -- we only preview this here, since Stacks get their own full module (Stacks & Queues) soon."
+    },
+    {
+      "type": "heading",
+      "text": "4. PriorityQueue: Always Smallest First"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.PriorityQueue;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<Integer> pq = new PriorityQueue<>();\n        pq.offer(30);\n        pq.offer(10);\n        pq.offer(20);\n\n        System.out.println(pq.poll());\n        System.out.println(pq.poll());\n        System.out.println(pq.poll());\n    }\n}",
+      "output": "10\n20\n30",
+      "retypePractice": true,
+      "retypeId": "java-priority-queue-basic"
+    },
+    {
+      "type": "definition",
+      "term": "PriorityQueue",
+      "text": "A queue that always removes the SMALLEST (by default) element first, regardless of insertion order, rather than following strict FIFO order."
+    },
+    {
+      "type": "warning",
+      "text": "Even though 30 was added FIRST, poll() returns 10 first -- PriorityQueue completely ignores insertion order, always giving you the current smallest element. This makes it fundamentally different from a plain Queue, despite sharing the same offer()/poll() method names. PriorityQueue gets its own full lesson in the upcoming Heap module, since it's Java's built-in heap implementation."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static boolean isBalanced(String text) {\n        Deque<Character> stack = new ArrayDeque<>();\n\n        for (char c : text.toCharArray()) {\n            if (c == '(') {\n                stack.push(c);\n            } else if (c == ')') {\n                if (stack.isEmpty()) {\n                    return false;\n                }\n                stack.pop();\n            }\n        }\n\n        return stack.isEmpty();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isBalanced(\"(a(b)c)\"));\n        System.out.println(isBalanced(\"(a(b)c\"));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-deque-balanced-parens"
+    },
+    {
+      "type": "keyPoints",
+      "title": "A very common DSA pattern",
+      "points": [
+        "Every ( pushes onto the stack -- \"I'm still waiting for a matching )\"",
+        "Every ) pops one ( off, if any exist -- a ) with nothing to match means unbalanced immediately",
+        "At the end, the stack must be completely empty for everything to have matched -- this exact pattern reappears in the Stack / Monotonic Stack lessons"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing Queue's FIFO order (offer/poll) with Deque-as-stack's LIFO order (push/pop) -- they're opposite processing orders.",
+        "Assuming PriorityQueue processes elements in insertion order like a plain Queue -- it always gives the smallest element first, regardless of when it was added.",
+        "Forgetting to check stack.isEmpty() before popping in patterns like balanced-parentheses checking, risking an exception on an empty stack.",
+        "Using the older java.util.Stack class out of habit, when ArrayDeque (via Deque) is the modern, recommended choice."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does FIFO mean, and which collection embodies it?",
+          "answer": "First-In-First-Out -- the first element added is the first one removed. Queue embodies this with offer() (add to back) and poll() (remove from front)."
+        },
+        {
+          "question": "What is a Deque, and how can it act as both a queue and a stack?",
+          "answer": "A Deque (double-ended queue) supports insertion and removal at both ends. Using addLast/removeFirst gives FIFO (queue) behavior, while push/pop gives LIFO (stack) behavior -- ArrayDeque is the standard general-purpose implementation for both."
+        },
+        {
+          "question": "How does PriorityQueue's ordering differ from a regular Queue's?",
+          "answer": "A regular Queue processes strictly in insertion order (FIFO). PriorityQueue ignores insertion order entirely and always removes the current smallest element first."
+        }
+      ],
+      "thirtySecondAnswer": "Queue processes elements in FIFO order using offer() (add to back) and poll() (remove from front) -- like a real checkout line. Deque, typically implemented with ArrayDeque, supports efficient insertion and removal at both ends, and can act as either a queue (addLast/removeFirst) or a stack (push/pop, LIFO order) -- the modern recommended replacement for the older java.util.Stack class. PriorityQueue looks similar syntactically but always removes the smallest element first regardless of insertion order, making it Java's built-in heap, covered fully in the Heap module. A very common DSA pattern using Deque-as-stack is checking balanced parentheses, which reappears in the Stack / Monotonic Stack lessons."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Queue = a checkout LINE -- first in line, first served (FIFO). Deque-as-stack = a stack of PLATES -- last one placed on top comes off first (LIFO). PriorityQueue = a hospital ER -- most urgent (smallest) goes first, no matter when they arrived."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does FIFO mean, and which Java collection implements it?",
+        "How can a Deque behave like a stack?",
+        "How does PriorityQueue's processing order differ from a regular Queue's?",
+        "What's the modern recommended replacement for java.util.Stack?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-queue-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.LinkedList;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<String> queue = new LinkedList<>();\n        queue.offer(\"Aman\");\n        queue.offer(\"Priya\");\n        queue.offer(\"Rahul\");\n\n        System.out.println(queue.poll());\n        System.out.println(queue.poll());\n        System.out.println(queue);\n    }\n}", "output": "Aman\nPriya\n[Rahul]" },
+    { "id": "java-deque-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> deque = new ArrayDeque<>();\n        deque.addFirst(1);\n        deque.addLast(2);\n        deque.addFirst(0);\n\n        System.out.println(deque);\n        System.out.println(deque.removeFirst());\n        System.out.println(deque.removeLast());\n    }\n}", "output": "[0, 1, 2]\n0\n2" },
+    { "id": "java-deque-as-stack", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(1);\n        stack.push(2);\n        stack.push(3);\n\n        System.out.println(stack.pop());\n        System.out.println(stack.pop());\n        System.out.println(stack);\n    }\n}", "output": "3\n2\n[1]" },
+    { "id": "java-priority-queue-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.PriorityQueue;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<Integer> pq = new PriorityQueue<>();\n        pq.offer(30);\n        pq.offer(10);\n        pq.offer(20);\n\n        System.out.println(pq.poll());\n        System.out.println(pq.poll());\n        System.out.println(pq.poll());\n    }\n}", "output": "10\n20\n30" },
+    { "id": "java-deque-balanced-parens", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static boolean isBalanced(String text) {\n        Deque<Character> stack = new ArrayDeque<>();\n\n        for (char c : text.toCharArray()) {\n            if (c == '(') {\n                stack.push(c);\n            } else if (c == ')') {\n                if (stack.isEmpty()) {\n                    return false;\n                }\n                stack.pop();\n            }\n        }\n\n        return stack.isEmpty();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isBalanced(\"(a(b)c)\"));\n        System.out.println(isBalanced(\"(a(b)c\"));\n    }\n}", "output": "true\nfalse" }
+  ],
+  "retypePractice": [
+    { "id": "java-queue-basic", "reference": "import java.util.LinkedList;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<String> queue = new LinkedList<>();\n        queue.offer(\"Aman\");\n        queue.offer(\"Priya\");\n        queue.offer(\"Rahul\");\n\n        System.out.println(queue.poll());\n        System.out.println(queue.poll());\n        System.out.println(queue);\n    }\n}" },
+    { "id": "java-deque-basic", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> deque = new ArrayDeque<>();\n        deque.addFirst(1);\n        deque.addLast(2);\n        deque.addFirst(0);\n\n        System.out.println(deque);\n        System.out.println(deque.removeFirst());\n        System.out.println(deque.removeLast());\n    }\n}" },
+    { "id": "java-deque-as-stack", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(1);\n        stack.push(2);\n        stack.push(3);\n\n        System.out.println(stack.pop());\n        System.out.println(stack.pop());\n        System.out.println(stack);\n    }\n}" },
+    { "id": "java-priority-queue-basic", "reference": "import java.util.PriorityQueue;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<Integer> pq = new PriorityQueue<>();\n        pq.offer(30);\n        pq.offer(10);\n        pq.offer(20);\n\n        System.out.println(pq.poll());\n        System.out.println(pq.poll());\n        System.out.println(pq.poll());\n    }\n}" },
+    { "id": "java-deque-balanced-parens", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static boolean isBalanced(String text) {\n        Deque<Character> stack = new ArrayDeque<>();\n\n        for (char c : text.toCharArray()) {\n            if (c == '(') {\n                stack.push(c);\n            } else if (c == ')') {\n                if (stack.isEmpty()) {\n                    return false;\n                }\n                stack.pop();\n            }\n        }\n\n        return stack.isEmpty();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isBalanced(\"(a(b)c)\"));\n        System.out.println(isBalanced(\"(a(b)c\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-queue-basic", "java-deque-basic", "java-deque-as-stack", "java-priority-queue-basic", "java-deque-balanced-parens"]
+  }
+}
