@@ -1,0 +1,182 @@
+{
+  "id": "java-constructors",
+  "moduleId": "oop",
+  "title": "Constructors",
+  "description": "Initializing an object's fields at creation time, instead of setting each one manually after new — including overloaded constructors.",
+  "objectives": [
+    "Understand what a constructor is and when it runs",
+    "Write a parameterized constructor to initialize fields at creation",
+    "Overload constructors, and know what the default constructor is"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Classes and Objects, we built a Student and then set s1.name and s1.age manually, line by line, after new Student(). That's repetitive and error-prone — easy to forget a field. A constructor lets us set everything up in one step, right when the object is created."
+    },
+    {
+      "type": "definition",
+      "term": "Constructor",
+      "text": "A special block of code, matching the class's name with no return type, that runs automatically when an object is created with new — typically used to initialize the object's fields."
+    },
+    {
+      "type": "heading",
+      "text": "2. Writing a Constructor"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    String name;\n    int age;\n\n    Student(String studentName, int studentAge) {\n        name = studentName;\n        age = studentAge;\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student(\"Aman\", 21);\n        System.out.println(s1.name + \" is \" + s1.age);\n    }\n}",
+      "output": "Aman is 21",
+      "retypePractice": true,
+      "retypeId": "java-constructor-basic"
+    },
+    {
+      "type": "table",
+      "title": "What makes Student(...) a constructor",
+      "headers": ["Feature", "Detail"],
+      "rows": [
+        ["Name", "Matches the class name exactly — Student"],
+        ["Return type", "None at all — not even void"],
+        ["When it runs", "Automatically, the moment new Student(...) executes"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "A constructor's name must EXACTLY match the class name, including capitalization. It has no return type — writing void Student(...) makes it an ordinary method named Student, not a constructor at all, and it would need to be called explicitly rather than running on new."
+    },
+    {
+      "type": "heading",
+      "text": "3. The Default Constructor"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "public class Student {\n    String name;\n    int age;\n}\n\n// Student s = new Student(); still works here!"
+    },
+    {
+      "type": "definition",
+      "term": "Default constructor",
+      "text": "A no-argument constructor Java automatically provides for a class that declares no constructors of its own — it does nothing beyond letting fields take their default values."
+    },
+    {
+      "type": "warning",
+      "text": "The moment you write ANY constructor yourself (like Student(String, int) above), Java stops providing the automatic default constructor. new Student() with no arguments would then fail to compile, unless you also explicitly write a no-argument constructor yourself."
+    },
+    {
+      "type": "heading",
+      "text": "4. Overloading Constructors"
+    },
+    {
+      "type": "paragraph",
+      "text": "Just like the Method Overloading lesson, a class can have multiple constructors, distinguished by their parameter lists."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    String name;\n    int age;\n\n    Student() {\n        name = \"Unknown\";\n        age = 0;\n    }\n\n    Student(String studentName, int studentAge) {\n        name = studentName;\n        age = studentAge;\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        Student s2 = new Student(\"Priya\", 23);\n\n        System.out.println(s1.name + \" is \" + s1.age);\n        System.out.println(s2.name + \" is \" + s2.age);\n    }\n}",
+      "output": "Unknown is 0\nPriya is 23",
+      "retypePractice": true,
+      "retypeId": "java-constructor-overloaded"
+    },
+    {
+      "type": "note",
+      "text": "Java picks which constructor to run the same way it picks an overloaded method: by matching the number and types of arguments in new Student(...) against each constructor's parameter list."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Rectangle {\n        double width;\n        double height;\n\n        Rectangle(double width, double height) {\n            this.width = width;\n            this.height = height;\n        }\n\n        double area() {\n            return width * height;\n        }\n    }\n\n    public static void main(String[] args) {\n        Rectangle r = new Rectangle(4, 6);\n        System.out.println(\"Area: \" + r.area());\n    }\n}",
+      "output": "Area: 24.0",
+      "retypePractice": true,
+      "retypeId": "java-constructor-rectangle"
+    },
+    {
+      "type": "warning",
+      "text": "this.width = width; uses this to distinguish the field width from the parameter width, which share the same name here. We are only previewing this keyword here — it's covered fully in the very next lesson."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Giving a constructor a return type, even void — this makes it an ordinary method, not a constructor.",
+        "Misspelling the constructor name, or mismatching its capitalization against the class name.",
+        "Writing a parameterized constructor and then trying to call new ClassName() with no arguments — the automatic default constructor is gone once you write ANY constructor yourself.",
+        "Manually setting every field after new when a well-designed constructor could set them all in one call."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a constructor?",
+          "answer": "A special block of code matching the class's name, with no return type, that runs automatically when an object is created with new — typically used to initialize the object's fields."
+        },
+        {
+          "question": "What is the default constructor, and when does Java stop providing it?",
+          "answer": "The default constructor is a no-argument constructor Java automatically supplies for a class with no constructors of its own. The moment you write any constructor yourself, Java stops providing this automatic one."
+        },
+        {
+          "question": "Can a class have multiple constructors?",
+          "answer": "Yes — this is called constructor overloading, and Java picks which one to run based on the number and types of arguments passed to new, exactly like overloaded methods."
+        }
+      ],
+      "thirtySecondAnswer": "A constructor is a special block matching the class's name, with no return type, that runs automatically when an object is created via new — typically to initialize its fields in one step, rather than setting each one manually afterward. Java automatically provides a no-argument default constructor for classes that declare none of their own, but that default disappears the moment any constructor is written explicitly. Classes can have multiple constructors (constructor overloading), and Java selects the matching one based on the arguments provided to new, following the same resolution rules as overloaded methods."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Constructor = the assembly line that runs the moment new fires. Same name as the class, NO return type — write one yourself and the free default one disappears."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is a constructor, and when does it run?",
+        "What happens to the automatic default constructor once you write your own?",
+        "Can a class have more than one constructor? How does Java choose which to run?",
+        "What return type does a constructor have?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-constructor-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student(\"Aman\", 21);\n        System.out.println(s1.name + \" is \" + s1.age);\n    }\n}", "output": "Aman is 21" },
+    { "id": "java-constructor-overloaded", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        Student s2 = new Student(\"Priya\", 23);\n\n        System.out.println(s1.name + \" is \" + s1.age);\n        System.out.println(s2.name + \" is \" + s2.age);\n    }\n}", "output": "Unknown is 0\nPriya is 23" },
+    { "id": "java-constructor-rectangle", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Rectangle {\n        double width;\n        double height;\n\n        Rectangle(double width, double height) {\n            this.width = width;\n            this.height = height;\n        }\n\n        double area() {\n            return width * height;\n        }\n    }\n\n    public static void main(String[] args) {\n        Rectangle r = new Rectangle(4, 6);\n        System.out.println(\"Area: \" + r.area());\n    }\n}", "output": "Area: 24.0" }
+  ],
+  "retypePractice": [
+    { "id": "java-constructor-basic", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student(\"Aman\", 21);\n        System.out.println(s1.name + \" is \" + s1.age);\n    }\n}" },
+    { "id": "java-constructor-overloaded", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s1 = new Student();\n        Student s2 = new Student(\"Priya\", 23);\n\n        System.out.println(s1.name + \" is \" + s1.age);\n        System.out.println(s2.name + \" is \" + s2.age);\n    }\n}" },
+    { "id": "java-constructor-rectangle", "reference": "public class Main {\n    static class Rectangle {\n        double width;\n        double height;\n\n        Rectangle(double width, double height) {\n            this.width = width;\n            this.height = height;\n        }\n\n        double area() {\n            return width * height;\n        }\n    }\n\n    public static void main(String[] args) {\n        Rectangle r = new Rectangle(4, 6);\n        System.out.println(\"Area: \" + r.area());\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-constructor-basic", "java-constructor-overloaded", "java-constructor-rectangle"]
+  }
+}
