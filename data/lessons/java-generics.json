@@ -1,0 +1,163 @@
+{
+  "id": "java-generics",
+  "moduleId": "advanced-java",
+  "title": "Generics",
+  "description": "Type-safe, reusable classes and methods using <T> -- fully explaining the ArrayList<Integer> and ArrayList<String> angle-bracket syntax from Array vs ArrayList.",
+  "objectives": [
+    "Understand generics as a way to write type-safe, reusable code",
+    "Write a generic class and a generic method using a type parameter",
+    "Recognize ArrayList<T> and similar Collections Framework types as generics in action"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Array vs ArrayList, we wrote ArrayList<Integer> and ArrayList<String> without explaining the <...> part. Generics are exactly that mechanism -- letting one class or method work with different types safely, decided when it's used."
+    },
+    {
+      "type": "definition",
+      "term": "Generics",
+      "text": "A Java feature allowing classes and methods to operate on a type specified as a parameter, enabling type-safe reuse of the same code across different types."
+    },
+    {
+      "type": "heading",
+      "text": "2. A Generic Class"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Box<T> {\n        private T content;\n\n        void set(T content) {\n            this.content = content;\n        }\n\n        T get() {\n            return content;\n        }\n    }\n\n    public static void main(String[] args) {\n        Box<String> stringBox = new Box<>();\n        stringBox.set(\"Hello\");\n        System.out.println(stringBox.get());\n\n        Box<Integer> intBox = new Box<>();\n        intBox.set(42);\n        System.out.println(intBox.get());\n    }\n}",
+      "output": "Hello\n42",
+      "retypePractice": true,
+      "retypeId": "java-generics-box"
+    },
+    {
+      "type": "table",
+      "title": "Reading Box<T>",
+      "headers": ["Piece", "Meaning"],
+      "rows": [
+        ["<T>", "T is a placeholder for \"some type, decided later\" -- T commonly stands for Type"],
+        ["Box<String>", "Creates a Box where T becomes String everywhere it appears"],
+        ["Box<Integer>", "The SAME Box class, but T becomes Integer this time"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Without generics, we'd need a separate StringBox class and IntBox class, each with duplicated code. Generics let ONE Box<T> class serve both cases -- and the compiler still enforces type safety: stringBox.set(42); (an int, into a Box<String>) would not compile."
+    },
+    {
+      "type": "heading",
+      "text": "3. Why <Integer> and Not <int>?"
+    },
+    {
+      "type": "warning",
+      "text": "Recall this exact restriction from Array vs ArrayList: generics can only work with reference types, never primitives directly. ArrayList<int> and Box<int> both fail to compile -- Integer (the wrapper class, covered fully in the next lesson on autoboxing/unboxing) must be used instead of the primitive int."
+    },
+    {
+      "type": "heading",
+      "text": "4. A Generic Method"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static <T> void printTwice(T value) {\n        System.out.println(value);\n        System.out.println(value);\n    }\n\n    public static void main(String[] args) {\n        printTwice(\"Hi\");\n        printTwice(99);\n    }\n}",
+      "output": "Hi\nHi\n99\n99",
+      "retypePractice": true,
+      "retypeId": "java-generics-method"
+    },
+    {
+      "type": "note",
+      "text": "<T> right before the return type declares that this method itself is generic, independent of any class. Java infers T from whatever argument you actually pass -- String for \"Hi\", Integer (auto-wrapped, per the next lesson) for 99 -- with no need to specify it explicitly."
+    },
+    {
+      "type": "heading",
+      "text": "5. Generics You've Already Been Using"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "ArrayList<Integer> numbers = new ArrayList<>();\nArrayList<String> names = new ArrayList<>();"
+    },
+    {
+      "type": "note",
+      "text": "ArrayList itself is really ArrayList<T> internally, generic exactly like our Box<T> example. numbers.get(0) returning an Integer directly, with no casting needed, is possible specifically because generics let ArrayList<Integer> know at compile time that every element inside is an Integer."
+    },
+    {
+      "type": "heading",
+      "text": "6. The Diamond Operator <>"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Box<String> box = new Box<>(); // <> lets Java infer String from the left side"
+    },
+    {
+      "type": "note",
+      "text": "new Box<>() (with nothing inside the angle brackets) is called the diamond operator -- Java infers the type from the variable's declared type on the left (Box<String>), saving you from repeating new Box<String>() in full."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to use a primitive type as a generic type parameter, like Box<int> -- only reference types (Integer, String, etc.) are allowed.",
+        "Forgetting the compiler enforces type safety with generics -- putting the wrong type into a Box<String> or ArrayList<String> is a compile error, not a runtime surprise.",
+        "Confusing the generic type parameter T (a placeholder name) with an actual type -- T only becomes a concrete type once the class or method is actually used.",
+        "Writing out the full type again inside <> on the right side unnecessarily, instead of using the diamond operator <> to let Java infer it."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What are generics, and what problem do they solve?",
+          "answer": "Generics let a class or method operate on a type specified as a parameter (like T), enabling the same code to be reused safely across different types instead of duplicating near-identical classes for each type, while still letting the compiler enforce type safety."
+        },
+        {
+          "question": "Why must you write ArrayList<Integer> instead of ArrayList<int>?",
+          "answer": "Generics only work with reference types, not primitives directly. int's wrapper class, Integer, must be used in its place wherever a generic type parameter is needed."
+        },
+        {
+          "question": "What does the diamond operator <> do?",
+          "answer": "It lets Java infer the generic type argument from the variable's declared type on the left side of an assignment, avoiding the need to repeat the type inside the angle brackets on the right, e.g. Box<String> box = new Box<>();."
+        }
+      ],
+      "thirtySecondAnswer": "Generics let a class or method use a type parameter, like T, deciding the actual type only when it's used -- Box<String> and Box<Integer> reuse the exact same Box<T> class definition, with the compiler still enforcing type safety at compile time. This is exactly what ArrayList<Integer> and ArrayList<String> were doing all along, letting collections know what type their elements are without needing separate classes per type. Generics only work with reference types, not primitives, which is why Integer (a wrapper class) is used instead of int. The diamond operator, <>, lets Java infer the type argument from the left side of an assignment automatically."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "<T> = \"fill in the blank with a type, later.\" Box<String> and Box<Integer> are the SAME blueprint, T just gets swapped. Generics only take REFERENCE types -- primitives need their wrapper first."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What problem do generics solve?",
+        "Why must ArrayList use Integer instead of int as its type parameter?",
+        "What does the diamond operator <> do?",
+        "Can Box<String> and Box<Integer> share the same class definition? Why?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-generics-box", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Box<T> {\n        private T content;\n\n        void set(T content) {\n            this.content = content;\n        }\n\n        T get() {\n            return content;\n        }\n    }\n\n    public static void main(String[] args) {\n        Box<String> stringBox = new Box<>();\n        stringBox.set(\"Hello\");\n        System.out.println(stringBox.get());\n\n        Box<Integer> intBox = new Box<>();\n        intBox.set(42);\n        System.out.println(intBox.get());\n    }\n}", "output": "Hello\n42" },
+    { "id": "java-generics-method", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static <T> void printTwice(T value) {\n        System.out.println(value);\n        System.out.println(value);\n    }\n\n    public static void main(String[] args) {\n        printTwice(\"Hi\");\n        printTwice(99);\n    }\n}", "output": "Hi\nHi\n99\n99" }
+  ],
+  "retypePractice": [
+    { "id": "java-generics-box", "reference": "public class Main {\n    static class Box<T> {\n        private T content;\n\n        void set(T content) {\n            this.content = content;\n        }\n\n        T get() {\n            return content;\n        }\n    }\n\n    public static void main(String[] args) {\n        Box<String> stringBox = new Box<>();\n        stringBox.set(\"Hello\");\n        System.out.println(stringBox.get());\n\n        Box<Integer> intBox = new Box<>();\n        intBox.set(42);\n        System.out.println(intBox.get());\n    }\n}" },
+    { "id": "java-generics-method", "reference": "public class Main {\n    static <T> void printTwice(T value) {\n        System.out.println(value);\n        System.out.println(value);\n    }\n\n    public static void main(String[] args) {\n        printTwice(\"Hi\");\n        printTwice(99);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-generics-box", "java-generics-method"]
+  }
+}
