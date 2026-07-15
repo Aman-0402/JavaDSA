@@ -1,0 +1,209 @@
+{
+  "id": "java-1d-arrays",
+  "moduleId": "arrays-strings",
+  "title": "1D Arrays",
+  "description": "Declaring, initializing, indexing, and looping over a one-dimensional array — formalizing the int[] numbers preview from Enhanced for Loop and Varargs.",
+  "objectives": [
+    "Declare and initialize a 1D array in multiple ways",
+    "Access and modify elements using an index",
+    "Understand that array size is fixed once created",
+    "Loop over an array with both regular and enhanced for loops"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What is an Array?"
+    },
+    {
+      "type": "paragraph",
+      "text": "We previewed arrays back in Enhanced for Loop and Varargs without fully explaining them. Today we cover arrays properly."
+    },
+    {
+      "type": "definition",
+      "term": "Array",
+      "text": "A fixed-size, ordered collection of values of the same type, stored together in memory and accessed by a numeric index starting at 0."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring and Creating an Array"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] numbers = new int[5]; // an array of 5 ints, all default to 0"
+    },
+    {
+      "type": "table",
+      "title": "Pieces of int[] numbers = new int[5];",
+      "headers": ["Piece", "Meaning"],
+      "rows": [
+        ["int[]", "The type: an array of int values"],
+        ["numbers", "The variable name"],
+        ["new int[5]", "Creates an actual array in memory with room for 5 int values"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Every element starts at that type's default value (recall the Data Types lesson's default-value table) — 0 for int, until you assign something else."
+    },
+    {
+      "type": "heading",
+      "text": "3. Initializing with Values Directly"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] numbers = {10, 20, 30, 40, 50};"
+    },
+    {
+      "type": "paragraph",
+      "text": "This shorthand creates an array AND fills it with these 5 values in one line — Java figures out the size (5) from how many values you listed."
+    },
+    {
+      "type": "heading",
+      "text": "4. Accessing Elements by Index"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nSystem.out.println(numbers[0]);\nSystem.out.println(numbers[2]);\nSystem.out.println(numbers[4]);",
+      "output": "10\n30\n50",
+      "retypePractice": true,
+      "retypeId": "java-array-access"
+    },
+    {
+      "type": "warning",
+      "text": "Array indices start at 0, not 1. numbers[0] is the FIRST element (10), and numbers[4] is the LAST element in a 5-element array, not numbers[5]. Using numbers[5] here would crash the program with an ArrayIndexOutOfBoundsException — there is no 6th element."
+    },
+    {
+      "type": "heading",
+      "text": "5. Modifying an Element"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] numbers = {10, 20, 30};\nnumbers[1] = 99;\nSystem.out.println(numbers[1]); // 99"
+    },
+    {
+      "type": "heading",
+      "text": "6. Array Size is Fixed"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] numbers = new int[5];\nSystem.out.println(numbers.length); // 5"
+    },
+    {
+      "type": "warning",
+      "text": "Once created, an array's size (its .length) can never change. There's no way to \"add a 6th element\" to a 5-element array — you'd need to create a brand new, larger array and copy values over. This limitation is exactly why the Java Collections Framework's ArrayList exists, previewed briefly at the end of this module."
+    },
+    {
+      "type": "heading",
+      "text": "7. Looping Over an Array"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int i = 0; i < numbers.length; i++) {\n    System.out.println(\"Index \" + i + \": \" + numbers[i]);\n}",
+      "output": "Index 0: 10\nIndex 1: 20\nIndex 2: 30\nIndex 3: 40\nIndex 4: 50",
+      "retypePractice": true,
+      "retypeId": "java-array-loop"
+    },
+    {
+      "type": "note",
+      "text": "i < numbers.length (not <=) is deliberate — with 5 elements, valid indices are 0 through 4, and numbers.length is 5. Using i <= numbers.length would try numbers[5] on the last pass, crashing with ArrayIndexOutOfBoundsException."
+    },
+    {
+      "type": "heading",
+      "text": "8. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int[] scores = {88, 92, 79, 95, 60};\n        int max = scores[0];\n\n        for (int i = 1; i < scores.length; i++) {\n            if (scores[i] > max) {\n                max = scores[i];\n            }\n        }\n\n        System.out.println(\"Highest score: \" + max);\n    }\n}",
+      "output": "Highest score: 95",
+      "retypePractice": true,
+      "retypeId": "java-array-max"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "max starts at scores[0] = 88",
+        "i=1: scores[1]=92 > 88 -> max becomes 92",
+        "i=2: scores[2]=79, not > 92 -> max stays 92",
+        "i=3: scores[3]=95 > 92 -> max becomes 95",
+        "i=4: scores[4]=60, not > 95 -> max stays 95",
+        "loop ends, max is 95"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting arrays are 0-indexed — the last valid index is length - 1, not length.",
+        "Using i <= array.length in a loop condition instead of i < array.length, causing an ArrayIndexOutOfBoundsException.",
+        "Trying to resize an array after creating it — arrays have a fixed size; you must create a new array if you need more room.",
+        "Confusing array.length (a field, no parentheses) with String's .length() (a method, with parentheses) — covered in the Strings lesson."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is an array in Java?",
+          "answer": "A fixed-size, ordered collection of values of the same type, stored together in memory and accessed by a zero-based numeric index."
+        },
+        {
+          "question": "What is the valid index range for an array of length n?",
+          "answer": "0 through n - 1. Accessing index n or beyond throws an ArrayIndexOutOfBoundsException."
+        },
+        {
+          "question": "Can an array's size change after it's created?",
+          "answer": "No. Java arrays have a fixed size for their entire lifetime; to \"grow\" one, you must create a new, larger array and copy the existing elements into it."
+        },
+        {
+          "question": "What happens if you access an array at an invalid index?",
+          "answer": "Java throws an ArrayIndexOutOfBoundsException at runtime, immediately stopping normal execution unless the exception is handled (exception handling is covered later, in Advanced Java)."
+        }
+      ],
+      "thirtySecondAnswer": "An array is a fixed-size, ordered collection of same-typed values, accessed by a zero-based index — index 0 is the first element, index length - 1 is the last. Arrays can be declared with new type[size] (defaulting every element) or initialized directly with {value, value, ...}. Once created, an array's size never changes; growing it requires creating a new array and copying values over, which is exactly the limitation that motivates ArrayList later in the Collections Framework. Looping over an array typically uses i < array.length (not <=) to avoid an ArrayIndexOutOfBoundsException."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Array = a fixed row of labeled boxes, numbered starting at 0. The last box is at length - 1, never at length itself."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is the index of the first element in an array? The last, for an array of length 5?",
+        "Can you resize an array after creating it?",
+        "Why should a loop condition use i < array.length instead of i <= array.length?",
+        "What exception is thrown for an invalid array index?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-array-access", "lang": "java", "filename": "Main.java", "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nSystem.out.println(numbers[0]);\nSystem.out.println(numbers[2]);\nSystem.out.println(numbers[4]);", "output": "10\n30\n50" },
+    { "id": "java-array-loop", "lang": "java", "filename": "Main.java", "code": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int i = 0; i < numbers.length; i++) {\n    System.out.println(\"Index \" + i + \": \" + numbers[i]);\n}", "output": "Index 0: 10\nIndex 1: 20\nIndex 2: 30\nIndex 3: 40\nIndex 4: 50" },
+    { "id": "java-array-max", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int[] scores = {88, 92, 79, 95, 60};\n        int max = scores[0];\n\n        for (int i = 1; i < scores.length; i++) {\n            if (scores[i] > max) {\n                max = scores[i];\n            }\n        }\n\n        System.out.println(\"Highest score: \" + max);\n    }\n}", "output": "Highest score: 95" }
+  ],
+  "retypePractice": [
+    { "id": "java-array-access", "reference": "int[] numbers = {10, 20, 30, 40, 50};\n\nSystem.out.println(numbers[0]);\nSystem.out.println(numbers[2]);\nSystem.out.println(numbers[4]);" },
+    { "id": "java-array-loop", "reference": "int[] numbers = {10, 20, 30, 40, 50};\n\nfor (int i = 0; i < numbers.length; i++) {\n    System.out.println(\"Index \" + i + \": \" + numbers[i]);\n}" },
+    { "id": "java-array-max", "reference": "public class Main {\n    public static void main(String[] args) {\n        int[] scores = {88, 92, 79, 95, 60};\n        int max = scores[0];\n\n        for (int i = 1; i < scores.length; i++) {\n            if (scores[i] > max) {\n                max = scores[i];\n            }\n        }\n\n        System.out.println(\"Highest score: \" + max);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-array-access", "java-array-loop", "java-array-max"]
+  }
+}

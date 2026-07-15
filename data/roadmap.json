@@ -42,7 +42,13 @@
         { "id": "java-static-vs-instance-methods", "title": "Static vs Instance Methods", "lesson": "java-static-vs-instance-methods" }
       ]
     },
-    { "id": "arrays-strings", "title": "Arrays & Strings", "topics": [] },
+    {
+      "id": "arrays-strings",
+      "title": "Arrays & Strings",
+      "topics": [
+        { "id": "java-1d-arrays", "title": "1D Arrays", "lesson": "java-1d-arrays" }
+      ]
+    },
     { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },
     { "id": "advanced-java", "title": "Advanced Java", "topics": [] },
     { "id": "collections-framework", "title": "Java Collections Framework", "topics": [] },
