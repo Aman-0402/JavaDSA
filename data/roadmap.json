@@ -22,7 +22,8 @@
         { "id": "java-loops", "title": "Loops", "lesson": "java-loops" },
         { "id": "java-for-loop", "title": "for Loop", "lesson": "java-for-loop" },
         { "id": "java-enhanced-for-loop", "title": "Enhanced for Loop (for-each)", "lesson": "java-enhanced-for-loop" },
-        { "id": "java-while-loop", "title": "while Loop", "lesson": "java-while-loop" }
+        { "id": "java-while-loop", "title": "while Loop", "lesson": "java-while-loop" },
+        { "id": "java-do-while-loop", "title": "do-while Loop", "lesson": "java-do-while-loop" }
       ]
     },
     { "id": "methods", "title": "Methods", "topics": [] },

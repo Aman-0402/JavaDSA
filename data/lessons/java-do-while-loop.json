@@ -1,0 +1,152 @@
+{
+  "id": "java-do-while-loop",
+  "moduleId": "control-flow",
+  "title": "do-while Loop",
+  "description": "The one loop that runs its body at least once before checking the condition — classic use case: menu-driven programs.",
+  "objectives": [
+    "Write a do-while loop and know exactly how it differs from while",
+    "Recognize the \"run at least once\" guarantee do-while provides",
+    "Know when do-while is the natural choice"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The One Difference That Matters"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the while lesson, we saw that a while loop's condition is checked BEFORE the body runs — so the body can run zero times. do-while flips the order: the body runs first, and the condition is checked AFTER. That means a do-while loop's body always runs at least once, no matter what."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int i = 1;\n\ndo {\n    System.out.println(i);\n    i++;\n} while (i <= 5);",
+      "output": "1\n2\n3\n4\n5",
+      "retypePractice": true,
+      "retypeId": "java-do-while-count-up"
+    },
+    {
+      "type": "definition",
+      "term": "do-while loop",
+      "text": "A loop that runs its body once, then repeats it as long as the condition (checked at the end, after the body) remains true — guaranteeing at least one execution."
+    },
+    {
+      "type": "warning",
+      "text": "Notice the semicolon after while (i <= 5);. do-while is the only loop in Java that ends with a semicolon after its condition — a common syntax mistake is forgetting it."
+    },
+    {
+      "type": "heading",
+      "text": "2. Proving the \"At Least Once\" Guarantee"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int i = 10;\n\ndo {\n    System.out.println(i);\n    i++;\n} while (i <= 5);\n// prints: 10  (just once!)"
+    },
+    {
+      "type": "note",
+      "text": "Compare to the equivalent while loop from the previous lesson — with the same starting condition (i = 10, checking i <= 5), a while loop prints nothing at all, but this do-while prints 10 once before checking and stopping. This is the entire reason do-while exists."
+    },
+    {
+      "type": "heading",
+      "text": "3. Classic Use Case: Menu-Driven Programs"
+    },
+    {
+      "type": "paragraph",
+      "text": "A very common real pattern: show a menu, do something based on the user's choice, and repeat until they choose to exit. You always want to show the menu at least once — which is exactly do-while's guarantee."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int choice;\n\n        do {\n            System.out.println(\"1. Say Hello\");\n            System.out.println(\"2. Exit\");\n            System.out.print(\"Enter choice: \");\n            choice = sc.nextInt();\n\n            if (choice == 1) {\n                System.out.println(\"Hello!\");\n            }\n        } while (choice != 2);\n\n        System.out.println(\"Goodbye!\");\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "The menu must be shown at least once so the user has something to respond to — a plain while loop checking a condition before anything is printed wouldn't naturally support that first display without extra setup."
+    },
+    {
+      "type": "heading",
+      "text": "4. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int num = 5789;\n        int digitCount = 0;\n\n        do {\n            digitCount++;\n            num = num / 10;\n        } while (num != 0);\n\n        System.out.println(\"Digit count: \" + digitCount);\n    }\n}",
+      "output": "Digit count: 4",
+      "retypePractice": true,
+      "retypeId": "java-do-while-digit-count"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "num=5789: digitCount=1, num becomes 578 (5789/10, integer division)",
+        "num=578: digitCount=2, num becomes 57",
+        "num=57: digitCount=3, num becomes 5",
+        "num=5: digitCount=4, num becomes 0",
+        "num == 0 now, so the condition num != 0 is false — loop ends with digitCount = 4"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the semicolon after the while (condition) — do-while is the only loop that requires one there.",
+        "Using do-while when the body genuinely should be skippable — if there's any chance the body shouldn't run at all, while is the correct choice, not do-while.",
+        "Confusing the check timing — do-while checks AFTER the body, not before; assuming otherwise leads to wrong iteration-count predictions."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the key difference between while and do-while?",
+          "answer": "while checks its condition before running the body, so the body can run zero times. do-while runs the body first and checks the condition afterward, guaranteeing the body executes at least once."
+        },
+        {
+          "question": "Why does do-while require a semicolon after its condition?",
+          "answer": "Because the while (condition) at the end of a do-while is a statement terminator, not the start of a new block — Java's grammar requires the semicolon to close the do-while statement, unlike a regular while loop's header."
+        },
+        {
+          "question": "Give a real example where do-while is more natural than while.",
+          "answer": "A menu-driven program where the menu must be displayed at least once before the user can make any choice that determines whether to continue looping."
+        }
+      ],
+      "thirtySecondAnswer": "do-while is like while, but with the condition check moved to the end instead of the beginning — the loop body runs at least once no matter what, since there's no check before the first execution. This makes it the natural fit for menu-driven programs, where you always want to show the menu at least once before deciding, based on the user's input, whether to loop again. Syntactically, do-while is the only loop that ends with a required semicolon after its condition, which is a common thing to forget."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "do-while = DO it first, ask WHILE later. It's the only loop guaranteed to run at least once, and the only one that ends with a semicolon."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the key difference between while and do-while?",
+        "How many times does a do-while body run at minimum?",
+        "Why does do-while need a semicolon at the end?",
+        "Name a real use case where do-while fits better than while."
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-do-while-count-up", "lang": "java", "filename": "Main.java", "code": "int i = 1;\n\ndo {\n    System.out.println(i);\n    i++;\n} while (i <= 5);", "output": "1\n2\n3\n4\n5" },
+    { "id": "java-do-while-digit-count", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int num = 5789;\n        int digitCount = 0;\n\n        do {\n            digitCount++;\n            num = num / 10;\n        } while (num != 0);\n\n        System.out.println(\"Digit count: \" + digitCount);\n    }\n}", "output": "Digit count: 4" }
+  ],
+  "retypePractice": [
+    { "id": "java-do-while-count-up", "reference": "int i = 1;\n\ndo {\n    System.out.println(i);\n    i++;\n} while (i <= 5);" },
+    { "id": "java-do-while-digit-count", "reference": "public class Main {\n    public static void main(String[] args) {\n        int num = 5789;\n        int digitCount = 0;\n\n        do {\n            digitCount++;\n            num = num / 10;\n        } while (num != 0);\n\n        System.out.println(\"Digit count: \" + digitCount);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-do-while-count-up", "java-do-while-digit-count"]
+  }
+}
