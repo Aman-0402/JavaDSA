@@ -1,0 +1,176 @@
+{
+  "id": "java-stringbuilder",
+  "moduleId": "arrays-strings",
+  "title": "StringBuilder",
+  "description": "The mutable alternative to String, solving the loop-concatenation performance problem from the Immutability lesson.",
+  "objectives": [
+    "Understand why StringBuilder exists and how it differs from String",
+    "Use append(), insert(), delete(), reverse(), and toString()",
+    "Recognize when StringBuilder is the right tool vs plain String"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Strings and Immutability, we saw that result = result + i; inside a loop creates a brand new String every single iteration, since String can never be modified in place. StringBuilder exists specifically to solve this."
+    },
+    {
+      "type": "definition",
+      "term": "StringBuilder",
+      "text": "A mutable sequence of characters that can be modified in place — appended to, inserted into, or deleted from — without creating a new object each time, unlike String."
+    },
+    {
+      "type": "heading",
+      "text": "2. Creating and Appending"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "StringBuilder sb = new StringBuilder();\n\nfor (int i = 1; i <= 5; i++) {\n    sb.append(i);\n}\n\nSystem.out.println(sb.toString());",
+      "output": "12345",
+      "retypePractice": true,
+      "retypeId": "java-sb-append-loop"
+    },
+    {
+      "type": "warning",
+      "text": "Unlike String concatenation, sb.append(i) modifies sb IN PLACE — no new object is created on each call. This is the entire performance benefit: for a loop running thousands of times, StringBuilder does far less unnecessary work than repeated String concatenation."
+    },
+    {
+      "type": "heading",
+      "text": "3. toString() — Converting Back to a String"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "StringBuilder sb = new StringBuilder(\"Hello\");\nString result = sb.toString();\nSystem.out.println(result); // Hello"
+    },
+    {
+      "type": "note",
+      "text": "StringBuilder is not a String — it's a different type entirely. Once you're done building, .toString() converts it into an actual, immutable String, which is what you'd typically return from a method or store long-term."
+    },
+    {
+      "type": "heading",
+      "text": "4. Other Useful Methods"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "StringBuilder sb = new StringBuilder(\"Hello World\");\n\nsb.insert(5, \",\");\nSystem.out.println(sb); // Hello, World\n\nsb.delete(5, 6);\nSystem.out.println(sb); // Hello World\n\nsb.reverse();\nSystem.out.println(sb); // dlroW olleH",
+      "output": "Hello, World\nHello World\ndlroW olleH",
+      "retypePractice": true,
+      "retypeId": "java-sb-methods"
+    },
+    {
+      "type": "table",
+      "title": "Common StringBuilder methods",
+      "headers": ["Method", "What it does"],
+      "rows": [
+        ["append(x)", "Adds x to the end, modifying the StringBuilder in place"],
+        ["insert(index, x)", "Inserts x starting at the given index"],
+        ["delete(start, end)", "Removes characters from start (inclusive) to end (exclusive) — same range rule as substring"],
+        ["reverse()", "Reverses the entire sequence of characters, in place"],
+        ["toString()", "Converts the StringBuilder's current content into a String"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Notice System.out.println(sb); worked directly, without calling .toString() explicitly — println automatically calls toString() on whatever object you give it. We call it explicitly here for clarity, but it isn't strictly required just to print."
+    },
+    {
+      "type": "heading",
+      "text": "5. When to Use StringBuilder vs String"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Guideline",
+      "points": [
+        "Use plain String for a value that's built once and doesn't change — most everyday text handling",
+        "Use StringBuilder when building up text incrementally, especially inside a loop — one append per iteration instead of one new String per iteration",
+        "Convert back to String with .toString() once you're done building, if you need to pass the result somewhere expecting a String"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static boolean isPalindrome(String text) {\n        String reversed = new StringBuilder(text).reverse().toString();\n        return text.equals(reversed);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isPalindrome(\"racecar\"));\n        System.out.println(isPalindrome(\"hello\"));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-sb-palindrome"
+    },
+    {
+      "type": "note",
+      "text": "new StringBuilder(text).reverse().toString() chains three steps in one line: wrap text in a StringBuilder, reverse it in place, then convert the result back to a String for the .equals() comparison. This chaining pattern — calling one method directly on the result of another — is common with StringBuilder."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using String concatenation (+) inside a loop that runs many times, instead of StringBuilder's append() — a common, easy-to-miss performance issue.",
+        "Forgetting StringBuilder is a different type than String — you cannot pass a StringBuilder directly where a String is strictly required without calling .toString() first.",
+        "Assuming delete(start, end) and substring have different range rules — both are start-inclusive, end-exclusive, consistent with the earlier String Methods lesson.",
+        "Reversing a StringBuilder and forgetting it modifies the object in place — sb.reverse(); already changed sb itself, calling it again would reverse it right back."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why does StringBuilder exist when String already covers text?",
+          "answer": "Because String is immutable, repeated modification (like concatenation in a loop) creates a new object every time, which is wasteful for many operations. StringBuilder is mutable, so operations like append() modify it in place without creating new objects each time."
+        },
+        {
+          "question": "How do you convert a StringBuilder back into a String?",
+          "answer": "Call its toString() method, which returns an actual, immutable String representing the StringBuilder's current content."
+        },
+        {
+          "question": "When would you choose StringBuilder over plain String concatenation?",
+          "answer": "When building up text incrementally, especially inside a loop with many iterations — StringBuilder avoids creating a new object on every single append, which repeated String concatenation would otherwise do."
+        }
+      ],
+      "thirtySecondAnswer": "StringBuilder is a mutable sequence of characters, created to solve the performance problem of String's immutability: repeated concatenation with + creates a new String object every time, which is wasteful in a loop with many iterations. StringBuilder's append(), insert(), delete(), and reverse() all modify the same object in place. Once built, .toString() converts it back into an actual String. The general guideline: use plain String for text built once, and StringBuilder when building text incrementally, especially inside loops."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "String = a printed page (Immutability lesson). StringBuilder = a whiteboard — erase, append, insert, reverse, all on the SAME object. Call .toString() when you're ready to print the final page."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why is StringBuilder more efficient than String concatenation inside a loop?",
+        "How do you convert a StringBuilder into a String?",
+        "Does append() create a new object each time it's called?",
+        "What does delete(start, end) remove — is end inclusive or exclusive?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-sb-append-loop", "lang": "java", "filename": "Main.java", "code": "StringBuilder sb = new StringBuilder();\n\nfor (int i = 1; i <= 5; i++) {\n    sb.append(i);\n}\n\nSystem.out.println(sb.toString());", "output": "12345" },
+    { "id": "java-sb-methods", "lang": "java", "filename": "Main.java", "code": "StringBuilder sb = new StringBuilder(\"Hello World\");\n\nsb.insert(5, \",\");\nSystem.out.println(sb); // Hello, World\n\nsb.delete(5, 6);\nSystem.out.println(sb); // Hello World\n\nsb.reverse();\nSystem.out.println(sb); // dlroW olleH", "output": "Hello, World\nHello World\ndlroW olleH" },
+    { "id": "java-sb-palindrome", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static boolean isPalindrome(String text) {\n        String reversed = new StringBuilder(text).reverse().toString();\n        return text.equals(reversed);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isPalindrome(\"racecar\"));\n        System.out.println(isPalindrome(\"hello\"));\n    }\n}", "output": "true\nfalse" }
+  ],
+  "retypePractice": [
+    { "id": "java-sb-append-loop", "reference": "StringBuilder sb = new StringBuilder();\n\nfor (int i = 1; i <= 5; i++) {\n    sb.append(i);\n}\n\nSystem.out.println(sb.toString());" },
+    { "id": "java-sb-methods", "reference": "StringBuilder sb = new StringBuilder(\"Hello World\");\n\nsb.insert(5, \",\");\nSystem.out.println(sb); // Hello, World\n\nsb.delete(5, 6);\nSystem.out.println(sb); // Hello World\n\nsb.reverse();\nSystem.out.println(sb); // dlroW olleH" },
+    { "id": "java-sb-palindrome", "reference": "public class Main {\n    static boolean isPalindrome(String text) {\n        String reversed = new StringBuilder(text).reverse().toString();\n        return text.equals(reversed);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isPalindrome(\"racecar\"));\n        System.out.println(isPalindrome(\"hello\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-sb-append-loop", "java-sb-methods", "java-sb-palindrome"]
+  }
+}
