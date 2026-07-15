@@ -1,0 +1,143 @@
+{
+  "id": "java-method-basics",
+  "moduleId": "methods",
+  "title": "Method Declaration and Calling",
+  "description": "What a method is, how to declare one, and how to call it — Java's version of a function.",
+  "objectives": [
+    "Understand why we group code into methods",
+    "Declare a method with a return type, name, and parameter list",
+    "Call a method and understand what happens when it runs"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Group Code Into Methods?"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've written all our code so far directly inside main(). If we needed to calculate a square twice, we'd have to repeat the same lines. A method lets us name a block of code once and reuse it wherever needed."
+    },
+    {
+      "type": "definition",
+      "term": "Method",
+      "text": "A named, reusable block of code that performs a specific task, which can be called (invoked) from other places in a program."
+    },
+    {
+      "type": "note",
+      "text": "You've actually already called methods without naming the concept: System.out.println(...) and sc.nextInt() are both method calls on existing objects. Today we write our own."
+    },
+    {
+      "type": "heading",
+      "text": "2. Declaring a Method"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int square(int number) {\n    return number * number;\n}"
+    },
+    {
+      "type": "table",
+      "title": "Pieces of a method declaration",
+      "headers": ["Piece", "Here", "Meaning"],
+      "rows": [
+        ["Modifier", "static", "How the method can be accessed — covered fully in Static vs Instance Methods"],
+        ["Return type", "int", "The type of value this method sends back"],
+        ["Name", "square", "How we refer to and call this method"],
+        ["Parameter list", "(int number)", "Input values the method needs to do its job"],
+        ["Body", "{ return number * number; }", "The actual code that runs"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "We are only using static here as a fixed pattern, without explaining it — it's covered properly soon in Static vs Instance Methods. For now, every method we write inside Main will use static, matching main() itself."
+    },
+    {
+      "type": "heading",
+      "text": "3. Calling a Method"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int square(int number) {\n        return number * number;\n    }\n\n    public static void main(String[] args) {\n        int result = square(5);\n        System.out.println(result);\n    }\n}",
+      "output": "25",
+      "retypePractice": true,
+      "retypeId": "java-method-square"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing square(5)",
+      "steps": [
+        "main() calls square(5) — control jumps into square's body, with number set to 5",
+        "number * number evaluates to 25",
+        "return 25 sends 25 back to wherever square was called from",
+        "Control returns to main(), and result is set to 25",
+        "System.out.println(result) prints 25"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Where Can Methods Be Declared?"
+    },
+    {
+      "type": "paragraph",
+      "text": "A method is declared inside a class, but outside any other method — notice square() sits alongside main(), not inside it. We haven't formally learned classes yet (that's the Object-Oriented Programming module), but for now, every method in this course lives directly inside the Main class, next to main()."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Declaring one method's body inside another method's braces — methods must be siblings inside the class, never nested inside each other.",
+        "Forgetting that calling a method requires parentheses, even with no arguments — square not square() does not call it.",
+        "Mismatching the return type — declaring int square(...) but trying to return a String, or forgetting to return anything at all.",
+        "Assuming a method runs automatically just because it's declared — it only runs when explicitly called."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a method in Java?",
+          "answer": "A named, reusable block of code that performs a specific task and can be called from elsewhere in the program, avoiding the need to duplicate the same logic."
+        },
+        {
+          "question": "What are the main pieces of a method declaration?",
+          "answer": "A return type, a name, a parameter list (possibly empty), and a body containing the code that runs when the method is called."
+        },
+        {
+          "question": "What happens when a method is called?",
+          "answer": "Control jumps into the method's body, running its code with the given argument values assigned to its parameters, and (if it returns something) sends a value back to the calling code before control returns there."
+        }
+      ],
+      "thirtySecondAnswer": "A method is a named, reusable block of code — Java's version of a function — declared with a return type, a name, a parameter list, and a body. Calling a method transfers control into its body with the given arguments assigned to its parameters; if it has a non-void return type, it sends a value back via return before control returns to the caller. Methods let us avoid duplicating the same logic across a program by giving it one name we can call wherever it's needed."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "A method is a mini-program with a name. Declare once, call as many times as you like — each call is a fresh trip into the body and back."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are the four main pieces of a method declaration?",
+        "What happens to control flow when a method is called?",
+        "Can a method be declared inside another method's body?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-method-square", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int square(int number) {\n        return number * number;\n    }\n\n    public static void main(String[] args) {\n        int result = square(5);\n        System.out.println(result);\n    }\n}", "output": "25" }
+  ],
+  "retypePractice": [
+    { "id": "java-method-square", "reference": "public class Main {\n    static int square(int number) {\n        return number * number;\n    }\n\n    public static void main(String[] args) {\n        int result = square(5);\n        System.out.println(result);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-method-square"]
+  }
+}

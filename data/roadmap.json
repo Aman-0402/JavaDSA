@@ -29,7 +29,13 @@
         { "id": "java-labeled-loops", "title": "Labeled Loops", "lesson": "java-labeled-loops" }
       ]
     },
-    { "id": "methods", "title": "Methods", "topics": [] },
+    {
+      "id": "methods",
+      "title": "Methods",
+      "topics": [
+        { "id": "java-method-basics", "title": "Method Declaration and Calling", "lesson": "java-method-basics" }
+      ]
+    },
     { "id": "arrays-strings", "title": "Arrays & Strings", "topics": [] },
     { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },
     { "id": "advanced-java", "title": "Advanced Java", "topics": [] },
