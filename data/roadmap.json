@@ -9,7 +9,8 @@
         { "id": "java-data-types", "title": "Data Types", "lesson": "java-data-types" },
         { "id": "java-operators", "title": "Operators", "lesson": "java-operators" },
         { "id": "java-type-casting", "title": "Type Casting", "lesson": "java-type-casting" },
-        { "id": "java-input-output", "title": "Input and Output", "lesson": "java-input-output" }
+        { "id": "java-input-output", "title": "Input and Output", "lesson": "java-input-output" },
+        { "id": "java-comments", "title": "Comments", "lesson": "java-comments" }
       ]
     },
     { "id": "control-flow", "title": "Control Flow", "topics": [] },

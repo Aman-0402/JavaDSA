@@ -1,0 +1,196 @@
+{
+  "id": "java-comments",
+  "moduleId": "java-fundamentals",
+  "title": "Comments",
+  "description": "Single-line, multi-line, and Javadoc comments — how to leave notes in code the compiler ignores.",
+  "objectives": [
+    "Write single-line comments with //",
+    "Write multi-line comments with /* */",
+    "Recognize Javadoc comments (/** */) and what they're for",
+    "Use comments to explain why, not just what"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What is a Comment?"
+    },
+    {
+      "type": "definition",
+      "term": "Comment",
+      "text": "Text in source code that the compiler completely ignores — written for humans reading the code, not for the computer."
+    },
+    {
+      "type": "paragraph",
+      "text": "You've already seen comments in earlier lessons, like // valid next to a variable declaration, without it being explained. Today we cover the three comment styles Java supports."
+    },
+    {
+      "type": "heading",
+      "text": "2. Single-Line Comments (//)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// This calculates the total price\nint total = price * quantity;\n\nint age = 25; // age of the user"
+    },
+    {
+      "type": "paragraph",
+      "text": "Everything after // on that line is ignored by the compiler, whether it's the whole line or just the end of it."
+    },
+    {
+      "type": "heading",
+      "text": "3. Multi-Line Comments (/* */)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "/*\n * This program calculates a student's\n * final grade based on three test scores.\n */\nint finalGrade;"
+    },
+    {
+      "type": "paragraph",
+      "text": "Everything between /* and */ is ignored, even across multiple lines. The leading * on each inner line is just a common style convention — it has no special meaning to the compiler."
+    },
+    {
+      "type": "warning",
+      "text": "Multi-line comments cannot be nested. /* outer /* inner */ still-outer? */ does not work the way you might expect — the first */ closes the comment early, and still-outer? */ becomes actual code, which usually breaks compilation."
+    },
+    {
+      "type": "heading",
+      "text": "4. Javadoc Comments (/** */)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "/**\n * Calculates the area of a rectangle.\n * @param width the rectangle's width\n * @param height the rectangle's height\n * @return the calculated area\n */\ndouble calculateArea(double width, double height) {\n    return width * height;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "This example uses a method (calculateArea) and @param/@return tags — concepts not covered yet. We only preview Javadoc comments here because they look similar to /* */ comments and beginners often confuse the two. Full method syntax is covered in the Methods module."
+    },
+    {
+      "type": "definition",
+      "term": "Javadoc comment",
+      "text": "A specially formatted comment starting with /** that documentation-generation tools can read to automatically produce reference documentation for your code."
+    },
+    {
+      "type": "table",
+      "title": "The three comment styles",
+      "headers": ["Style", "Syntax", "Use"],
+      "rows": [
+        ["Single-line", "// text", "Short notes, one line at a time"],
+        ["Multi-line", "/* text */", "Longer explanations spanning several lines"],
+        ["Javadoc", "/** text */", "Documentation meant to be read by tools that generate reference docs"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. What Makes a Good Comment?"
+    },
+    {
+      "type": "paragraph",
+      "text": "A comment that just repeats what the code already says isn't useful. A good comment explains why something is done, especially when the reason isn't obvious from the code alone."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// Bad: just repeats the code\nint age = 25; // set age to 25\n\n// Good: explains why\nint minimumAge = 18; // legal age requirement for this feature"
+    },
+    {
+      "type": "tip",
+      "text": "As your programs grow, resist the urge to comment every single line. Clear variable and method names (like totalPrice instead of x) often make comments unnecessary — save comments for the parts that genuinely need explaining."
+    },
+    {
+      "type": "heading",
+      "text": "6. Commenting Out Code"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comments are also used to temporarily disable a line of code without deleting it — often while testing or debugging."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int total = price * quantity;\n// int total = price * quantity * 2; // old calculation, kept for reference"
+    },
+    {
+      "type": "note",
+      "text": "This is fine while actively working on something, but leaving lots of commented-out old code lying around long-term usually just clutters a file — it's generally better to remove code you no longer need once you're confident you won't need it back."
+    },
+    {
+      "type": "heading",
+      "text": "7. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    /*\n     * Entry point of the program.\n     * Calculates and prints a simple total.\n     */\n    public static void main(String[] args) {\n        int price = 50;   // price per item, in rupees\n        int quantity = 3; // number of items bought\n\n        int total = price * quantity;\n        System.out.println(\"Total: \" + total);\n    }\n}",
+      "output": "Total: 150",
+      "retypePractice": true,
+      "retypeId": "java-comments-mix"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to nest /* */ comments inside each other — the first closing */ ends the comment early.",
+        "Writing comments that just restate the code (// increment i by 1 next to i++;) instead of explaining why.",
+        "Confusing /** */ (Javadoc, read by documentation tools) with a plain /* */ comment.",
+        "Leaving large blocks of commented-out old code permanently in a file instead of removing what's no longer needed."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What are the three types of comments in Java?",
+          "answer": "Single-line comments (//), multi-line comments (/* */), and Javadoc comments (/** */), which documentation-generation tools can read to produce reference docs."
+        },
+        {
+          "question": "Can multi-line comments be nested in Java?",
+          "answer": "No. The first */ encountered closes the comment, so nested /* */ pairs don't work as expected and often cause a compile error in the leftover text."
+        },
+        {
+          "question": "Do comments affect a compiled Java program's behavior?",
+          "answer": "No. Comments are completely ignored by the compiler — they exist purely for humans reading the source code."
+        },
+        {
+          "question": "What makes a comment useful rather than clutter?",
+          "answer": "A useful comment explains why something is done, especially when the reason isn't obvious — comments that just restate what the code already clearly says add little value."
+        }
+      ],
+      "thirtySecondAnswer": "Java supports three comment styles: // for single-line notes, /* */ for multi-line explanations, and /** */ (Javadoc) for documentation that tooling can extract into reference docs. Comments are completely ignored by the compiler and exist purely for human readers. Multi-line comments can't be nested, and the most useful comments explain why code does something rather than restating what it obviously already does."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "// = one line. /* */ = a block. /** */ = documentation (the extra * is what makes it \"special\"). Comments explain WHY, the code already shows WHAT."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are the three comment styles in Java?",
+        "Can you nest multi-line comments?",
+        "What's the difference between /* */ and /** */?",
+        "Why is a comment that just restates the code not very useful?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-comments-mix", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    /*\n     * Entry point of the program.\n     * Calculates and prints a simple total.\n     */\n    public static void main(String[] args) {\n        int price = 50;   // price per item, in rupees\n        int quantity = 3; // number of items bought\n\n        int total = price * quantity;\n        System.out.println(\"Total: \" + total);\n    }\n}", "output": "Total: 150" }
+  ],
+  "retypePractice": [
+    {
+      "id": "java-comments-mix",
+      "reference": "public class Main {\n    /*\n     * Entry point of the program.\n     * Calculates and prints a simple total.\n     */\n    public static void main(String[] args) {\n        int price = 50;   // price per item, in rupees\n        int quantity = 3; // number of items bought\n\n        int total = price * quantity;\n        System.out.println(\"Total: \" + total);\n    }\n}"
+    }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-comments-mix"]
+  }
+}
