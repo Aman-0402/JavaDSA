@@ -1,0 +1,169 @@
+{
+  "id": "java-strings-immutability",
+  "moduleId": "arrays-strings",
+  "title": "Strings and Immutability",
+  "description": "String as a sequence of chars, and the crucial fact that Strings never change once created — every 'modification' makes a new one.",
+  "objectives": [
+    "Understand String as a reference type built from char values",
+    "Understand what immutability means and why String is immutable",
+    "Recognize the performance implication of repeated String concatenation in a loop"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. String: A Sequence of Characters"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Data Types, we said String is a reference type, unlike the 8 primitives. A String is essentially a sequence of char values (recall char from Data Types) bundled together as one object."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String name = \"Aman\";"
+    },
+    {
+      "type": "definition",
+      "term": "String",
+      "text": "A reference type in Java representing an immutable sequence of characters."
+    },
+    {
+      "type": "heading",
+      "text": "2. What Immutability Means"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String greeting = \"Hello\";\ngreeting = greeting + \" World\";\nSystem.out.println(greeting); // Hello World"
+    },
+    {
+      "type": "warning",
+      "text": "This looks like greeting was modified, but it wasn't! greeting + \" World\" creates a BRAND NEW String object (\"Hello World\"), and greeting is simply reassigned to point at this new object. The original \"Hello\" String still exists in memory, unchanged — it's just no longer referenced by greeting."
+    },
+    {
+      "type": "definition",
+      "term": "Immutable",
+      "text": "Once created, an object's internal state can never be changed. Every operation that appears to 'modify' an immutable object actually produces a new object instead."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Printed page analogy",
+      "text": "A String is like a printed page — you can't erase and rewrite a word on it. If you want different text, you print a brand NEW page and throw away (or keep, unused) the old one. greeting = greeting + \" World\"; prints a new page and points your bookmark (greeting) at it."
+    },
+    {
+      "type": "heading",
+      "text": "3. Every 'Modifying' Operation Creates a New String"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "String original = \"java\";\nString upper = original.toUpperCase();\n\nSystem.out.println(original); // java  -- unchanged!\nSystem.out.println(upper);    // JAVA  -- a brand new String",
+      "output": "java\nJAVA",
+      "retypePractice": true,
+      "retypeId": "java-string-immutable-upper"
+    },
+    {
+      "type": "note",
+      "text": "toUpperCase() (a String method, covered fully in the next lesson) does NOT change original — it can't, since String is immutable. It returns a new String, which we captured in upper. If you forget to capture the result, the 'modification' is simply lost."
+    },
+    {
+      "type": "heading",
+      "text": "4. The Hidden Cost: Concatenation in a Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String result = \"\";\nfor (int i = 1; i <= 5; i++) {\n    result = result + i; // creates a NEW String every single iteration\n}\nSystem.out.println(result); // 12345"
+    },
+    {
+      "type": "warning",
+      "text": "Each result + i creates an entirely new String object, since the old result can't be modified in place. For 5 iterations this is harmless, but for a loop running thousands of times, this means thousands of throwaway String objects being created — a real performance problem. The fix for this is StringBuilder, covered in the very next lesson."
+    },
+    {
+      "type": "heading",
+      "text": "5. String Comparison: == vs .equals()"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "String a = \"hello\";\nString b = \"hello\";\nString c = new String(\"hello\");\n\nSystem.out.println(a == b);        // true (often, due to String interning)\nSystem.out.println(a == c);        // false\nSystem.out.println(a.equals(c));   // true"
+    },
+    {
+      "type": "warning",
+      "text": "== compares references (are these the exact same object in memory?), while .equals() compares actual content (do these Strings contain the same characters?). Because String is a reference type, ALWAYS use .equals() to compare String content — using == can give misleading results, especially with new String(...). We revisit exactly why == sometimes shows true for literals like a == b once we reach Object-Oriented Programming."
+    },
+    {
+      "type": "heading",
+      "text": "6. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        String password = \"secret123\";\n        String userInput = \"secret123\";\n\n        if (password.equals(userInput)) {\n            System.out.println(\"Access granted\");\n        } else {\n            System.out.println(\"Access denied\");\n        }\n    }\n}",
+      "output": "Access granted",
+      "retypePractice": true,
+      "retypeId": "java-string-equals-check"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using == to compare String content instead of .equals() — this can give unpredictable results depending on how the Strings were created.",
+        "Calling a String method like toUpperCase() and expecting the original variable to change — the result must be captured in a new (or reassigned) variable.",
+        "Concatenating Strings in a large loop with + without realizing each iteration creates a new object — a performance trap that StringBuilder solves.",
+        "Assuming immutability means Strings can't be reassigned — a String variable can always be reassigned to a completely different String object; it's the object's content that never changes."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does it mean for String to be immutable?",
+          "answer": "Once a String object is created, its content can never change. Any operation that appears to modify a String — like concatenation or toUpperCase() — actually creates and returns a brand new String object, leaving the original unchanged."
+        },
+        {
+          "question": "Why should you use .equals() instead of == to compare String content?",
+          "answer": "== compares whether two references point to the exact same object in memory, not whether their content is equal. .equals() compares actual character content, which is almost always what you actually want when comparing Strings."
+        },
+        {
+          "question": "Why is concatenating Strings with + inside a large loop considered inefficient?",
+          "answer": "Because String is immutable, each + creates an entirely new String object rather than modifying one in place. In a loop with many iterations, this creates many throwaway objects, wasting memory and time — StringBuilder avoids this by being mutable."
+        }
+      ],
+      "thirtySecondAnswer": "String is a reference type representing an immutable sequence of characters — once created, its content can never change. Every apparent 'modification', like concatenation with + or calling toUpperCase(), actually creates and returns a brand new String object rather than altering the original. Because of this, comparing String content should always use .equals(), not ==, which compares object references instead. Concatenating Strings repeatedly inside a loop is a common performance trap, since each iteration silently creates a new object — StringBuilder, covered next, exists specifically to solve this."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "String = a printed page, not a whiteboard. You can't erase and rewrite — every 'edit' prints a brand new page. Compare CONTENT with .equals(), not == (which compares whether it's literally the same physical page)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does it mean for a String to be immutable?",
+        "Why does str.toUpperCase(); (without capturing the result) not change str?",
+        "Why should you compare String content with .equals() instead of ==?",
+        "Why is String concatenation with + inefficient inside a large loop?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-string-immutable-upper", "lang": "java", "filename": "Main.java", "code": "String original = \"java\";\nString upper = original.toUpperCase();\n\nSystem.out.println(original); // java  -- unchanged!\nSystem.out.println(upper);    // JAVA  -- a brand new String", "output": "java\nJAVA" },
+    { "id": "java-string-equals-check", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        String password = \"secret123\";\n        String userInput = \"secret123\";\n\n        if (password.equals(userInput)) {\n            System.out.println(\"Access granted\");\n        } else {\n            System.out.println(\"Access denied\");\n        }\n    }\n}", "output": "Access granted" }
+  ],
+  "retypePractice": [
+    { "id": "java-string-immutable-upper", "reference": "String original = \"java\";\nString upper = original.toUpperCase();\n\nSystem.out.println(original); // java  -- unchanged!\nSystem.out.println(upper);    // JAVA  -- a brand new String" },
+    { "id": "java-string-equals-check", "reference": "public class Main {\n    public static void main(String[] args) {\n        String password = \"secret123\";\n        String userInput = \"secret123\";\n\n        if (password.equals(userInput)) {\n            System.out.println(\"Access granted\");\n        } else {\n            System.out.println(\"Access denied\");\n        }\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-string-immutable-upper", "java-string-equals-check"]
+  }
+}
