@@ -93,7 +93,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 
 | # | Module | Status | Lessons done |
 |---|--------|--------|---------------|
-| 1 | Java Fundamentals | 🟡 in progress | Introduction to Java, Variables, Data Types, Operators, Type Casting, Input and Output — remaining: Comments |
+| 1 | Java Fundamentals | ✅ done | Introduction to Java, Variables, Data Types, Operators, Type Casting, Input and Output, Comments |
 | 2 | Control Flow | ⬜ | — |
 | 3 | Methods | ⬜ | — |
 | 4 | Arrays & Strings | ⬜ | — |
