@@ -1,0 +1,190 @@
+{
+  "id": "java-exception-handling",
+  "moduleId": "advanced-java",
+  "title": "Exception Handling",
+  "description": "try/catch/finally, the checked vs unchecked distinction, and writing custom exceptions -- properly explaining the ArrayIndexOutOfBoundsException mentioned back in 1D Arrays.",
+  "objectives": [
+    "Understand what an exception is and use try/catch to handle one",
+    "Use finally for cleanup code that always runs",
+    "Distinguish checked from unchecked exceptions",
+    "Write and throw a custom exception"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What is an Exception?"
+    },
+    {
+      "type": "paragraph",
+      "text": "In 1D Arrays, we mentioned that accessing an invalid index throws an ArrayIndexOutOfBoundsException, crashing the program. Today we learn how to catch and handle problems like this gracefully instead of letting them crash everything."
+    },
+    {
+      "type": "definition",
+      "term": "Exception",
+      "text": "An object representing an error or unusual condition that occurs during a program's execution, which can be caught and handled instead of crashing the program."
+    },
+    {
+      "type": "heading",
+      "text": "2. try/catch"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 2, 3};\n\n        try {\n            System.out.println(numbers[5]);\n        } catch (ArrayIndexOutOfBoundsException e) {\n            System.out.println(\"Caught an error: invalid index\");\n        }\n\n        System.out.println(\"Program continues normally.\");\n    }\n}",
+      "output": "Caught an error: invalid index\nProgram continues normally.",
+      "retypePractice": true,
+      "retypeId": "java-exception-array-catch"
+    },
+    {
+      "type": "table",
+      "title": "Pieces of try/catch",
+      "headers": ["Block", "Purpose"],
+      "rows": [
+        ["try { ... }", "Code that might throw an exception"],
+        ["catch (ExceptionType e) { ... }", "Runs only if that specific exception type occurs inside the try block"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Without try/catch, numbers[5] here would crash the entire program immediately -- Program continues normally. would never print. With try/catch, the exception is handled, and execution continues right after the try/catch block."
+    },
+    {
+      "type": "heading",
+      "text": "3. Multiple catch Blocks"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "try {\n    int result = 10 / 0;\n} catch (ArithmeticException e) {\n    System.out.println(\"Cannot divide by zero\");\n} catch (Exception e) {\n    System.out.println(\"Some other error occurred\");\n}"
+    },
+    {
+      "type": "note",
+      "text": "Java checks catch blocks top to bottom, similar to else if in Conditional Statements, and runs the first one matching the actual exception type. Exception (capital E) is the general parent type of nearly all exceptions -- a catch (Exception e) block at the end acts as a catch-all, similar to a final else."
+    },
+    {
+      "type": "heading",
+      "text": "4. finally -- Code That Always Runs"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        try {\n            int result = 10 / 0;\n        } catch (ArithmeticException e) {\n            System.out.println(\"Caught division by zero\");\n        } finally {\n            System.out.println(\"This always runs\");\n        }\n    }\n}",
+      "output": "Caught division by zero\nThis always runs",
+      "retypePractice": true,
+      "retypeId": "java-exception-finally"
+    },
+    {
+      "type": "definition",
+      "term": "finally block",
+      "text": "A block that always executes after a try/catch, whether an exception occurred or not -- commonly used for cleanup code like closing a file or a Scanner."
+    },
+    {
+      "type": "heading",
+      "text": "5. Checked vs Unchecked Exceptions"
+    },
+    {
+      "type": "table",
+      "title": "The two categories",
+      "headers": ["", "Checked", "Unchecked (Runtime)"],
+      "rows": [
+        ["Compiler enforcement", "Must be caught or declared, or it won't compile", "No compiler enforcement -- can be ignored until it crashes at runtime"],
+        ["Examples", "IOException (file operations)", "ArrayIndexOutOfBoundsException, ArithmeticException, NullPointerException"],
+        ["Represents", "Expected, recoverable conditions outside your control (a missing file)", "Programming mistakes, usually preventable with careful code"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "ArrayIndexOutOfBoundsException, seen back in 1D Arrays, is unchecked -- Java's compiler never forces you to catch it. That's exactly why it was possible to crash a program with an invalid index without any compile error warning you in advance."
+    },
+    {
+      "type": "heading",
+      "text": "6. Custom Exceptions"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class InvalidAgeException extends Exception {\n        InvalidAgeException(String message) {\n            super(message);\n        }\n    }\n\n    static void setAge(int age) throws InvalidAgeException {\n        if (age < 0) {\n            throw new InvalidAgeException(\"Age cannot be negative: \" + age);\n        }\n        System.out.println(\"Age set to \" + age);\n    }\n\n    public static void main(String[] args) {\n        try {\n            setAge(-5);\n        } catch (InvalidAgeException e) {\n            System.out.println(\"Error: \" + e.getMessage());\n        }\n    }\n}",
+      "output": "Error: Age cannot be negative: -5",
+      "retypePractice": true,
+      "retypeId": "java-exception-custom"
+    },
+    {
+      "type": "keyPoints",
+      "title": "What's happening here",
+      "points": [
+        "InvalidAgeException extends Exception (Inheritance, applied to exceptions) -- making it a checked exception of our own design",
+        "throws InvalidAgeException on setAge's signature declares it might throw this checked exception, required by the compiler",
+        "throw new InvalidAgeException(...) actually creates and raises the exception when age is invalid",
+        "catch (InvalidAgeException e) handles it, and e.getMessage() retrieves the message passed to super(message)"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Catching Exception (the general parent type) FIRST, before more specific exceptions -- like else if in Conditional Statements, a broader catch placed first prevents more specific catch blocks below it from ever running.",
+        "Forgetting a checked exception must be either caught or declared with throws on the method signature, or the code won't compile.",
+        "Using try/catch to silently swallow ALL exceptions without ever printing or logging anything, hiding real bugs.",
+        "Confusing throw (raising a single exception instance) with throws (declaring on a method's signature that it might raise one)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the purpose of try/catch?",
+          "answer": "It lets a program handle an exception gracefully instead of crashing -- code that might fail goes in the try block, and the catch block runs only if a matching exception actually occurs, letting execution continue afterward."
+        },
+        {
+          "question": "What is the difference between checked and unchecked exceptions?",
+          "answer": "Checked exceptions must be caught or declared with throws, enforced by the compiler, and typically represent recoverable conditions outside the program's control. Unchecked (runtime) exceptions have no compiler enforcement and usually represent programming mistakes, like ArrayIndexOutOfBoundsException."
+        },
+        {
+          "question": "What does the finally block guarantee?",
+          "answer": "Its code always runs after a try/catch, whether an exception occurred or not -- commonly used for cleanup that must happen regardless of success or failure."
+        },
+        {
+          "question": "How do you create a custom exception in Java?",
+          "answer": "Define a class that extends Exception (checked) or RuntimeException (unchecked), typically with a constructor that calls super(message), and throw an instance of it with throw new YourException(...) where needed."
+        }
+      ],
+      "thirtySecondAnswer": "try/catch lets a program handle exceptions gracefully: code that might fail goes in try, and a matching catch block handles the exception instead of crashing the program, with execution continuing afterward. finally always runs regardless of whether an exception occurred, useful for cleanup. Checked exceptions must be caught or declared with throws, enforced by the compiler; unchecked exceptions like ArrayIndexOutOfBoundsException have no such enforcement. Custom exceptions extend Exception (checked) or RuntimeException (unchecked), letting a program define and throw its own meaningful error types, like an InvalidAgeException for a negative age."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "try = \"attempt this, might break.\" catch = \"if it breaks THIS way, do this instead.\" finally = \"no matter what, do this anyway.\" Checked = compiler forces you to plan for it. Unchecked = your own bug, silently waiting to crash."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is the purpose of a catch block?",
+        "What's the difference between checked and unchecked exceptions?",
+        "Does the finally block run even if no exception occurred?",
+        "How do you define a custom exception?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-exception-array-catch", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 2, 3};\n\n        try {\n            System.out.println(numbers[5]);\n        } catch (ArrayIndexOutOfBoundsException e) {\n            System.out.println(\"Caught an error: invalid index\");\n        }\n\n        System.out.println(\"Program continues normally.\");\n    }\n}", "output": "Caught an error: invalid index\nProgram continues normally." },
+    { "id": "java-exception-finally", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        try {\n            int result = 10 / 0;\n        } catch (ArithmeticException e) {\n            System.out.println(\"Caught division by zero\");\n        } finally {\n            System.out.println(\"This always runs\");\n        }\n    }\n}", "output": "Caught division by zero\nThis always runs" },
+    { "id": "java-exception-custom", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class InvalidAgeException extends Exception {\n        InvalidAgeException(String message) {\n            super(message);\n        }\n    }\n\n    static void setAge(int age) throws InvalidAgeException {\n        if (age < 0) {\n            throw new InvalidAgeException(\"Age cannot be negative: \" + age);\n        }\n        System.out.println(\"Age set to \" + age);\n    }\n\n    public static void main(String[] args) {\n        try {\n            setAge(-5);\n        } catch (InvalidAgeException e) {\n            System.out.println(\"Error: \" + e.getMessage());\n        }\n    }\n}", "output": "Error: Age cannot be negative: -5" }
+  ],
+  "retypePractice": [
+    { "id": "java-exception-array-catch", "reference": "public class Main {\n    public static void main(String[] args) {\n        int[] numbers = {1, 2, 3};\n\n        try {\n            System.out.println(numbers[5]);\n        } catch (ArrayIndexOutOfBoundsException e) {\n            System.out.println(\"Caught an error: invalid index\");\n        }\n\n        System.out.println(\"Program continues normally.\");\n    }\n}" },
+    { "id": "java-exception-finally", "reference": "public class Main {\n    public static void main(String[] args) {\n        try {\n            int result = 10 / 0;\n        } catch (ArithmeticException e) {\n            System.out.println(\"Caught division by zero\");\n        } finally {\n            System.out.println(\"This always runs\");\n        }\n    }\n}" },
+    { "id": "java-exception-custom", "reference": "public class Main {\n    static class InvalidAgeException extends Exception {\n        InvalidAgeException(String message) {\n            super(message);\n        }\n    }\n\n    static void setAge(int age) throws InvalidAgeException {\n        if (age < 0) {\n            throw new InvalidAgeException(\"Age cannot be negative: \" + age);\n        }\n        System.out.println(\"Age set to \" + age);\n    }\n\n    public static void main(String[] args) {\n        try {\n            setAge(-5);\n        } catch (InvalidAgeException e) {\n            System.out.println(\"Error: \" + e.getMessage());\n        }\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-exception-array-catch", "java-exception-finally", "java-exception-custom"]
+  }
+}

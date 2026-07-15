@@ -69,7 +69,13 @@
         { "id": "java-packages", "title": "Packages", "lesson": "java-packages" }
       ]
     },
-    { "id": "advanced-java", "title": "Advanced Java", "topics": [] },
+    {
+      "id": "advanced-java",
+      "title": "Advanced Java",
+      "topics": [
+        { "id": "java-exception-handling", "title": "Exception Handling", "lesson": "java-exception-handling" }
+      ]
+    },
     { "id": "collections-framework", "title": "Java Collections Framework", "topics": [] },
     { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
