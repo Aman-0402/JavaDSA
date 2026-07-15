@@ -1,0 +1,18 @@
+{
+  "modules": [
+    { "id": "java-fundamentals", "title": "Java Fundamentals", "topics": [] },
+    { "id": "control-flow", "title": "Control Flow", "topics": [] },
+    { "id": "methods", "title": "Methods", "topics": [] },
+    { "id": "arrays-strings", "title": "Arrays & Strings", "topics": [] },
+    { "id": "oop", "title": "Object-Oriented Programming", "topics": [] },
+    { "id": "advanced-java", "title": "Advanced Java", "topics": [] },
+    { "id": "collections-framework", "title": "Java Collections Framework", "topics": [] },
+    { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
+    { "id": "linked-list", "title": "Linked List", "topics": [] },
+    { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },
+    { "id": "heap", "title": "Heap", "topics": [] },
+    { "id": "trees", "title": "Trees", "topics": [] },
+    { "id": "graphs", "title": "Graphs", "topics": [] },
+    { "id": "greedy-dp", "title": "Greedy & Dynamic Programming", "topics": [] }
+  ]
+}

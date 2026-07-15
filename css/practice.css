@@ -1,0 +1,25 @@
+/* Reserved for coding-challenge workspace components (added when practice questions exist) */
+.challenge-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  margin: 16px 0;
+  overflow: hidden;
+}
+.challenge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.challenge-header h4 { font-size: 15px; font-weight: 700; }
+.challenge-body { padding: 16px 18px; }
+.challenge-console {
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: var(--font-code);
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+}
