@@ -1,0 +1,170 @@
+{
+  "id": "java-labeled-loops",
+  "moduleId": "control-flow",
+  "title": "Labeled Loops",
+  "description": "Naming a loop with a label so break and continue can target an outer loop directly, solving the nested-loop limitation from the break lesson.",
+  "objectives": [
+    "Label a loop and use labeled break to exit an outer loop from inside a nested one",
+    "Use labeled continue to skip an outer loop's iteration from inside a nested one",
+    "Know when a label is genuinely needed vs when it's overkill"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the break lesson, we saw that a plain break only exits the innermost loop, leaving any outer loop untouched. Sometimes you genuinely need to exit an OUTER loop from inside a nested one — that's exactly what a label enables."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            break; // only exits the j loop\n        }\n        System.out.println(i + \",\" + j);\n    }\n}\n// 1,1  2,1  3,1  (outer loop keeps going, as seen before)"
+    },
+    {
+      "type": "heading",
+      "text": "2. Labeling a Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        // ...\n    }\n}"
+    },
+    {
+      "type": "definition",
+      "term": "Label",
+      "text": "A name (like outer:) placed directly before a loop, which break or continue can reference to target that specific loop instead of only the innermost one."
+    },
+    {
+      "type": "note",
+      "text": "A label is just an identifier followed by a colon, written immediately before the loop it names. It follows the same naming rules as a variable name."
+    },
+    {
+      "type": "heading",
+      "text": "3. Labeled break"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            break outer;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}",
+      "output": "1,1",
+      "retypePractice": true,
+      "retypeId": "java-labeled-break"
+    },
+    {
+      "type": "warning",
+      "text": "break outer; exits the OUTER loop entirely, the moment j == 2 on the very first pass (i = 1). Compare this to the plain break earlier in this lesson, which let the outer loop continue to i=2 and i=3 — labeled break stops everything at once."
+    },
+    {
+      "type": "heading",
+      "text": "4. Labeled continue"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            continue outer;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}",
+      "output": "1,1\n2,1\n3,1",
+      "retypePractice": true,
+      "retypeId": "java-labeled-continue"
+    },
+    {
+      "type": "note",
+      "text": "continue outer; skips the rest of the INNER loop's current pass AND moves straight to the outer loop's next iteration, rather than just moving to the inner loop's next j. That's why we get exactly one line per i value (1,1 then 2,1 then 3,1) instead of the inner loop ever reaching j=3."
+    },
+    {
+      "type": "table",
+      "title": "Plain vs labeled, side by side",
+      "headers": ["Statement", "Effect"],
+      "rows": [
+        ["break;", "Exits only the innermost loop"],
+        ["break outer;", "Exits the loop labeled outer, however many levels out that is"],
+        ["continue;", "Skips to the next iteration of the innermost loop"],
+        ["continue outer;", "Skips straight to the next iteration of the loop labeled outer"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. A Realistic Use Case: Searching a Grid"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "int[][] grid = {\n    {1, 2, 3},\n    {4, 5, 6},\n    {7, 8, 9}\n};\nint target = 5;\nboolean found = false;\n\nsearch:\nfor (int row = 0; row < grid.length; row++) {\n    for (int col = 0; col < grid[row].length; col++) {\n        if (grid[row][col] == target) {\n            found = true;\n            break search;\n        }\n    }\n}\n\nSystem.out.println(\"Found: \" + found);"
+    },
+    {
+      "type": "warning",
+      "text": "int[][] grid is a 2D array — a grid of values, covered properly in the Arrays module. Here, it only serves to show why labeled break is genuinely useful: without it, finding a value inside a nested loop and stopping BOTH loops entirely would need an extra boolean flag checked in the outer loop too, adding clutter."
+    },
+    {
+      "type": "heading",
+      "text": "6. Don't Overuse Labels"
+    },
+    {
+      "type": "tip",
+      "text": "Labeled break/continue are useful, but reaching for them constantly can be a sign a loop's logic could be restructured more clearly — for example, by extracting the nested loops into a separate method (methods are the very next module) that simply returns as soon as it finds what it needs. Use labels when they genuinely simplify the code, not as a default habit."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the colon after the label name — outer for (...) instead of outer: for (...) is invalid syntax.",
+        "Confusing break outer; with break; — the former exits the labeled loop specifically, the latter always exits only the innermost one.",
+        "Labeling every loop out of habit, even single (non-nested) loops, where a label adds no value.",
+        "Assuming continue outer; behaves like break outer; — continue still loops again (at the outer level), it does not exit entirely."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What problem do labeled loops solve?",
+          "answer": "A plain break or continue only affects the innermost loop it's inside. Labeled break/continue let you target a specific outer loop directly, exiting or continuing it even from deep inside nested loops."
+        },
+        {
+          "question": "What is the difference between break outer; and continue outer;?",
+          "answer": "break outer; exits the labeled outer loop entirely. continue outer; skips the rest of the current inner-loop pass and jumps to the outer loop's next iteration, but the outer loop keeps running."
+        },
+        {
+          "question": "How do you write a label for a loop in Java?",
+          "answer": "An identifier followed by a colon, placed immediately before the loop, e.g. outer: for (...) { ... }. The label can then be referenced by break labelName; or continue labelName; inside any loop nested within it."
+        }
+      ],
+      "thirtySecondAnswer": "A label is a named identifier placed before a loop, like outer: for (...), that break and continue can reference directly to target that specific loop rather than only the innermost one. break outer; exits the labeled loop entirely, while continue outer; skips the current inner-loop pass and jumps straight to the labeled outer loop's next iteration. This solves the common nested-loop problem where a plain break or continue can't reach past the innermost loop — useful for cases like searching a 2D grid and needing to stop both loops the instant a match is found."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "label: names the loop. break label; = EXIT that named loop entirely. continue label; = SKIP to that named loop's next round. Without a label, break/continue only ever see the innermost ring."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What problem does a labeled break solve that a plain break can't?",
+        "How do you write a label before a loop?",
+        "What's the difference between break outer; and continue outer;?",
+        "Should you label every nested loop by default? Why or why not?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-labeled-break", "lang": "java", "filename": "Main.java", "code": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            break outer;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}", "output": "1,1" },
+    { "id": "java-labeled-continue", "lang": "java", "filename": "Main.java", "code": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            continue outer;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}", "output": "1,1\n2,1\n3,1" }
+  ],
+  "retypePractice": [
+    { "id": "java-labeled-break", "reference": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            break outer;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}" },
+    { "id": "java-labeled-continue", "reference": "outer:\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        if (j == 2) {\n            continue outer;\n        }\n        System.out.println(i + \",\" + j);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-labeled-break", "java-labeled-continue"]
+  }
+}

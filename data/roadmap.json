@@ -25,7 +25,8 @@
         { "id": "java-while-loop", "title": "while Loop", "lesson": "java-while-loop" },
         { "id": "java-do-while-loop", "title": "do-while Loop", "lesson": "java-do-while-loop" },
         { "id": "java-break", "title": "break", "lesson": "java-break" },
-        { "id": "java-continue", "title": "continue", "lesson": "java-continue" }
+        { "id": "java-continue", "title": "continue", "lesson": "java-continue" },
+        { "id": "java-labeled-loops", "title": "Labeled Loops", "lesson": "java-labeled-loops" }
       ]
     },
     { "id": "methods", "title": "Methods", "topics": [] },
