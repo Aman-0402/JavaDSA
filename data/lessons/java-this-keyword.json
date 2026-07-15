@@ -1,0 +1,156 @@
+{
+  "id": "java-this-keyword",
+  "moduleId": "oop",
+  "title": "this Keyword",
+  "description": "Explaining the this.width = width; pattern previewed in Constructors, plus using this() to call one constructor from another.",
+  "objectives": [
+    "Understand what this refers to inside an instance method or constructor",
+    "Resolve field/parameter name shadowing with this",
+    "Use this(...) to call one constructor from another"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Constructors, we wrote this.width = width; without full explanation. Today we explain this properly."
+    },
+    {
+      "type": "definition",
+      "term": "this",
+      "text": "A reference, available inside instance methods and constructors, to the specific object the code is currently running on."
+    },
+    {
+      "type": "heading",
+      "text": "2. Why We Needed this"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    String name;\n    int age;\n\n    Student(String name, int age) {\n        this.name = name; // this.name = the FIELD, name = the PARAMETER\n        this.age = age;\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "The constructor's parameters are named name and age — deliberately the SAME as the fields, for readability. Without this, writing name = name; would just assign the parameter to itself and do nothing useful — the field would never actually get set. this.name specifically means \"the name field belonging to this object,\" resolving the naming clash."
+    },
+    {
+      "type": "heading",
+      "text": "3. this is Optional When There's No Naming Clash"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "public class Student {\n    String name;\n    int age;\n\n    Student(String studentName, int studentAge) {\n        name = studentName; // no clash -- this. is optional here\n        age = studentAge;\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "Recall this exact pattern from the Constructors lesson's very first example — studentName and studentAge don't share a name with any field, so plain name = studentName; works fine without this. Using this. everywhere, even when not required, is a matter of style — some developers do it for consistency, others only when actually necessary."
+    },
+    {
+      "type": "heading",
+      "text": "4. this Inside Instance Methods"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Counter {\n        int count;\n\n        void increment() {\n            this.count = this.count + 1;\n        }\n    }\n\n    public static void main(String[] args) {\n        Counter c = new Counter();\n        c.increment();\n        c.increment();\n        System.out.println(c.count);\n    }\n}",
+      "output": "2",
+      "retypePractice": true,
+      "retypeId": "java-this-counter"
+    },
+    {
+      "type": "note",
+      "text": "Inside increment(), this refers to whichever specific Counter object the method is currently running on — here, c. If you had a second Counter object, calling increment() on it would affect only ITS OWN count, since this always refers to \"the object this call is happening on,\" not a shared value."
+    },
+    {
+      "type": "heading",
+      "text": "5. this(...) — Calling One Constructor from Another"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Student.java",
+      "code": "public class Student {\n    String name;\n    int age;\n\n    Student(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n\n    Student(String name) {\n        this(name, 18); // calls the two-argument constructor above\n    }\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\");\n        System.out.println(s.name + \" is \" + s.age);\n    }\n}",
+      "output": "Aman is 18",
+      "retypePractice": true,
+      "retypeId": "java-this-constructor-chain"
+    },
+    {
+      "type": "warning",
+      "text": "this(name, 18); must be the FIRST statement in the constructor if used at all — Java requires it to appear before any other code in that constructor's body. This avoids duplicating the same field-assignment logic across multiple overloaded constructors."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Writing name = name; inside a constructor when the parameter shares the field's name, accidentally assigning the parameter to itself instead of setting the field.",
+        "Forgetting this(...) must be the very first line in a constructor — any code before it causes a compile error.",
+        "Confusing this(...) (calling another constructor) with this.field (accessing a field) — they look similar but serve different purposes.",
+        "Using this inside a static method — static methods don't run on any particular object, so this isn't available there at all."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does this refer to inside an instance method or constructor?",
+          "answer": "The specific object the currently executing code is running on — it lets code inside a class refer to that object's own fields and methods explicitly."
+        },
+        {
+          "question": "Why is this.name = name; needed instead of just name = name; in some constructors?",
+          "answer": "When a constructor parameter shares its name with a field, plain name = name; would just assign the parameter to itself, never touching the field. this.name specifically targets the field, resolving the naming clash."
+        },
+        {
+          "question": "What does this(...) do, and where must it appear in a constructor?",
+          "answer": "It calls another constructor of the same class, letting one constructor reuse another's initialization logic. It must be the very first statement in the constructor body if used at all."
+        },
+        {
+          "question": "Can this be used inside a static method?",
+          "answer": "No. static methods don't run on any specific object (recall Static vs Instance Methods), so there is no this available inside them."
+        }
+      ],
+      "thirtySecondAnswer": "this is a reference, available inside instance methods and constructors, to the specific object the code is currently running on. It's most commonly needed when a constructor or method parameter shares a name with a field — this.name = name; explicitly targets the field, avoiding the parameter shadowing it. this(...) is a related but different use: calling one constructor from another to avoid duplicating initialization logic, and it must be the first statement in the calling constructor. Since static methods don't belong to any object, this is unavailable inside them."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "this = \"the object I'm currently running on, in person.\" this.field wins any naming tie against a same-named parameter. this(...) (with parentheses) calls a sibling constructor — must go first, no exceptions."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does this refer to inside an instance method?",
+        "Why is this.name = name; needed when field and parameter share a name?",
+        "Where must a this(...) constructor call appear in the constructor body?",
+        "Can this be used inside a static method?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-this-counter", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Counter {\n        int count;\n\n        void increment() {\n            this.count = this.count + 1;\n        }\n    }\n\n    public static void main(String[] args) {\n        Counter c = new Counter();\n        c.increment();\n        c.increment();\n        System.out.println(c.count);\n    }\n}", "output": "2" },
+    { "id": "java-this-constructor-chain", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\");\n        System.out.println(s.name + \" is \" + s.age);\n    }\n}", "output": "Aman is 18" }
+  ],
+  "retypePractice": [
+    { "id": "java-this-counter", "reference": "public class Main {\n    static class Counter {\n        int count;\n\n        void increment() {\n            this.count = this.count + 1;\n        }\n    }\n\n    public static void main(String[] args) {\n        Counter c = new Counter();\n        c.increment();\n        c.increment();\n        System.out.println(c.count);\n    }\n}" },
+    { "id": "java-this-constructor-chain", "reference": "public class Main {\n    public static void main(String[] args) {\n        Student s = new Student(\"Aman\");\n        System.out.println(s.name + \" is \" + s.age);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-this-counter", "java-this-constructor-chain"]
+  }
+}

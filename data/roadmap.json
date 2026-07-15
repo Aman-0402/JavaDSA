@@ -59,7 +59,8 @@
       "title": "Object-Oriented Programming",
       "topics": [
         { "id": "java-classes-objects", "title": "Classes and Objects", "lesson": "java-classes-objects" },
-        { "id": "java-constructors", "title": "Constructors", "lesson": "java-constructors" }
+        { "id": "java-constructors", "title": "Constructors", "lesson": "java-constructors" },
+        { "id": "java-this-keyword", "title": "this Keyword", "lesson": "java-this-keyword" }
       ]
     },
     { "id": "advanced-java", "title": "Advanced Java", "topics": [] },
