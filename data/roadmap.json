@@ -141,7 +141,8 @@
       "id": "trees",
       "title": "Trees",
       "topics": [
-        { "id": "java-binary-trees", "title": "Binary Trees", "lesson": "java-binary-trees" }
+        { "id": "java-binary-trees", "title": "Binary Trees", "lesson": "java-binary-trees" },
+        { "id": "java-binary-search-trees", "title": "Binary Search Trees", "lesson": "java-binary-search-trees" }
       ]
     },
     { "id": "graphs", "title": "Graphs", "topics": [] },

@@ -1,0 +1,156 @@
+{
+  "id": "java-binary-search-trees",
+  "moduleId": "trees",
+  "title": "Binary Search Trees",
+  "description": "Adding an ordering rule to Binary Trees -- left is smaller, right is bigger -- enabling O(log n) search, echoing Binary Search's halving idea.",
+  "objectives": [
+    "Understand the BST ordering property",
+    "Implement insert and search recursively",
+    "Recognize why BST operations are O(log n) for a balanced tree, but O(n) for a skewed one"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Rule: Left Smaller, Right Bigger"
+    },
+    {
+      "type": "paragraph",
+      "text": "A plain Binary Tree makes no promises about ordering. A Binary Search Tree (BST) adds exactly one rule, applied at EVERY node: everything in the left subtree is smaller, and everything in the right subtree is bigger."
+    },
+    {
+      "type": "definition",
+      "term": "Binary Search Tree",
+      "text": "A binary tree where every node's left subtree contains only smaller values and its right subtree contains only larger values, enabling efficient searching."
+    },
+    {
+      "type": "heading",
+      "text": "2. Inserting Into a BST"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node insert(Node node, int value) {\n        if (node == null) {\n            return new Node(value); // base case -- found the empty spot\n        }\n        if (value < node.data) {\n            node.left = insert(node.left, value);\n        } else if (value > node.data) {\n            node.right = insert(node.right, value);\n        }\n        return node;\n    }\n\n    static void printInOrder(Node node) {\n        if (node == null) return;\n        printInOrder(node.left);\n        System.out.print(node.data + \" \");\n        printInOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = null;\n        int[] values = {50, 30, 70, 20, 40, 60, 80};\n        for (int v : values) {\n            root = insert(root, v);\n        }\n        printInOrder(root);\n    }\n}",
+      "output": "20 30 40 50 60 70 80 ",
+      "retypePractice": true,
+      "retypeId": "java-bst-insert"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing insert(root, 40) where root already has 50 (left:30) inserted",
+      "steps": [
+        "insert(node=50, 40): 40 < 50 -- recurse into node.left (30)",
+        "insert(node=30, 40): 40 > 30 -- recurse into node.right (currently null)",
+        "insert(node=null, 40): base case -- return new Node(40)",
+        "Back at node=30: node.right = new Node(40)",
+        "Back at node=50: node.left stays 30 (unchanged reference), just its right child updated"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "This is exactly the recursive pattern from Recursion Basics and the height calculation in Binary Trees: a base case (null -- create the node) and a recursive case that moves toward it, based on comparing value against the current node."
+    },
+    {
+      "type": "heading",
+      "text": "3. Searching a BST"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node insert(Node node, int value) {\n        if (node == null) return new Node(value);\n        if (value < node.data) node.left = insert(node.left, value);\n        else if (value > node.data) node.right = insert(node.right, value);\n        return node;\n    }\n\n    static boolean search(Node node, int value) {\n        if (node == null) {\n            return false; // reached an empty spot -- not found\n        }\n        if (value == node.data) {\n            return true;\n        }\n        return value < node.data ? search(node.left, value) : search(node.right, value);\n    }\n\n    public static void main(String[] args) {\n        Node root = null;\n        int[] values = {50, 30, 70, 20, 40, 60, 80};\n        for (int v : values) {\n            root = insert(root, v);\n        }\n\n        System.out.println(search(root, 60));\n        System.out.println(search(root, 100));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-bst-search"
+    },
+    {
+      "type": "warning",
+      "text": "search(root, 100) MUST check every level down to a null before concluding 'not found' -- there's no shortcut for a value that genuinely isn't there. This mirrors Binary Search's own miss case, from the Binary Search lesson."
+    },
+    {
+      "type": "heading",
+      "text": "4. Why BST Search Echoes Binary Search"
+    },
+    {
+      "type": "keyPoints",
+      "title": "The parallel to Binary Search",
+      "points": [
+        "At each node, comparing value against node.data eliminates an ENTIRE subtree from consideration -- exactly like Binary Search eliminating half an array with one comparison",
+        "For a BALANCED BST (roughly equal-sized left/right subtrees), this gives O(log n) search and insert, matching Binary Search's O(log n)",
+        "printInOrder visits nodes in SORTED order automatically -- this connects directly to the next lesson, Tree Traversals, where in-order is formally covered"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. The Catch: Skewed Trees"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// Inserting already-sorted values creates a skewed BST:\n// insert(1), insert(2), insert(3), insert(4), insert(5)\n// Result: 1 -> right -> 2 -> right -> 3 -> right -> 4 -> right -> 5\n// This is really just a LINKED LIST in disguise!"
+    },
+    {
+      "type": "warning",
+      "text": "If values are inserted in already-sorted order, EVERY node only ever gets a right child -- the tree degenerates into something structurally identical to a singly linked list (from the Singly Linked List lesson), and search/insert become O(n), not O(log n). Keeping a BST balanced (a topic beyond this course's current scope, handled by self-balancing trees like AVL or Red-Black trees) is what guarantees the O(log n) promise actually holds."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming ALL binary trees have BST ordering -- only a tree explicitly built and maintained with the BST insertion rule guarantees this property.",
+        "Forgetting BST operations degrade to O(n) on a skewed (e.g. already-sorted-input) tree, since it's structurally just a linked list.",
+        "Inserting a duplicate value without deciding a consistent rule for it (this example silently ignores duplicates via the else if) -- real implementations must pick and document a clear policy.",
+        "Confusing search's O(log n) BEST case (balanced tree) with its O(n) WORST case (skewed tree) -- both are true depending on the tree's actual shape."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the defining property of a Binary Search Tree?",
+          "answer": "For every node, all values in its left subtree are smaller, and all values in its right subtree are larger -- this ordering holds recursively at every node in the tree, not just the root."
+        },
+        {
+          "question": "Why is BST search O(log n) on a balanced tree but O(n) on a skewed one?",
+          "answer": "On a balanced tree, each comparison eliminates roughly half the remaining nodes, giving logarithmic depth to search. A skewed tree (e.g. built by inserting already-sorted values) degenerates into a structure equivalent to a linked list, where search must potentially check every node."
+        },
+        {
+          "question": "What traversal of a BST produces values in sorted order?",
+          "answer": "An in-order traversal (left subtree, then current node, then right subtree) -- covered fully in the Tree Traversals lesson -- visits every node's value in ascending sorted order, because of the BST property."
+        }
+      ],
+      "thirtySecondAnswer": "A Binary Search Tree adds one rule to a plain binary tree: every node's left subtree holds only smaller values, and its right subtree holds only larger values. This lets insert and search compare the target against the current node and eliminate an entire subtree per step, mirroring Binary Search's halving -- giving O(log n) on a balanced tree. But if values are inserted in already-sorted order, the tree degenerates into a linked-list-like shape, and both operations become O(n). An in-order traversal of a BST always visits values in ascending sorted order, a direct consequence of the ordering property."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "BST rule: smaller goes LEFT, bigger goes RIGHT, at every single node -- like a filing system that always halves your search. Feed it already-sorted data and it collapses into a lazy, lopsided linked list."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is the ordering property that defines a BST?",
+        "Why is BST search O(log n) on a balanced tree but O(n) on a skewed one?",
+        "What causes a BST to become skewed?",
+        "Which traversal visits a BST's values in sorted order?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-bst-insert", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node insert(Node node, int value) {\n        if (node == null) {\n            return new Node(value); // base case -- found the empty spot\n        }\n        if (value < node.data) {\n            node.left = insert(node.left, value);\n        } else if (value > node.data) {\n            node.right = insert(node.right, value);\n        }\n        return node;\n    }\n\n    static void printInOrder(Node node) {\n        if (node == null) return;\n        printInOrder(node.left);\n        System.out.print(node.data + \" \");\n        printInOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = null;\n        int[] values = {50, 30, 70, 20, 40, 60, 80};\n        for (int v : values) {\n            root = insert(root, v);\n        }\n        printInOrder(root);\n    }\n}", "output": "20 30 40 50 60 70 80 " },
+    { "id": "java-bst-search", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node insert(Node node, int value) {\n        if (node == null) return new Node(value);\n        if (value < node.data) node.left = insert(node.left, value);\n        else if (value > node.data) node.right = insert(node.right, value);\n        return node;\n    }\n\n    static boolean search(Node node, int value) {\n        if (node == null) {\n            return false; // reached an empty spot -- not found\n        }\n        if (value == node.data) {\n            return true;\n        }\n        return value < node.data ? search(node.left, value) : search(node.right, value);\n    }\n\n    public static void main(String[] args) {\n        Node root = null;\n        int[] values = {50, 30, 70, 20, 40, 60, 80};\n        for (int v : values) {\n            root = insert(root, v);\n        }\n\n        System.out.println(search(root, 60));\n        System.out.println(search(root, 100));\n    }\n}", "output": "true\nfalse" }
+  ],
+  "retypePractice": [
+    { "id": "java-bst-insert", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node insert(Node node, int value) {\n        if (node == null) {\n            return new Node(value); // base case -- found the empty spot\n        }\n        if (value < node.data) {\n            node.left = insert(node.left, value);\n        } else if (value > node.data) {\n            node.right = insert(node.right, value);\n        }\n        return node;\n    }\n\n    static void printInOrder(Node node) {\n        if (node == null) return;\n        printInOrder(node.left);\n        System.out.print(node.data + \" \");\n        printInOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = null;\n        int[] values = {50, 30, 70, 20, 40, 60, 80};\n        for (int v : values) {\n            root = insert(root, v);\n        }\n        printInOrder(root);\n    }\n}" },
+    { "id": "java-bst-search", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node insert(Node node, int value) {\n        if (node == null) return new Node(value);\n        if (value < node.data) node.left = insert(node.left, value);\n        else if (value > node.data) node.right = insert(node.right, value);\n        return node;\n    }\n\n    static boolean search(Node node, int value) {\n        if (node == null) {\n            return false; // reached an empty spot -- not found\n        }\n        if (value == node.data) {\n            return true;\n        }\n        return value < node.data ? search(node.left, value) : search(node.right, value);\n    }\n\n    public static void main(String[] args) {\n        Node root = null;\n        int[] values = {50, 30, 70, 20, 40, 60, 80};\n        for (int v : values) {\n            root = insert(root, v);\n        }\n\n        System.out.println(search(root, 60));\n        System.out.println(search(root, 100));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-bst-insert", "java-bst-search"]
+  }
+}
