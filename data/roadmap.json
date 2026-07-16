@@ -110,7 +110,13 @@
         { "id": "java-backtracking", "title": "Backtracking", "lesson": "java-backtracking" }
       ]
     },
-    { "id": "linked-list", "title": "Linked List", "topics": [] },
+    {
+      "id": "linked-list",
+      "title": "Linked List",
+      "topics": [
+        { "id": "java-singly-linked-list", "title": "Singly Linked List", "lesson": "java-singly-linked-list" }
+      ]
+    },
     { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },
     { "id": "heap", "title": "Heap", "topics": [] },
     { "id": "trees", "title": "Trees", "topics": [] },

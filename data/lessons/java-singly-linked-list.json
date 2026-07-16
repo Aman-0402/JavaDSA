@@ -1,0 +1,168 @@
+{
+  "id": "java-singly-linked-list",
+  "moduleId": "linked-list",
+  "title": "Singly Linked List",
+  "description": "Building a linked list manually with a Node class -- what LinkedList (Collections Framework) does internally, seen from the inside for the first time.",
+  "objectives": [
+    "Understand a Node as an object holding data and a reference to the next Node",
+    "Build a singly linked list manually: insert at head, insert at tail, traverse, delete",
+    "Compare a manual linked list against ArrayList's array-backed behavior"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why Build This Manually?"
+    },
+    {
+      "type": "paragraph",
+      "text": "In List: ArrayList vs LinkedList, we used java.util.LinkedList without seeing what's actually inside it. Today we build a linked list completely from scratch, using a Node class, to see the real mechanics that let insertion/removal in the middle be O(1) once you're already there."
+    },
+    {
+      "type": "definition",
+      "term": "Node",
+      "text": "An object holding one piece of data and a reference to the next Node in the sequence -- the fundamental building block of a linked list."
+    },
+    {
+      "type": "heading",
+      "text": "2. Defining the Node Class"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n\n        Node(int data) {\n            this.data = data;\n            this.next = null;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node head = new Node(10);\n        head.next = new Node(20);\n        head.next.next = new Node(30);\n\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n    }\n}",
+      "output": "10 20 30 ",
+      "retypePractice": true,
+      "retypeId": "java-sll-manual-chain"
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Treasure hunt analogy",
+      "text": "Each Node is like a clue card: it holds a value, and points to WHERE the next clue is (next), rather than the clues being physically next to each other. Following the chain means reading one card, then jumping to wherever it points -- this is exactly what current = current.next does."
+    },
+    {
+      "type": "warning",
+      "text": "Unlike an array (recall 1D Arrays), a linked list has NO index-based access -- there's no node[2]. You must WALK the chain from head, one next at a time, to reach any given position. This is the fundamental trade-off previewed in List: ArrayList vs LinkedList."
+    },
+    {
+      "type": "heading",
+      "text": "3. A Proper LinkedList Class: Insert at Head"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static class SinglyLinkedList {\n        Node head;\n\n        void insertAtHead(int data) {\n            Node newNode = new Node(data);\n            newNode.next = head;\n            head = newNode;\n        }\n\n        void printAll() {\n            Node current = head;\n            while (current != null) {\n                System.out.print(current.data + \" \");\n                current = current.next;\n            }\n            System.out.println();\n        }\n    }\n\n    public static void main(String[] args) {\n        SinglyLinkedList list = new SinglyLinkedList();\n        list.insertAtHead(30);\n        list.insertAtHead(20);\n        list.insertAtHead(10);\n        list.printAll();\n    }\n}",
+      "output": "10 20 30 ",
+      "retypePractice": true,
+      "retypeId": "java-sll-insert-head"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why insertAtHead is O(1)",
+      "points": [
+        "newNode.next = head links the new node to whatever the list currently starts with",
+        "head = newNode makes the new node the new starting point",
+        "No shifting of existing elements needed -- unlike ArrayList inserting at position 0, which shifts every element (recall List: ArrayList vs LinkedList)"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Insert at Tail"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "static void insertAtTail(int data) {\n    Node newNode = new Node(data);\n    if (head == null) {\n        head = newNode;\n        return;\n    }\n    Node current = head;\n    while (current.next != null) {\n        current = current.next;\n    }\n    current.next = newNode;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "Unlike insertAtHead, insertAtTail requires WALKING the entire list to find the last node (where current.next == null) -- this is O(n), not O(1), for a plain singly linked list with only a head reference. Real implementations often keep an extra tail reference to make this O(1) too, at the cost of some extra bookkeeping."
+    },
+    {
+      "type": "heading",
+      "text": "5. Deleting a Node by Value"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node head;\n\n    static void insertAtTail(int data) {\n        Node newNode = new Node(data);\n        if (head == null) {\n            head = newNode;\n            return;\n        }\n        Node current = head;\n        while (current.next != null) {\n            current = current.next;\n        }\n        current.next = newNode;\n    }\n\n    static void delete(int value) {\n        if (head == null) return;\n        if (head.data == value) {\n            head = head.next;\n            return;\n        }\n        Node current = head;\n        while (current.next != null && current.next.data != value) {\n            current = current.next;\n        }\n        if (current.next != null) {\n            current.next = current.next.next;\n        }\n    }\n\n    static void printAll() {\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtTail(10);\n        insertAtTail(20);\n        insertAtTail(30);\n        delete(20);\n        printAll();\n    }\n}",
+      "output": "10 30 ",
+      "retypePractice": true,
+      "retypeId": "java-sll-delete"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing delete(20) on 10 -> 20 -> 30",
+      "steps": [
+        "head.data (10) != 20, so we don't remove the head itself",
+        "current starts at head (node 10); current.next.data is 20 -- MATCH, stop advancing",
+        "current.next = current.next.next skips over the node holding 20, linking node 10 directly to node 30",
+        "Result: 10 -> 30"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting to update head when deleting the very first node -- deleting anywhere else only requires relinking current.next, but the head itself needs special handling.",
+        "Losing the reference to the rest of the list by overwriting next before saving where it pointed -- always capture what you need before reassigning.",
+        "Assuming index-based access (list[i]) works on a linked list -- there is no such thing; you must walk from head.",
+        "Forgetting insertAtTail is O(n) for a plain singly linked list without a separate tail reference, unlike insertAtHead's O(1)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a Node in a linked list?",
+          "answer": "An object holding one piece of data and a reference to the next Node in the sequence -- the basic building block that chains together to form the list."
+        },
+        {
+          "question": "Why is inserting at the head of a singly linked list O(1), while inserting at the tail is O(n)?",
+          "answer": "Inserting at the head only requires pointing the new node at the current head and updating head to the new node -- constant work. Inserting at the tail requires walking the entire list to find the last node (unless a separate tail reference is maintained), which takes time proportional to the list's length."
+        },
+        {
+          "question": "Why can't you access a linked list by index the way you can an array?",
+          "answer": "A linked list has no contiguous memory layout with computable offsets like an array does -- each node only knows about the next node, so reaching position i requires walking i steps from head one node at a time."
+        }
+      ],
+      "thirtySecondAnswer": "A singly linked list is built from Node objects, each holding data and a reference to the next node, chained together starting from a head reference. Inserting at the head is O(1) -- just point the new node at the old head and update head. Inserting at the tail is O(n) for a plain list, since you must walk to the end first, unless a separate tail reference is kept. There's no index-based access like an array's arr[i] -- reaching any position requires walking node by node from head. Deleting requires relinking the previous node's next around the removed one, with special handling when the node being removed is the head itself."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "A linked list is a treasure hunt, not a numbered street. Each Node only knows the NEXT clue's location. Insert at head = plant a new first clue, O(1). Insert at tail = walk the WHOLE hunt to the end first, O(n)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What two things does a Node hold?",
+        "Why is insertAtHead O(1) but insertAtTail O(n) for a plain singly linked list?",
+        "Why is there no index-based access on a linked list?",
+        "What special case must delete() handle when removing the head node?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-sll-manual-chain", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n\n        Node(int data) {\n            this.data = data;\n            this.next = null;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node head = new Node(10);\n        head.next = new Node(20);\n        head.next.next = new Node(30);\n\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n    }\n}", "output": "10 20 30 " },
+    { "id": "java-sll-insert-head", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static class SinglyLinkedList {\n        Node head;\n\n        void insertAtHead(int data) {\n            Node newNode = new Node(data);\n            newNode.next = head;\n            head = newNode;\n        }\n\n        void printAll() {\n            Node current = head;\n            while (current != null) {\n                System.out.print(current.data + \" \");\n                current = current.next;\n            }\n            System.out.println();\n        }\n    }\n\n    public static void main(String[] args) {\n        SinglyLinkedList list = new SinglyLinkedList();\n        list.insertAtHead(30);\n        list.insertAtHead(20);\n        list.insertAtHead(10);\n        list.printAll();\n    }\n}", "output": "10 20 30 " },
+    { "id": "java-sll-delete", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node head;\n\n    static void insertAtTail(int data) {\n        Node newNode = new Node(data);\n        if (head == null) {\n            head = newNode;\n            return;\n        }\n        Node current = head;\n        while (current.next != null) {\n            current = current.next;\n        }\n        current.next = newNode;\n    }\n\n    static void delete(int value) {\n        if (head == null) return;\n        if (head.data == value) {\n            head = head.next;\n            return;\n        }\n        Node current = head;\n        while (current.next != null && current.next.data != value) {\n            current = current.next;\n        }\n        if (current.next != null) {\n            current.next = current.next.next;\n        }\n    }\n\n    static void printAll() {\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtTail(10);\n        insertAtTail(20);\n        insertAtTail(30);\n        delete(20);\n        printAll();\n    }\n}", "output": "10 30 " }
+  ],
+  "retypePractice": [
+    { "id": "java-sll-manual-chain", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n\n        Node(int data) {\n            this.data = data;\n            this.next = null;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node head = new Node(10);\n        head.next = new Node(20);\n        head.next.next = new Node(30);\n\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n    }\n}" },
+    { "id": "java-sll-insert-head", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static class SinglyLinkedList {\n        Node head;\n\n        void insertAtHead(int data) {\n            Node newNode = new Node(data);\n            newNode.next = head;\n            head = newNode;\n        }\n\n        void printAll() {\n            Node current = head;\n            while (current != null) {\n                System.out.print(current.data + \" \");\n                current = current.next;\n            }\n            System.out.println();\n        }\n    }\n\n    public static void main(String[] args) {\n        SinglyLinkedList list = new SinglyLinkedList();\n        list.insertAtHead(30);\n        list.insertAtHead(20);\n        list.insertAtHead(10);\n        list.printAll();\n    }\n}" },
+    { "id": "java-sll-delete", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node head;\n\n    static void insertAtTail(int data) {\n        Node newNode = new Node(data);\n        if (head == null) {\n            head = newNode;\n            return;\n        }\n        Node current = head;\n        while (current.next != null) {\n            current = current.next;\n        }\n        current.next = newNode;\n    }\n\n    static void delete(int value) {\n        if (head == null) return;\n        if (head.data == value) {\n            head = head.next;\n            return;\n        }\n        Node current = head;\n        while (current.next != null && current.next.data != value) {\n            current = current.next;\n        }\n        if (current.next != null) {\n            current.next = current.next.next;\n        }\n    }\n\n    static void printAll() {\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtTail(10);\n        insertAtTail(20);\n        insertAtTail(30);\n        delete(20);\n        printAll();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-sll-manual-chain", "java-sll-insert-head", "java-sll-delete"]
+  }
+}
