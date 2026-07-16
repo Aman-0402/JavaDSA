@@ -132,6 +132,86 @@
         "What data structure and technique does the O(n log n) solution use?",
         "Does the tails array in the fast solution contain the actual LIS elements?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-300",
+      "number": 300,
+      "title": "Longest Increasing Subsequence",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/longest-increasing-subsequence/",
+      "problemStatement": "Given an integer array, return the length of the longest strictly increasing subsequence.",
+      "examples": [
+        { "input": "nums = [10,9,2,5,3,7,101,18]", "output": "4", "explanation": "One LIS is [2,3,7,101] (or [2,3,7,18]), length 4." }
+      ],
+      "constraints": ["1 <= nums.length <= 2500"],
+      "hints": ["O(n^2): dp[i] = length of LIS ending exactly at index i = 1 + max(dp[j]) over all j < i with nums[j] < nums[i].", "O(n log n): maintain a 'tails' array (smallest tail value for each subsequence length) and binary search for where each new number fits."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Classic O(n^2) DP: dp[i] tracks the LIS length ending at i, checking all earlier indices j.",
+          "code": "class Solution {\n    public int lengthOfLIS(int[] nums) {\n        int n = nums.length;\n        int[] dp = new int[n];\n        Arrays.fill(dp, 1);\n        int best = 1;\n        for (int i = 1; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[j] < nums[i]) {\n                    dp[i] = Math.max(dp[i], dp[j] + 1);\n                }\n            }\n            best = Math.max(best, dp[i]);\n        }\n        return best;\n    }\n}",
+          "output": "4",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Maintain 'tails', where tails[k] is the smallest possible tail value of any increasing subsequence of length k+1. For each number, binary search for the first tail >= it and replace that position (or append if it's bigger than all tails). The final tails length is the LIS length.",
+          "code": "class Solution {\n    public int lengthOfLIS(int[] nums) {\n        int[] tails = new int[nums.length];\n        int size = 0;\n        for (int num : nums) {\n            int lo = 0, hi = size;\n            while (lo < hi) {\n                int mid = (lo + hi) / 2;\n                if (tails[mid] < num) lo = mid + 1; else hi = mid;\n            }\n            tails[lo] = num;\n            if (lo == size) size++;\n        }\n        return size;\n    }\n}",
+          "output": "4",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-673",
+      "number": 673,
+      "title": "Number of Longest Increasing Subsequence",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/",
+      "problemStatement": "Given an integer array, return the NUMBER of distinct longest increasing subsequences.",
+      "examples": [
+        { "input": "nums = [1,3,5,4,7]", "output": "2", "explanation": "Two LIS of length 4 exist: [1,3,5,7] and [1,3,4,7]." }
+      ],
+      "constraints": ["1 <= nums.length <= 2000"],
+      "hints": ["Track two arrays: length[i] = LIS length ending at i, and count[i] = number of LIS of that length ending at i.", "When extending from j to i (nums[j] < nums[i]): if length[j]+1 > length[i], a new longer path is found, so count[i] resets to count[j]. If length[j]+1 == length[i], an equally-long alternative path is found, so count[i] += count[j]."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "O(n^2) DP tracking both the LIS length ending at each index and how many ways achieve that length, updating both together as each earlier index j is considered.",
+          "code": "class Solution {\n    public int findNumberOfLIS(int[] nums) {\n        int n = nums.length;\n        int[] length = new int[n];\n        int[] count = new int[n];\n        Arrays.fill(length, 1);\n        Arrays.fill(count, 1);\n        int maxLength = 1;\n\n        for (int i = 1; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[j] < nums[i]) {\n                    if (length[j] + 1 > length[i]) {\n                        length[i] = length[j] + 1;\n                        count[i] = count[j];\n                    } else if (length[j] + 1 == length[i]) {\n                        count[i] += count[j];\n                    }\n                }\n            }\n            maxLength = Math.max(maxLength, length[i]);\n        }\n\n        int result = 0;\n        for (int i = 0; i < n; i++) {\n            if (length[i] == maxLength) result += count[i];\n        }\n        return result;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-354",
+      "number": 354,
+      "title": "Russian Doll Envelopes",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/russian-doll-envelopes/",
+      "problemStatement": "Given pairs [width, height], one envelope fits inside another if both its width AND height are strictly smaller. Return the maximum number of envelopes that can be nested (like Russian dolls).",
+      "examples": [
+        { "input": "envelopes = [[5,4],[6,4],[6,7],[2,3]]", "output": "3", "explanation": "The chain [2,3] -> [5,4] -> [6,7] nests 3 envelopes." }
+      ],
+      "constraints": ["1 <= envelopes.length <= 10^5"],
+      "hints": ["Sort by width ascending; for equal widths, sort by height DESCENDING (this prevents two same-width envelopes from being counted as nestable in the LIS pass, since one can't fit in an equal-width one).", "After sorting, the problem reduces to finding the LIS of the height sequence -- reuse the O(n log n) LIS technique."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Sort by width ascending, breaking width ties by height DESCENDING (so equal-width envelopes can never both appear in an increasing-height run). Then run the O(n log n) tails-array LIS algorithm on the resulting height sequence.",
+          "code": "class Solution {\n    public int maxEnvelopes(int[][] envelopes) {\n        Arrays.sort(envelopes, (a, b) -> a[0] != b[0] ? a[0] - b[0] : b[1] - a[1]);\n        int[] tails = new int[envelopes.length];\n        int size = 0;\n        for (int[] envelope : envelopes) {\n            int height = envelope[1];\n            int lo = 0, hi = size;\n            while (lo < hi) {\n                int mid = (lo + hi) / 2;\n                if (tails[mid] < height) lo = mid + 1; else hi = mid;\n            }\n            tails[lo] = height;\n            if (lo == size) size++;\n        }\n        return size;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
     }
   ],
   "codeExamples": [
