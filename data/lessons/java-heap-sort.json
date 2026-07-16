@@ -1,0 +1,151 @@
+{
+  "id": "java-heap-sort",
+  "moduleId": "heap",
+  "title": "Heap Sort",
+  "description": "Sorting an array in-place using the heapify/sift-down operations from Manual Heap Implementation -- an O(n log n) algorithm built entirely from heap mechanics.",
+  "objectives": [
+    "Build a max-heap in-place from an unsorted array (heapify)",
+    "Repeatedly extract the max to produce a sorted array",
+    "Understand heap sort's O(n log n) complexity"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Idea: Use a Heap to Sort"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Manual Heap Implementation, extractMin always returns elements in increasing order, one at a time. Heap sort uses this exact idea, but with a MAX-heap: repeatedly pull the maximum out and place it at the end of the array, building a sorted result."
+    },
+    {
+      "type": "heading",
+      "text": "2. heapify: Sift Down at Every Non-Leaf Node"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static void siftDown(int[] arr, int size, int index) {\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int largest = index;\n\n            if (left < size && arr[left] > arr[largest]) {\n                largest = left;\n            }\n            if (right < size && arr[right] > arr[largest]) {\n                largest = right;\n            }\n            if (largest == index) {\n                break;\n            }\n\n            int temp = arr[index];\n            arr[index] = arr[largest];\n            arr[largest] = temp;\n            index = largest;\n        }\n    }\n\n    static void heapify(int[] arr) {\n        int n = arr.length;\n        for (int i = n / 2 - 1; i >= 0; i--) {\n            siftDown(arr, n, i);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 10, 3, 5, 1};\n        heapify(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}",
+      "output": "[10, 5, 3, 4, 1]",
+      "retypePractice": true,
+      "retypeId": "java-heapsort-heapify"
+    },
+    {
+      "type": "note",
+      "text": "siftDown here is nearly identical to Manual Heap Implementation's version, but flipped for a MAX-heap: it moves the LARGER child up instead of the smaller one. heapify starts from the LAST non-leaf node (n/2 - 1) and works backward to index 0 -- this ordering guarantees each subtree is already a valid heap before its parent is processed."
+    },
+    {
+      "type": "heading",
+      "text": "3. Sorting: Repeatedly Extract the Max"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static void siftDown(int[] arr, int size, int index) {\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int largest = index;\n\n            if (left < size && arr[left] > arr[largest]) largest = left;\n            if (right < size && arr[right] > arr[largest]) largest = right;\n            if (largest == index) break;\n\n            int temp = arr[index];\n            arr[index] = arr[largest];\n            arr[largest] = temp;\n            index = largest;\n        }\n    }\n\n    static void heapSort(int[] arr) {\n        int n = arr.length;\n\n        // Build a max-heap\n        for (int i = n / 2 - 1; i >= 0; i--) {\n            siftDown(arr, n, i);\n        }\n\n        // Repeatedly move the max (root) to the end, shrink the heap, sift down\n        for (int end = n - 1; end > 0; end--) {\n            int temp = arr[0];\n            arr[0] = arr[end];\n            arr[end] = temp;\n\n            siftDown(arr, end, 0);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 10, 3, 5, 1};\n        heapSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}",
+      "output": "[1, 3, 4, 5, 10]",
+      "retypePractice": true,
+      "retypeId": "java-heapsort-full"
+    },
+    {
+      "type": "keyPoints",
+      "title": "How the sorted result builds up",
+      "points": [
+        "After heapify, arr[0] is guaranteed to be the LARGEST element of the whole array",
+        "Swapping arr[0] with arr[end] puts that largest element in its FINAL sorted position, at the end",
+        "Shrinking size (end--) means arr[0]'s new value is sifted down only within the REMAINING unsorted portion",
+        "Repeating this n-1 times places every element into its correct final position, largest to smallest, working inward from the end"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "siftDown(arr, end, 0) is called with SIZE = end, not n -- the already-sorted portion at the far end (arr[end] and beyond) must be EXCLUDED from future heap operations, or it would get incorrectly disturbed."
+    },
+    {
+      "type": "heading",
+      "text": "4. Why Heap Sort Is O(n log n)"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Complexity breakdown",
+      "points": [
+        "Building the initial heap (heapify) takes O(n) overall -- a detail more subtle than it first looks, but well below O(n log n)",
+        "The main sorting loop runs n-1 times, each doing one O(log n) siftDown",
+        "Total: O(n) + O(n log n) = O(n log n) overall -- matching the best general-purpose comparison sorts"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Heap Sort vs Arrays.sort() and Bubble/Selection Sort"
+    },
+    {
+      "type": "table",
+      "title": "Comparing sorting approaches from the Sorting lesson",
+      "headers": ["Approach", "Time complexity", "Notes"],
+      "rows": [
+        ["Heap sort", "O(n log n)", "In-place, no extra array needed -- reuses the heap logic from Manual Heap Implementation"],
+        ["Bubble sort / Selection sort", "O(n^2)", "Educational only, from the Sorting lesson"],
+        ["Arrays.sort()", "O(n log n) typical", "Still the practical real-world choice -- heap sort here is for understanding the underlying mechanics"]
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Building a MIN-heap instead of a MAX-heap for ascending-order heap sort -- the root must be the largest so it can be placed correctly at the end each round.",
+        "Forgetting to shrink the effective heap size (passing end instead of n to siftDown) after each extraction, corrupting the already-sorted portion.",
+        "Starting heapify from index 0 instead of n/2 - 1 -- heapify must start from the LAST non-leaf node and work backward for the subtree-validity assumption to hold.",
+        "Confusing this heap sort's siftDown with Manual Heap Implementation's -- that lesson's version favors the SMALLER child (min-heap); this one favors the LARGER child (max-heap)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What are the two main phases of heap sort?",
+          "answer": "First, build a max-heap from the entire array (heapify). Second, repeatedly swap the root (the current maximum) with the last unsorted element, shrink the heap by one, and sift the new root down -- placing elements into their final sorted positions from the end inward."
+        },
+        {
+          "question": "Why is a max-heap used for ascending-order heap sort, rather than a min-heap?",
+          "answer": "The root of a max-heap is always the largest remaining element, which is exactly what needs to be moved to the end of the array on each round to build an ascending sorted result from the back forward."
+        },
+        {
+          "question": "What is heap sort's overall time complexity, and why?",
+          "answer": "O(n log n). Building the initial heap costs O(n), and the sorting phase performs n-1 extractions, each requiring an O(log n) sift-down -- giving O(n) + O(n log n), which simplifies to O(n log n)."
+        }
+      ],
+      "thirtySecondAnswer": "Heap sort has two phases: heapify builds a max-heap from the entire array in O(n), then the sorting phase repeatedly swaps the root (always the current maximum) with the last unsorted element, shrinks the heap by one, and sifts the new root down -- placing elements into their correct final position from the end of the array inward. Each of the n-1 extractions costs O(log n) for the sift-down, giving an overall O(n log n), matching general-purpose comparison sorts. It reuses the exact sift-down mechanics from Manual Heap Implementation, just favoring the larger child instead of the smaller, and sorts entirely in-place with no extra array needed."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Heap sort = build a max-heap (biggest always floats to the root), then repeatedly CROWN it, BANISH it to the sorted end, and let the next biggest float up -- shrinking the kingdom by one each round."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are heap sort's two main phases?",
+        "Why does ascending heap sort use a max-heap, not a min-heap?",
+        "Why must siftDown be called with a shrinking size (end), not the full array length?",
+        "What is heap sort's overall time complexity, and how is it derived?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-heapsort-heapify", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static void siftDown(int[] arr, int size, int index) {\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int largest = index;\n\n            if (left < size && arr[left] > arr[largest]) {\n                largest = left;\n            }\n            if (right < size && arr[right] > arr[largest]) {\n                largest = right;\n            }\n            if (largest == index) {\n                break;\n            }\n\n            int temp = arr[index];\n            arr[index] = arr[largest];\n            arr[largest] = temp;\n            index = largest;\n        }\n    }\n\n    static void heapify(int[] arr) {\n        int n = arr.length;\n        for (int i = n / 2 - 1; i >= 0; i--) {\n            siftDown(arr, n, i);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 10, 3, 5, 1};\n        heapify(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}", "output": "[10, 5, 3, 4, 1]" },
+    { "id": "java-heapsort-full", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static void siftDown(int[] arr, int size, int index) {\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int largest = index;\n\n            if (left < size && arr[left] > arr[largest]) largest = left;\n            if (right < size && arr[right] > arr[largest]) largest = right;\n            if (largest == index) break;\n\n            int temp = arr[index];\n            arr[index] = arr[largest];\n            arr[largest] = temp;\n            index = largest;\n        }\n    }\n\n    static void heapSort(int[] arr) {\n        int n = arr.length;\n\n        // Build a max-heap\n        for (int i = n / 2 - 1; i >= 0; i--) {\n            siftDown(arr, n, i);\n        }\n\n        // Repeatedly move the max (root) to the end, shrink the heap, sift down\n        for (int end = n - 1; end > 0; end--) {\n            int temp = arr[0];\n            arr[0] = arr[end];\n            arr[end] = temp;\n\n            siftDown(arr, end, 0);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 10, 3, 5, 1};\n        heapSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}", "output": "[1, 3, 4, 5, 10]" }
+  ],
+  "retypePractice": [
+    { "id": "java-heapsort-heapify", "reference": "public class Main {\n    static void siftDown(int[] arr, int size, int index) {\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int largest = index;\n\n            if (left < size && arr[left] > arr[largest]) {\n                largest = left;\n            }\n            if (right < size && arr[right] > arr[largest]) {\n                largest = right;\n            }\n            if (largest == index) {\n                break;\n            }\n\n            int temp = arr[index];\n            arr[index] = arr[largest];\n            arr[largest] = temp;\n            index = largest;\n        }\n    }\n\n    static void heapify(int[] arr) {\n        int n = arr.length;\n        for (int i = n / 2 - 1; i >= 0; i--) {\n            siftDown(arr, n, i);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 10, 3, 5, 1};\n        heapify(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}" },
+    { "id": "java-heapsort-full", "reference": "public class Main {\n    static void siftDown(int[] arr, int size, int index) {\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int largest = index;\n\n            if (left < size && arr[left] > arr[largest]) largest = left;\n            if (right < size && arr[right] > arr[largest]) largest = right;\n            if (largest == index) break;\n\n            int temp = arr[index];\n            arr[index] = arr[largest];\n            arr[largest] = temp;\n            index = largest;\n        }\n    }\n\n    static void heapSort(int[] arr) {\n        int n = arr.length;\n\n        // Build a max-heap\n        for (int i = n / 2 - 1; i >= 0; i--) {\n            siftDown(arr, n, i);\n        }\n\n        // Repeatedly move the max (root) to the end, shrink the heap, sift down\n        for (int end = n - 1; end > 0; end--) {\n            int temp = arr[0];\n            arr[0] = arr[end];\n            arr[end] = temp;\n\n            siftDown(arr, end, 0);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 10, 3, 5, 1};\n        heapSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-heapsort-heapify", "java-heapsort-full"]
+  }
+}
