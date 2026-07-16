@@ -1,0 +1,134 @@
+{
+  "id": "java-circular-queue",
+  "moduleId": "stacks-queues",
+  "title": "Circular Queue",
+  "description": "A fixed-size array queue that wraps around using modulo -- the array-based cousin of the Circular Linked List, solving a real space-waste problem.",
+  "objectives": [
+    "Understand the wasted-space problem a naive array queue has",
+    "Implement a circular queue using front/rear indices and modulo wraparound",
+    "Distinguish a full circular queue from an empty one"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: A Naive Array Queue Wastes Space"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int[] queue = new int[5];\nint front = 0, rear = 0;\n\n// enqueue: queue[rear++] = value;\n// dequeue: value = queue[front++];"
+    },
+    {
+      "type": "warning",
+      "text": "After several enqueue/dequeue operations, front and rear only ever move FORWARD -- once rear reaches the array's end, there's no way to reuse the empty space at the beginning left behind by earlier dequeues, even though it's genuinely free. A circular queue fixes this by wrapping indices back to 0 using modulo, exactly like the Circular Linked List wrapped its LAST node back to the first."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Circular Queue Idea"
+    },
+    {
+      "type": "definition",
+      "term": "Circular queue",
+      "text": "A fixed-size array-based queue where the front and rear indices wrap around to the beginning using modulo arithmetic once they reach the end, reusing freed space instead of wasting it."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int[] queue = new int[5];\n    static int front = 0, size = 0;\n\n    static boolean enqueue(int value) {\n        if (size == queue.length) {\n            return false; // full\n        }\n        int rear = (front + size) % queue.length;\n        queue[rear] = value;\n        size++;\n        return true;\n    }\n\n    static int dequeue() {\n        int value = queue[front];\n        front = (front + 1) % queue.length;\n        size--;\n        return value;\n    }\n\n    public static void main(String[] args) {\n        enqueue(10);\n        enqueue(20);\n        enqueue(30);\n\n        System.out.println(dequeue());\n        System.out.println(dequeue());\n\n        enqueue(40);\n        enqueue(50);\n        enqueue(60);\n\n        for (int i = 0; i < size; i++) {\n            System.out.print(queue[(front + i) % queue.length] + \" \");\n        }\n    }\n}",
+      "output": "10\n20\n30 40 50 60 ",
+      "retypePractice": true,
+      "retypeId": "java-circular-queue-basic"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing the wraparound",
+      "steps": [
+        "enqueue 10,20,30: array=[10,20,30,_,_], front=0, size=3",
+        "dequeue (returns 10): front becomes (0+1)%5=1, size=2. Array unchanged, just front moved: [_,20,30,_,_]",
+        "dequeue (returns 20): front becomes (1+1)%5=2, size=1: [_,_,30,_,_]",
+        "enqueue 40: rear=(2+1)%5=3. array[3]=40, size=2: [_,_,30,40,_]",
+        "enqueue 50: rear=(2+2)%5=4. array[4]=50, size=3: [_,_,30,40,50]",
+        "enqueue 60: rear=(2+3)%5=0 -- WRAPS AROUND to index 0! array[0]=60, size=4: [60,_,30,40,50]",
+        "Reading in logical order from front=2, size=4: queue[2]=30, queue[3]=40, queue[4]=50, queue[(2+3)%5=0]=60 -> 30 40 50 60"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Notice index 0 now holds 60, even though logically 60 is the LAST element in the queue -- the physical array position and the logical queue order are no longer the same thing. This is exactly why reading the queue requires (front + i) % queue.length, not a plain 0-to-size loop over the raw array."
+    },
+    {
+      "type": "heading",
+      "text": "3. Distinguishing Full From Empty"
+    },
+    {
+      "type": "warning",
+      "text": "A naive circular queue using ONLY front and rear indices (no separate size counter) has a classic ambiguity: front == rear could mean either completely empty OR completely full, since rear wraps back around to meet front in both cases. Tracking size explicitly (as done above) sidesteps this problem entirely -- some implementations instead sacrifice one array slot to disambiguate the two cases without a size counter."
+    },
+    {
+      "type": "heading",
+      "text": "4. Why Use a Circular Queue Instead of ArrayDeque?"
+    },
+    {
+      "type": "note",
+      "text": "In practice, java.util.ArrayDeque (from Queue and Deque) already handles this wraparound internally and is what you'd use in real code. Building a circular queue manually here is purely educational -- to understand the mechanics ArrayDeque hides, similar to how Manual Heap Implementation explained what PriorityQueue does internally."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the modulo when computing rear or advancing front, causing an ArrayIndexOutOfBoundsException once the index would naturally exceed the array's length.",
+        "Using front == rear alone to detect \"empty\" when the queue could also be completely full at that exact same condition -- track size explicitly, or sacrifice one slot.",
+        "Reading the queue's contents with a plain 0-to-size loop over the raw array instead of (front + i) % length -- this ignores that the logical front might not be at physical index 0.",
+        "Forgetting to check size == queue.length before enqueuing, silently overwriting data that hasn't been dequeued yet."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What problem does a circular queue solve compared to a naive array-based queue?",
+          "answer": "A naive array queue only ever advances front and rear forward, wasting the space freed by earlier dequeues once rear reaches the array's end. A circular queue wraps both indices back to 0 via modulo, reusing that freed space."
+        },
+        {
+          "question": "Why is front == rear ambiguous in a circular queue implemented without a separate size counter?",
+          "answer": "Both a completely empty queue and a completely full queue can result in front and rear pointing to the same index, since rear wraps around to meet front in either case -- an explicit size counter (or sacrificing one array slot) resolves the ambiguity."
+        },
+        {
+          "question": "Why must reading a circular queue's elements use (front + i) % length instead of a plain array loop?",
+          "answer": "Because the logical front of the queue may not be at physical array index 0 after wraparound has occurred -- the modulo maps the logical position back to wherever it actually lives in the underlying array."
+        }
+      ],
+      "thirtySecondAnswer": "A circular queue is a fixed-size array queue where front and rear wrap around to index 0 via modulo once they reach the array's end, reusing space freed by earlier dequeues instead of wasting it like a naive array queue would. A classic pitfall is that front == rear is ambiguous between empty and full without an explicit size counter, since rear wraps back to meet front in both cases. Reading the queue's contents requires (front + i) % length rather than a plain array loop, since the logical front may sit anywhere in the physical array after enough wraparounds. In real code, java.util.ArrayDeque already implements this wraparound internally."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Circular queue = a circular parking lot, not a dead-end street -- car #6 wraps around to spot #1 if it's now empty, instead of the lot pretending it's full when half the spaces are actually free."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What space-waste problem does a circular queue solve?",
+        "Why is front == rear ambiguous without tracking size separately?",
+        "Why must reading the queue use (front + i) % length instead of a plain loop?",
+        "What real Java class already implements this wraparound behavior internally?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-circular-queue-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int[] queue = new int[5];\n    static int front = 0, size = 0;\n\n    static boolean enqueue(int value) {\n        if (size == queue.length) {\n            return false; // full\n        }\n        int rear = (front + size) % queue.length;\n        queue[rear] = value;\n        size++;\n        return true;\n    }\n\n    static int dequeue() {\n        int value = queue[front];\n        front = (front + 1) % queue.length;\n        size--;\n        return value;\n    }\n\n    public static void main(String[] args) {\n        enqueue(10);\n        enqueue(20);\n        enqueue(30);\n\n        System.out.println(dequeue());\n        System.out.println(dequeue());\n\n        enqueue(40);\n        enqueue(50);\n        enqueue(60);\n\n        for (int i = 0; i < size; i++) {\n            System.out.print(queue[(front + i) % queue.length] + \" \");\n        }\n    }\n}", "output": "10\n20\n30 40 50 60 " }
+  ],
+  "retypePractice": [
+    { "id": "java-circular-queue-basic", "reference": "public class Main {\n    static int[] queue = new int[5];\n    static int front = 0, size = 0;\n\n    static boolean enqueue(int value) {\n        if (size == queue.length) {\n            return false; // full\n        }\n        int rear = (front + size) % queue.length;\n        queue[rear] = value;\n        size++;\n        return true;\n    }\n\n    static int dequeue() {\n        int value = queue[front];\n        front = (front + 1) % queue.length;\n        size--;\n        return value;\n    }\n\n    public static void main(String[] args) {\n        enqueue(10);\n        enqueue(20);\n        enqueue(30);\n\n        System.out.println(dequeue());\n        System.out.println(dequeue());\n\n        enqueue(40);\n        enqueue(50);\n        enqueue(60);\n\n        for (int i = 0; i < size; i++) {\n            System.out.print(queue[(front + i) % queue.length] + \" \");\n        }\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-circular-queue-basic"]
+  }
+}
