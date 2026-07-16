@@ -1,0 +1,155 @@
+{
+  "id": "java-binary-search",
+  "moduleId": "dsa-foundations",
+  "title": "Binary Search",
+  "description": "The O(log n) algorithm previewed back in Big-O Notation -- cutting a sorted array in half with every comparison instead of scanning linearly.",
+  "objectives": [
+    "Implement binary search on a sorted array",
+    "Trace binary search's mid/left/right pointer movement",
+    "Understand why binary search requires a sorted array and is O(log n)"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: Linear Search is O(n)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int linearSearch(int[] arr, int target) {\n    for (int i = 0; i < arr.length; i++) {\n        if (arr[i] == target) {\n            return i;\n        }\n    }\n    return -1;\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "Linear search checks every element, one by one -- O(n). In Big-O Notation, we previewed that binary search achieves O(log n) instead, by exploiting one key fact: the array is SORTED."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Binary Search Idea"
+    },
+    {
+      "type": "definition",
+      "term": "Binary search",
+      "text": "An algorithm that finds a target in a SORTED array by repeatedly checking the middle element and eliminating half of the remaining search space based on the comparison."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int binarySearch(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                return mid;\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return -1;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72};\n        System.out.println(binarySearch(arr, 23));\n        System.out.println(binarySearch(arr, 100));\n    }\n}",
+      "output": "5\n-1",
+      "retypePractice": true,
+      "retypeId": "java-binary-search-basic"
+    },
+    {
+      "type": "warning",
+      "text": "mid = left + (right - left) / 2, NOT (left + right) / 2! Both give the same mathematical result, but (left + right) / 2 can overflow int's range for very large arrays (recall Data Types' int range), while left + (right - left) / 2 avoids this risk entirely. This is a well-known, deliberate defensive habit."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing binarySearch({2,5,8,12,16,23,38,45,56,72}, 23)",
+      "steps": [
+        "left=0, right=9: mid=0+(9-0)/2=4. arr[4]=16 < 23 -- search right half: left=5",
+        "left=5, right=9: mid=5+(9-5)/2=7. arr[7]=45 > 23 -- search left half: right=6",
+        "left=5, right=6: mid=5+(6-5)/2=5. arr[5]=23 -- MATCH! return 5"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Why This Is O(log n)"
+    },
+    {
+      "type": "keyPoints",
+      "title": "The halving argument",
+      "points": [
+        "Each comparison eliminates HALF of the remaining search space entirely",
+        "Starting from n elements: after 1 step, n/2 remain; after 2 steps, n/4; after k steps, n/2^k",
+        "The search ends when only 1 element remains -- roughly when n/2^k = 1, meaning k = log2(n)",
+        "For n = 1,000,000, log2(n) is about 20 -- just 20 comparisons instead of up to a million"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Why Binary Search Requires a Sorted Array"
+    },
+    {
+      "type": "warning",
+      "text": "arr[mid] < target only tells us to search the right half BECAUSE the array is sorted -- everything to the left of mid is guaranteed to be even smaller. On an unsorted array, this guarantee vanishes completely, and binary search simply doesn't work; you'd need to sort first (see the Sorting lesson), which itself costs time."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int firstOccurrence(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n        int result = -1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                result = mid;\n                right = mid - 1; // keep searching LEFT for an earlier occurrence\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 2, 2, 3, 4, 5};\n        System.out.println(firstOccurrence(arr, 2));\n    }\n}",
+      "output": "1",
+      "retypePractice": true,
+      "retypeId": "java-binary-search-first-occurrence"
+    },
+    {
+      "type": "note",
+      "text": "This variant doesn't stop at the FIRST match found -- it records the match, then keeps narrowing toward the LEFT (right = mid - 1) to check for an even earlier occurrence of the same value. This pattern -- 'binary search, but keep going in one direction after a match' -- is extremely common in DSA problems built on top of plain binary search."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using (left + right) / 2 instead of left + (right - left) / 2, risking integer overflow on very large arrays.",
+        "Applying binary search to an unsorted array -- it silently gives wrong answers instead of an obvious error, since the halving logic assumes sorted order.",
+        "Off-by-one errors in the loop condition (left <= right, not left < right) or in updating left/right (mid + 1 / mid - 1, not just mid), causing an infinite loop or missing the target.",
+        "Forgetting to keep narrowing after a match when searching for the FIRST or LAST occurrence of a duplicated value, instead of returning immediately."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is binary search, and what does it require of its input?",
+          "answer": "An algorithm that finds a target in a SORTED array by repeatedly checking the middle element and eliminating half the remaining search space based on the comparison. It requires the array to already be sorted -- it does not work correctly on unsorted data."
+        },
+        {
+          "question": "Why is binary search's time complexity O(log n)?",
+          "answer": "Each comparison eliminates half of the remaining elements, so after k steps only n/2^k elements remain. The search ends when this shrinks to 1 element, which happens after roughly log2(n) steps."
+        },
+        {
+          "question": "Why is left + (right - left) / 2 preferred over (left + right) / 2 for computing mid?",
+          "answer": "(left + right) can overflow int's maximum value for very large arrays, producing an incorrect (often negative) mid. left + (right - left) / 2 computes the same midpoint without that overflow risk."
+        }
+      ],
+      "thirtySecondAnswer": "Binary search finds a target in a SORTED array in O(log n) by repeatedly checking the middle element and eliminating half the remaining search space based on whether the target is smaller or larger -- for a million elements, this needs only about 20 comparisons instead of up to a million with linear search. It requires the array to be sorted, since the halving logic relies on everything left of mid being smaller and everything right being larger. mid is computed as left + (right - left) / 2 rather than (left + right) / 2 to avoid integer overflow on large arrays. Variants of binary search, like finding the first or last occurrence of a duplicated value, keep narrowing in one direction even after finding a match, instead of returning immediately."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Binary search = guessing a number 1-100 by always guessing the MIDDLE and eliminating half the range each time -- 'higher' or 'lower' cuts your work in half, every single guess. Only works because the range is ORDERED."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why does binary search require a sorted array?",
+        "What is binary search's time complexity, and why?",
+        "Why is left + (right - left) / 2 safer than (left + right) / 2?",
+        "How would you modify binary search to find the FIRST occurrence of a duplicated value?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-binary-search-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int binarySearch(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                return mid;\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return -1;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72};\n        System.out.println(binarySearch(arr, 23));\n        System.out.println(binarySearch(arr, 100));\n    }\n}", "output": "5\n-1" },
+    { "id": "java-binary-search-first-occurrence", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int firstOccurrence(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n        int result = -1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                result = mid;\n                right = mid - 1; // keep searching LEFT for an earlier occurrence\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 2, 2, 3, 4, 5};\n        System.out.println(firstOccurrence(arr, 2));\n    }\n}", "output": "1" }
+  ],
+  "retypePractice": [
+    { "id": "java-binary-search-basic", "reference": "public class Main {\n    static int binarySearch(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                return mid;\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return -1;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72};\n        System.out.println(binarySearch(arr, 23));\n        System.out.println(binarySearch(arr, 100));\n    }\n}" },
+    { "id": "java-binary-search-first-occurrence", "reference": "public class Main {\n    static int firstOccurrence(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n        int result = -1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                result = mid;\n                right = mid - 1; // keep searching LEFT for an earlier occurrence\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 2, 2, 3, 4, 5};\n        System.out.println(firstOccurrence(arr, 2));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-binary-search-basic", "java-binary-search-first-occurrence"]
+  }
+}

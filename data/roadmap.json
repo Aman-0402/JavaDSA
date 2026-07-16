@@ -103,7 +103,8 @@
         { "id": "java-sliding-window", "title": "Sliding Window", "lesson": "java-sliding-window" },
         { "id": "java-prefix-sum", "title": "Prefix Sum", "lesson": "java-prefix-sum" },
         { "id": "java-difference-array", "title": "Difference Array", "lesson": "java-difference-array" },
-        { "id": "java-hashing", "title": "Hashing", "lesson": "java-hashing" }
+        { "id": "java-hashing", "title": "Hashing", "lesson": "java-hashing" },
+        { "id": "java-binary-search", "title": "Binary Search", "lesson": "java-binary-search" }
       ]
     },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
