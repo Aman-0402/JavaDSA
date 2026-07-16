@@ -1,0 +1,166 @@
+{
+  "id": "java-iterator",
+  "moduleId": "collections-framework",
+  "title": "Iterator",
+  "description": "Explaining what actually powers the enhanced for loop over every collection we've used, and the one case it can't safely handle: removing while iterating.",
+  "objectives": [
+    "Understand Iterator as the mechanism behind the enhanced for loop over collections",
+    "Use hasNext(), next(), and remove() directly",
+    "Recognize why modifying a collection during a for-each loop crashes"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. What's Actually Happening in a For-Each Loop?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Since Enhanced for Loop, we've written for (String name : list) freely, over arrays, Lists, Sets, and Maps. Under the hood, every one of these (except plain arrays) is powered by an object called an Iterator."
+    },
+    {
+      "type": "definition",
+      "term": "Iterator",
+      "text": "An object that provides a way to traverse a collection one element at a time, without exposing the collection's internal structure, via hasNext(), next(), and remove()."
+    },
+    {
+      "type": "heading",
+      "text": "2. Using an Iterator Directly"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> names = new ArrayList<>();\n        names.add(\"Aman\");\n        names.add(\"Priya\");\n        names.add(\"Rahul\");\n\n        Iterator<String> it = names.iterator();\n        while (it.hasNext()) {\n            String name = it.next();\n            System.out.println(name);\n        }\n    }\n}",
+      "output": "Aman\nPriya\nRahul",
+      "retypePractice": true,
+      "retypeId": "java-iterator-manual"
+    },
+    {
+      "type": "table",
+      "title": "Iterator's three core methods",
+      "headers": ["Method", "Purpose"],
+      "rows": [
+        ["hasNext()", "Returns true if there's another element left to visit"],
+        ["next()", "Returns the next element and moves the iterator forward"],
+        ["remove()", "Safely removes the element most recently returned by next()"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "This while (it.hasNext()) { ... it.next() ... } pattern is EXACTLY what for (String name : names) does automatically, behind the scenes. The enhanced for loop is really just this Iterator loop, written for you."
+    },
+    {
+      "type": "heading",
+      "text": "3. The Problem: Removing During a For-Each Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "List<Integer> numbers = new ArrayList<>();\nnumbers.add(1);\nnumbers.add(2);\nnumbers.add(3);\n\nfor (int n : numbers) {\n    if (n == 2) {\n        numbers.remove(Integer.valueOf(2)); // ConcurrentModificationException!\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "This throws a ConcurrentModificationException at runtime! Modifying a collection's structure (adding/removing) WHILE a for-each loop is iterating over it is not allowed -- the hidden Iterator detects the collection changed underneath it and immediately fails, rather than risk producing unpredictable results."
+    },
+    {
+      "type": "heading",
+      "text": "4. The Fix: Iterator's remove()"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(1);\n        numbers.add(2);\n        numbers.add(3);\n\n        Iterator<Integer> it = numbers.iterator();\n        while (it.hasNext()) {\n            int n = it.next();\n            if (n == 2) {\n                it.remove(); // safe -- goes through the Iterator itself\n            }\n        }\n\n        System.out.println(numbers);\n    }\n}",
+      "output": "[1, 3]",
+      "retypePractice": true,
+      "retypeId": "java-iterator-safe-remove"
+    },
+    {
+      "type": "note",
+      "text": "it.remove() is safe because the Iterator itself performs the removal and keeps its own internal state consistent -- unlike numbers.remove(...), which modifies the list from OUTSIDE the iteration, confusing the Iterator that's still walking through it."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        for (int i = 1; i <= 10; i++) {\n            numbers.add(i);\n        }\n\n        Iterator<Integer> it = numbers.iterator();\n        while (it.hasNext()) {\n            int n = it.next();\n            if (n % 2 == 0) {\n                it.remove();\n            }\n        }\n\n        System.out.println(numbers);\n    }\n}",
+      "output": "[1, 3, 5, 7, 9]",
+      "retypePractice": true,
+      "retypeId": "java-iterator-remove-evens"
+    },
+    {
+      "type": "keyPoints",
+      "title": "What's happening",
+      "points": [
+        "numbers starts as [1,2,3,4,5,6,7,8,9,10]",
+        "The Iterator walks through every element; whenever n % 2 == 0 (an even number), it.remove() removes it safely",
+        "The result keeps only the odd numbers: [1, 3, 5, 7, 9]"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Calling list.remove(...) directly inside a for-each loop over that same list -- this throws ConcurrentModificationException; use it.remove() via an explicit Iterator instead.",
+        "Calling it.remove() before ever calling it.next() -- remove() always operates on the element most recently returned by next(), and fails if next() hasn't been called yet.",
+        "Forgetting hasNext() must be checked before every next() call -- calling next() with nothing left throws a NoSuchElementException.",
+        "Assuming Iterator lets you go backward -- Iterator only moves forward; ListIterator (not covered here) supports backward traversal for Lists specifically."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is an Iterator, and what does it power?",
+          "answer": "An object that traverses a collection one element at a time via hasNext(), next(), and remove(). It's exactly what powers the enhanced for loop over any Collection (List, Set, Map's entrySet, etc.) behind the scenes."
+        },
+        {
+          "question": "Why does removing an element directly during a for-each loop throw an exception?",
+          "answer": "It throws a ConcurrentModificationException, because the collection's structure changed while the hidden Iterator was still traversing it -- Java detects this inconsistency and fails immediately rather than risk unpredictable behavior."
+        },
+        {
+          "question": "How do you safely remove elements while iterating over a collection?",
+          "answer": "Use an explicit Iterator and call its own remove() method, which keeps the iterator's internal state consistent with the collection, instead of calling the collection's remove() method directly during iteration."
+        }
+      ],
+      "thirtySecondAnswer": "Iterator is the object that actually powers the enhanced for loop over any Collection -- hasNext() checks if elements remain, next() returns the next one and advances, and remove() safely deletes the most recently returned element. Calling a collection's own remove() method directly inside a for-each loop over that same collection throws a ConcurrentModificationException, since the collection changed structurally while the hidden iterator was still walking it. The fix is to get an explicit Iterator and call its remove() method instead, which keeps the iterator's internal bookkeeping consistent with the collection's actual state."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Iterator = the invisible engine behind every for-each loop. hasNext()/next() = \"anything left? give it to me.\" Removing through the COLLECTION mid-loop confuses the iterator -- remove through the ITERATOR itself instead."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What three methods does Iterator provide?",
+        "What powers Java's enhanced for loop behind the scenes?",
+        "Why does removing an element directly during a for-each loop throw an exception?",
+        "How do you safely remove elements while iterating?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-iterator-manual", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> names = new ArrayList<>();\n        names.add(\"Aman\");\n        names.add(\"Priya\");\n        names.add(\"Rahul\");\n\n        Iterator<String> it = names.iterator();\n        while (it.hasNext()) {\n            String name = it.next();\n            System.out.println(name);\n        }\n    }\n}", "output": "Aman\nPriya\nRahul" },
+    { "id": "java-iterator-safe-remove", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(1);\n        numbers.add(2);\n        numbers.add(3);\n\n        Iterator<Integer> it = numbers.iterator();\n        while (it.hasNext()) {\n            int n = it.next();\n            if (n == 2) {\n                it.remove(); // safe -- goes through the Iterator itself\n            }\n        }\n\n        System.out.println(numbers);\n    }\n}", "output": "[1, 3]" },
+    { "id": "java-iterator-remove-evens", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        for (int i = 1; i <= 10; i++) {\n            numbers.add(i);\n        }\n\n        Iterator<Integer> it = numbers.iterator();\n        while (it.hasNext()) {\n            int n = it.next();\n            if (n % 2 == 0) {\n                it.remove();\n            }\n        }\n\n        System.out.println(numbers);\n    }\n}", "output": "[1, 3, 5, 7, 9]" }
+  ],
+  "retypePractice": [
+    { "id": "java-iterator-manual", "reference": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> names = new ArrayList<>();\n        names.add(\"Aman\");\n        names.add(\"Priya\");\n        names.add(\"Rahul\");\n\n        Iterator<String> it = names.iterator();\n        while (it.hasNext()) {\n            String name = it.next();\n            System.out.println(name);\n        }\n    }\n}" },
+    { "id": "java-iterator-safe-remove", "reference": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(1);\n        numbers.add(2);\n        numbers.add(3);\n\n        Iterator<Integer> it = numbers.iterator();\n        while (it.hasNext()) {\n            int n = it.next();\n            if (n == 2) {\n                it.remove(); // safe -- goes through the Iterator itself\n            }\n        }\n\n        System.out.println(numbers);\n    }\n}" },
+    { "id": "java-iterator-remove-evens", "reference": "import java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        for (int i = 1; i <= 10; i++) {\n            numbers.add(i);\n        }\n\n        Iterator<Integer> it = numbers.iterator();\n        while (it.hasNext()) {\n            int n = it.next();\n            if (n % 2 == 0) {\n                it.remove();\n            }\n        }\n\n        System.out.println(numbers);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-iterator-manual", "java-iterator-safe-remove", "java-iterator-remove-evens"]
+  }
+}

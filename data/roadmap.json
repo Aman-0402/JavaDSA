@@ -88,7 +88,8 @@
         { "id": "java-list-arraylist-linkedlist", "title": "List: ArrayList vs LinkedList", "lesson": "java-list-arraylist-linkedlist" },
         { "id": "java-set-implementations", "title": "Set: HashSet, TreeSet, LinkedHashSet", "lesson": "java-set-implementations" },
         { "id": "java-map-implementations", "title": "Map: HashMap, TreeMap, LinkedHashMap", "lesson": "java-map-implementations" },
-        { "id": "java-queue-deque", "title": "Queue and Deque: ArrayDeque, PriorityQueue", "lesson": "java-queue-deque" }
+        { "id": "java-queue-deque", "title": "Queue and Deque: ArrayDeque, PriorityQueue", "lesson": "java-queue-deque" },
+        { "id": "java-iterator", "title": "Iterator", "lesson": "java-iterator" }
       ]
     },
     { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
