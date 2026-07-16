@@ -130,6 +130,42 @@
         "What special case applies when inserting into an empty circular linked list?",
         "Give a real-world scenario a circular linked list models naturally."
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-708",
+      "number": 708,
+      "title": "Insert into a Sorted Circular Linked List",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/",
+      "problemStatement": "Given a node from a circular linked list sorted in ascending order, write a function to insert insertVal into the list such that it remains a sorted circular list. Return the original given node's reference.",
+      "examples": [
+        { "input": "head = [3,4,1], insertVal = 2", "output": "[3,4,1,2]", "explanation": "The list is 3->4->1 (circularly), with the 'wrap point' between 4 (max) and 1 (min). 2 fits between 1 and 3 (across the wrap point), giving 3->4->1->2->(back to 3)." }
+      ],
+      "constraints": ["0 <= number of nodes <= 5*10^4", "-10^6 <= Node.val, insertVal <= 10^6"],
+      "hints": [
+        "Walk the circle looking for a spot where prev.val <= insertVal <= current.val -- the normal case.",
+        "Special case: if you complete a full loop without finding a spot, insert at the 'wrap point' -- where prev.val > current.val (the max-to-min transition), or anywhere if all values are equal.",
+        "Special case: an empty list needs the new node to point to itself, exactly like this lesson's insertAtEnd base case."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Collect all values into a List, insert the new value into the correct sorted position, then rebuild the circular list from scratch.",
+          "code": "class Node {\n    int val;\n    Node next;\n    Node(int val) { this.val = val; }\n}\n\nclass Solution {\n    public Node insert(Node head, int insertVal) {\n        if (head == null) {\n            Node newNode = new Node(insertVal);\n            newNode.next = newNode;\n            return newNode;\n        }\n\n        java.util.List<Integer> values = new java.util.ArrayList<>();\n        Node current = head;\n        do {\n            values.add(current.val);\n            current = current.next;\n        } while (current != head);\n\n        values.add(insertVal);\n        java.util.Collections.sort(values);\n\n        Node dummy = new Node(0);\n        Node tail = dummy;\n        for (int v : values) {\n            tail.next = new Node(v);\n            tail = tail.next;\n        }\n        tail.next = dummy.next; // close the circle\n        return dummy.next;\n    }\n}",
+          "output": "For head = [3,4,1], insertVal = 2: [3,4,1,2] (in some rotation, still circular and sorted)",
+          "timeComplexity": "O(n log n) due to sorting",
+          "spaceComplexity": "O(n) for the values list and new nodes"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Walk the circle once, inserting at the first valid spot found -- the normal in-range case, or the wrap-point case if no normal spot exists.",
+          "code": "class Node {\n    int val;\n    Node next;\n    Node(int val) { this.val = val; }\n}\n\nclass Solution {\n    public Node insert(Node head, int insertVal) {\n        Node newNode = new Node(insertVal);\n\n        if (head == null) {\n            newNode.next = newNode;\n            return newNode;\n        }\n\n        Node prev = head;\n        Node current = head.next;\n\n        while (current != head) {\n            if (prev.val <= insertVal && insertVal <= current.val) {\n                break; // normal case -- fits between prev and current\n            }\n            if (prev.val > current.val) { // wrap point (max-to-min transition)\n                if (insertVal >= prev.val || insertVal <= current.val) {\n                    break;\n                }\n            }\n            prev = current;\n            current = current.next;\n        }\n\n        prev.next = newNode;\n        newNode.next = current;\n        return head;\n    }\n}",
+          "output": "For head = [3,4,1], insertVal = 2: [3,4,1,2]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
     }
   ],
   "codeExamples": [
