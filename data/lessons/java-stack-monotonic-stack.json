@@ -134,6 +134,391 @@
         "Why does next-greater-element run in O(n) despite its nested while loop?",
         "Why does the stack store indices rather than values in this pattern?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-20",
+      "number": 20,
+      "title": "Valid Parentheses",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/valid-parentheses/",
+      "problemStatement": "Given a string s containing just '(', ')', '{', '}', '[' and ']', determine if the input string is valid -- every open bracket must be closed by the same type, in the correct order.",
+      "examples": [
+        { "input": "s = \"()[]{}\"", "output": "true" },
+        { "input": "s = \"(]\"", "output": "false" }
+      ],
+      "constraints": ["1 <= s.length <= 10^4"],
+      "hints": ["Push every opening bracket; on a closing bracket, it must match whatever is currently on TOP of the stack -- exactly the balanced-parentheses pattern previewed back in Queue and Deque."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Repeatedly find and remove any adjacent matching pair (like \"()\", \"[]\", \"{}\") until no more removals are possible; valid if the string becomes empty.",
+          "code": "class Solution {\n    public boolean isValid(String s) {\n        String prev;\n        do {\n            prev = s;\n            s = s.replace(\"()\", \"\").replace(\"[]\", \"\").replace(\"{}\", \"\");\n        } while (!s.equals(prev));\n        return s.isEmpty();\n    }\n}",
+          "output": "For s = \"()[]{}\": true",
+          "timeComplexity": "O(n^2) worst case",
+          "spaceComplexity": "O(n) for intermediate Strings"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A stack: push opening brackets, and on a closing bracket, pop and check it matches.",
+          "code": "class Solution {\n    public boolean isValid(String s) {\n        java.util.Deque<Character> stack = new java.util.ArrayDeque<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(' || c == '[' || c == '{') {\n                stack.push(c);\n            } else {\n                if (stack.isEmpty()) return false;\n                char top = stack.pop();\n                if ((c == ')' && top != '(') || (c == ']' && top != '[') || (c == '}' && top != '{')) {\n                    return false;\n                }\n            }\n        }\n        return stack.isEmpty();\n    }\n}",
+          "output": "For s = \"()[]{}\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1047",
+      "number": 1047,
+      "title": "Remove All Adjacent Duplicates In String",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/",
+      "problemStatement": "Given a string s, repeatedly remove adjacent duplicate letters until no more removals can be made, and return the final string.",
+      "examples": [
+        { "input": "s = \"abbaca\"", "output": "\"ca\"", "explanation": "\"abbaca\" -> remove \"bb\" -> \"aaca\" -> remove \"aa\" -> \"ca\"." }
+      ],
+      "constraints": ["1 <= s.length <= 10^5", "lowercase English letters"],
+      "hints": ["Push characters onto a stack; if the next character matches the stack's top, pop instead of pushing -- this handles cascading removals in a single pass."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Repeatedly scan for and remove one adjacent duplicate pair, restarting the scan, until no more removals are possible.",
+          "code": "class Solution {\n    public String removeDuplicates(String s) {\n        StringBuilder sb = new StringBuilder(s);\n        boolean changed = true;\n        while (changed) {\n            changed = false;\n            for (int i = 0; i < sb.length() - 1; i++) {\n                if (sb.charAt(i) == sb.charAt(i + 1)) {\n                    sb.delete(i, i + 2);\n                    changed = true;\n                    break;\n                }\n            }\n        }\n        return sb.toString();\n    }\n}",
+          "output": "For s = \"abbaca\": \"ca\"",
+          "timeComplexity": "O(n^2) worst case",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A single-pass stack (implemented with a StringBuilder acting as a stack): pop (delete last char) if it matches, otherwise push (append).",
+          "code": "class Solution {\n    public String removeDuplicates(String s) {\n        StringBuilder stack = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (stack.length() > 0 && stack.charAt(stack.length() - 1) == c) {\n                stack.deleteCharAt(stack.length() - 1);\n            } else {\n                stack.append(c);\n            }\n        }\n        return stack.toString();\n    }\n}",
+          "output": "For s = \"abbaca\": \"ca\"",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-682",
+      "number": 682,
+      "title": "Baseball Game",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/baseball-game/",
+      "problemStatement": "Given a list of strings representing operations on a record of scores -- an integer (new score), \"+\" (sum of previous two), \"D\" (double the previous), or \"C\" (cancel/remove the previous) -- return the sum of all scores on the record after applying all operations.",
+      "examples": [
+        { "input": "ops = [\"5\",\"2\",\"C\",\"D\",\"+\"]", "output": "30", "explanation": "5, 2, cancel 2 (back to just 5), double previous (5*2=10), sum of previous two (5+10=15). Record: [5,10,15]. Sum = 30." }
+      ],
+      "constraints": ["1 <= ops.length <= 1000"],
+      "hints": ["A stack naturally represents 'the record so far' -- \"C\" pops, \"D\"/\"+\" peek at recent entries before pushing a new one, and numbers just push directly."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use an ArrayList instead of a stack, removing/inspecting from the end manually -- functionally identical to a stack, just via a different API.",
+          "code": "class Solution {\n    public int calPoints(String[] ops) {\n        java.util.List<Integer> record = new java.util.ArrayList<>();\n        for (String op : ops) {\n            if (op.equals(\"C\")) {\n                record.remove(record.size() - 1);\n            } else if (op.equals(\"D\")) {\n                record.add(record.get(record.size() - 1) * 2);\n            } else if (op.equals(\"+\")) {\n                record.add(record.get(record.size() - 1) + record.get(record.size() - 2));\n            } else {\n                record.add(Integer.parseInt(op));\n            }\n        }\n        int sum = 0;\n        for (int score : record) sum += score;\n        return sum;\n    }\n}",
+          "output": "For ops = [\"5\",\"2\",\"C\",\"D\",\"+\"]: 30",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "An ArrayDeque used as a stack -- push/peek/pop directly express each operation naturally.",
+          "code": "class Solution {\n    public int calPoints(String[] ops) {\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n        for (String op : ops) {\n            if (op.equals(\"C\")) {\n                stack.pop();\n            } else if (op.equals(\"D\")) {\n                stack.push(stack.peek() * 2);\n            } else if (op.equals(\"+\")) {\n                int top = stack.pop();\n                int newTop = top + stack.peek();\n                stack.push(top);\n                stack.push(newTop);\n            } else {\n                stack.push(Integer.parseInt(op));\n            }\n        }\n        int sum = 0;\n        for (int score : stack) sum += score;\n        return sum;\n    }\n}",
+          "output": "For ops = [\"5\",\"2\",\"C\",\"D\",\"+\"]: 30",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-150",
+      "number": 150,
+      "title": "Evaluate Reverse Polish Notation",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
+      "problemStatement": "Evaluate an arithmetic expression given in Reverse Polish Notation (postfix). Valid operators are +, -, *, /. Each operand may be an integer or another expression's result.",
+      "examples": [
+        { "input": "tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]", "output": "9", "explanation": "(2 + 1) * 3 = 9." }
+      ],
+      "constraints": ["1 <= tokens.length <= 10^4"],
+      "hints": ["Push numbers; when an operator appears, pop the top TWO numbers, apply the operator, and push the result back -- classic stack-based expression evaluation."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Same fundamental approach is required for RPN -- there isn't a meaningfully simpler non-stack alternative; shown here using an ArrayList as the stack.",
+          "code": "class Solution {\n    public int evalRPN(String[] tokens) {\n        java.util.List<Integer> stack = new java.util.ArrayList<>();\n        for (String token : tokens) {\n            if (token.equals(\"+\") || token.equals(\"-\") || token.equals(\"*\") || token.equals(\"/\")) {\n                int b = stack.remove(stack.size() - 1);\n                int a = stack.remove(stack.size() - 1);\n                int result = switch (token) {\n                    case \"+\" -> a + b;\n                    case \"-\" -> a - b;\n                    case \"*\" -> a * b;\n                    default -> a / b;\n                };\n                stack.add(result);\n            } else {\n                stack.add(Integer.parseInt(token));\n            }\n        }\n        return stack.get(0);\n    }\n}",
+          "output": "For tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]: 9",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "An ArrayDeque as a stack -- push numbers, pop two and combine on each operator.",
+          "code": "class Solution {\n    public int evalRPN(String[] tokens) {\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n        for (String token : tokens) {\n            switch (token) {\n                case \"+\" -> stack.push(stack.pop() + stack.pop());\n                case \"*\" -> stack.push(stack.pop() * stack.pop());\n                case \"-\" -> {\n                    int b = stack.pop(), a = stack.pop();\n                    stack.push(a - b);\n                }\n                case \"/\" -> {\n                    int b = stack.pop(), a = stack.pop();\n                    stack.push(a / b);\n                }\n                default -> stack.push(Integer.parseInt(token));\n            }\n        }\n        return stack.pop();\n    }\n}",
+          "output": "For tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]: 9",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-155",
+      "number": 155,
+      "title": "Min Stack",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/min-stack/",
+      "problemStatement": "Design a stack that supports push, pop, top, and retrieving the minimum element, all in O(1) time.",
+      "examples": [
+        { "input": "push(-2); push(0); push(-3); getMin(); pop(); top(); getMin()", "output": "-3, 0, -2", "explanation": "After popping -3, the stack is [-2, 0]; top is 0, and the new minimum is -2." }
+      ],
+      "constraints": ["-2^31 <= val <= 2^31 - 1", "At most 3*10^4 calls to push, pop, top, and getMin"],
+      "hints": ["Maintain a SECOND stack that tracks the minimum seen so far at each point -- pushed and popped in lockstep with the main stack, so getMin() is always just a peek."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "A single stack, with getMin() scanning the entire stack every time -- correct, but O(n) instead of O(1).",
+          "code": "class MinStack {\n    private java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n\n    public void push(int val) {\n        stack.push(val);\n    }\n\n    public void pop() {\n        stack.pop();\n    }\n\n    public int top() {\n        return stack.peek();\n    }\n\n    public int getMin() {\n        int min = Integer.MAX_VALUE;\n        for (int val : stack) min = Math.min(min, val);\n        return min;\n    }\n}",
+          "output": "getMin()=-3, top()=0, getMin()=-2 (matches expected sequence)",
+          "timeComplexity": "O(1) for push/pop/top, O(n) for getMin",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two stacks in lockstep: the main stack, and a min-stack tracking the minimum value at each corresponding depth.",
+          "code": "class MinStack {\n    private java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n    private java.util.Deque<Integer> minStack = new java.util.ArrayDeque<>();\n\n    public void push(int val) {\n        stack.push(val);\n        minStack.push(minStack.isEmpty() ? val : Math.min(val, minStack.peek()));\n    }\n\n    public void pop() {\n        stack.pop();\n        minStack.pop();\n    }\n\n    public int top() {\n        return stack.peek();\n    }\n\n    public int getMin() {\n        return minStack.peek();\n    }\n}",
+          "output": "getMin()=-3, top()=0, getMin()=-2 (matches expected sequence)",
+          "timeComplexity": "O(1) for all operations",
+          "spaceComplexity": "O(n) for both stacks"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-394",
+      "number": 394,
+      "title": "Decode String",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/decode-string/",
+      "problemStatement": "Given an encoded string in the form k[encoded_string], decode it -- the encoded string inside brackets is repeated exactly k times, and this can be nested.",
+      "examples": [
+        { "input": "s = \"3[a2[c]]\"", "output": "\"accaccacc\"", "explanation": "2[c] decodes to \"cc\", so a2[c] is \"acc\", and 3[a2[c]] repeats \"acc\" three times." }
+      ],
+      "constraints": ["1 <= s.length <= 30"],
+      "hints": ["Two stacks: one for pending repeat counts, one for pending partial strings -- when a ']' closes a bracket, pop both and repeat/append, exactly handling nested brackets naturally via the call stack of pushes/pops."],
+      "approaches": [
+        {
+          "label": "Brute Force (Recursive)",
+          "explanation": "Recursively parse: read a number, expect '[', recursively decode until the matching ']', repeat that result, and continue.",
+          "code": "class Solution {\n    private int pos = 0;\n\n    public String decodeString(String s) {\n        pos = 0;\n        return decode(s);\n    }\n\n    private String decode(String s) {\n        StringBuilder result = new StringBuilder();\n        while (pos < s.length() && s.charAt(pos) != ']') {\n            if (Character.isDigit(s.charAt(pos))) {\n                int count = 0;\n                while (Character.isDigit(s.charAt(pos))) {\n                    count = count * 10 + (s.charAt(pos) - '0');\n                    pos++;\n                }\n                pos++; // skip '['\n                String inner = decode(s);\n                pos++; // skip ']'\n                for (int i = 0; i < count; i++) result.append(inner);\n            } else {\n                result.append(s.charAt(pos));\n                pos++;\n            }\n        }\n        return result.toString();\n    }\n}",
+          "output": "For s = \"3[a2[c]]\": \"accaccacc\"",
+          "timeComplexity": "O(maxK^depth * n)",
+          "spaceComplexity": "O(depth) recursion, plus output size"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Iterative with two explicit stacks (counts and partial strings) instead of recursion -- avoids relying on the call stack for nesting.",
+          "code": "class Solution {\n    public String decodeString(String s) {\n        java.util.Deque<Integer> countStack = new java.util.ArrayDeque<>();\n        java.util.Deque<StringBuilder> stringStack = new java.util.ArrayDeque<>();\n        StringBuilder current = new StringBuilder();\n        int count = 0;\n\n        for (char c : s.toCharArray()) {\n            if (Character.isDigit(c)) {\n                count = count * 10 + (c - '0');\n            } else if (c == '[') {\n                countStack.push(count);\n                stringStack.push(current);\n                current = new StringBuilder();\n                count = 0;\n            } else if (c == ']') {\n                StringBuilder prev = stringStack.pop();\n                int repeat = countStack.pop();\n                for (int i = 0; i < repeat; i++) prev.append(current);\n                current = prev;\n            } else {\n                current.append(c);\n            }\n        }\n        return current.toString();\n    }\n}",
+          "output": "For s = \"3[a2[c]]\": \"accaccacc\"",
+          "timeComplexity": "O(maxK^depth * n)",
+          "spaceComplexity": "O(n) for the stacks"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-496",
+      "number": 496,
+      "title": "Next Greater Element I",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/next-greater-element-i/",
+      "problemStatement": "Given two arrays nums1 and nums2 (nums1 is a subset of nums2), for each element of nums1, find its next greater element in nums2 (the first greater element to its right). If none exists, use -1.",
+      "examples": [
+        { "input": "nums1 = [4,1,2], nums2 = [1,3,4,2]", "output": "[3,-1,-1]", "explanation": "4's next greater in nums2 doesn't exist (4 is nums2's last relevant max). 1's next greater is 3. 2's next greater doesn't exist." }
+      ],
+      "constraints": ["1 <= nums1.length <= nums2.length <= 1000", "nums2 consists of unique elements, nums1 is a subset"],
+      "hints": ["Precompute next-greater for EVERY element of nums2 using the monotonic stack pattern from this lesson's Section 3, storing results in a HashMap, then look up each nums1 element."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each element of nums1, scan forward in nums2 from its position to find the first greater value.",
+          "code": "class Solution {\n    public int[] nextGreaterElement(int[] nums1, int[] nums2) {\n        int[] result = new int[nums1.length];\n        for (int i = 0; i < nums1.length; i++) {\n            int target = nums1[i];\n            int j = 0;\n            while (nums2[j] != target) j++;\n            int nextGreater = -1;\n            for (int k = j + 1; k < nums2.length; k++) {\n                if (nums2[k] > target) {\n                    nextGreater = nums2[k];\n                    break;\n                }\n            }\n            result[i] = nextGreater;\n        }\n        return result;\n    }\n}",
+          "output": "For nums1 = [4,1,2], nums2 = [1,3,4,2]: [3,-1,-1]",
+          "timeComplexity": "O(n * m)",
+          "spaceComplexity": "O(1) extra"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A monotonic stack (exactly this lesson's Section 3 pattern) computes next-greater for all of nums2 in one pass, stored in a HashMap for O(1) lookup per nums1 element.",
+          "code": "class Solution {\n    public int[] nextGreaterElement(int[] nums1, int[] nums2) {\n        java.util.Map<Integer, Integer> nextGreater = new java.util.HashMap<>();\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n\n        for (int num : nums2) {\n            while (!stack.isEmpty() && stack.peek() < num) {\n                nextGreater.put(stack.pop(), num);\n            }\n            stack.push(num);\n        }\n\n        int[] result = new int[nums1.length];\n        for (int i = 0; i < nums1.length; i++) {\n            result[i] = nextGreater.getOrDefault(nums1[i], -1);\n        }\n        return result;\n    }\n}",
+          "output": "For nums1 = [4,1,2], nums2 = [1,3,4,2]: [3,-1,-1]",
+          "timeComplexity": "O(n + m)",
+          "spaceComplexity": "O(m) for the stack and map"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-503",
+      "number": 503,
+      "title": "Next Greater Element II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/next-greater-element-ii/",
+      "problemStatement": "Given a CIRCULAR integer array nums, return the next greater element for every element -- the array wraps around, so the search for a greater element can continue from the beginning.",
+      "examples": [
+        { "input": "nums = [1,2,1]", "output": "[2,-1,2]", "explanation": "For the last 1, wrapping around finds 2 at index 0 as its next greater element." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4"],
+      "hints": ["Simulate the circular wraparound by iterating TWICE through the array (index i % n), while only pushing/recording results during the conceptual first pass."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each index, scan forward up to n-1 additional steps (wrapping with modulo) looking for a greater value.",
+          "code": "class Solution {\n    public int[] nextGreaterElements(int[] nums) {\n        int n = nums.length;\n        int[] result = new int[n];\n        for (int i = 0; i < n; i++) {\n            result[i] = -1;\n            for (int offset = 1; offset < n; offset++) {\n                int j = (i + offset) % n;\n                if (nums[j] > nums[i]) {\n                    result[i] = nums[j];\n                    break;\n                }\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,2,1]: [2,-1,2]",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1) extra"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Monotonic stack over indices, iterating 2n times (i % n) to simulate the circular wraparound.",
+          "code": "class Solution {\n    public int[] nextGreaterElements(int[] nums) {\n        int n = nums.length;\n        int[] result = new int[n];\n        java.util.Arrays.fill(result, -1);\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n\n        for (int i = 0; i < 2 * n; i++) {\n            int num = nums[i % n];\n            while (!stack.isEmpty() && nums[stack.peek()] < num) {\n                result[stack.pop()] = num;\n            }\n            if (i < n) {\n                stack.push(i);\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,2,1]: [2,-1,2]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-739",
+      "number": 739,
+      "title": "Daily Temperatures",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/daily-temperatures/",
+      "problemStatement": "Given an array of daily temperatures, return an array answer where answer[i] is the number of days you'd have to wait after day i to get a warmer temperature. If there is no future day, answer[i] = 0.",
+      "examples": [
+        { "input": "temperatures = [73,74,75,71,69,72,76,73]", "output": "[1,1,4,2,1,1,0,0]" }
+      ],
+      "constraints": ["1 <= temperatures.length <= 10^5", "30 <= temperatures[i] <= 100"],
+      "hints": ["This is next-greater-element, but returning the DISTANCE (index difference) to the next greater element instead of its value."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each day, scan forward until a warmer day is found.",
+          "code": "class Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] result = new int[n];\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                if (temperatures[j] > temperatures[i]) {\n                    result[i] = j - i;\n                    break;\n                }\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For temperatures = [73,74,75,71,69,72,76,73]: [1,1,4,2,1,1,0,0]",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1) extra"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A monotonic stack of indices -- when a warmer day is found, pop and compute the index difference for every day it resolves.",
+          "code": "class Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] result = new int[n];\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n\n        for (int i = 0; i < n; i++) {\n            while (!stack.isEmpty() && temperatures[stack.peek()] < temperatures[i]) {\n                int index = stack.pop();\n                result[index] = i - index;\n            }\n            stack.push(i);\n        }\n        return result;\n    }\n}",
+          "output": "For temperatures = [73,74,75,71,69,72,76,73]: [1,1,4,2,1,1,0,0]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-901",
+      "number": 901,
+      "title": "Online Stock Span",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/online-stock-span/",
+      "problemStatement": "Design an algorithm that collects daily stock price quotes and returns the SPAN of the stock's price for the current day -- the number of consecutive days (including today) the price has been less than or equal to today's price.",
+      "examples": [
+        { "input": "next(100); next(80); next(60); next(70); next(60); next(75); next(85)", "output": "1, 1, 1, 2, 1, 4, 6", "explanation": "For 75: prices 70,60,75 back to (but not past) 60... spans back through 60,70 which are <=75, plus the earlier 80 breaks it. Span=4 covers 60,70,60,75." }
+      ],
+      "constraints": ["1 <= price <= 10^5", "At most 10^4 calls to next"],
+      "hints": ["Maintain a monotonic stack of (price, span) pairs -- when a new price arrives, pop and ACCUMULATE the span of every previous price that's <= the new one, since they're all now part of this price's span too."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Store all prices in a list; for each new price, scan backward counting consecutive prices <= it.",
+          "code": "class StockSpanner {\n    private java.util.List<Integer> prices = new java.util.ArrayList<>();\n\n    public int next(int price) {\n        prices.add(price);\n        int span = 0;\n        for (int i = prices.size() - 1; i >= 0; i--) {\n            if (prices.get(i) <= price) {\n                span++;\n            } else {\n                break;\n            }\n        }\n        return span;\n    }\n}",
+          "output": "Matches expected sequence: 1, 1, 1, 2, 1, 4, 6",
+          "timeComplexity": "O(n) per call worst case",
+          "spaceComplexity": "O(n) for stored prices"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A monotonic stack storing (price, span) pairs -- popping and accumulating spans whenever the new price is >= the stack's top.",
+          "code": "class StockSpanner {\n    private java.util.Deque<int[]> stack = new java.util.ArrayDeque<>(); // {price, span}\n\n    public int next(int price) {\n        int span = 1;\n        while (!stack.isEmpty() && stack.peek()[0] <= price) {\n            span += stack.pop()[1];\n        }\n        stack.push(new int[]{price, span});\n        return span;\n    }\n}",
+          "output": "Matches expected sequence: 1, 1, 1, 2, 1, 4, 6",
+          "timeComplexity": "O(1) amortized per call",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-84",
+      "number": 84,
+      "title": "Largest Rectangle in Histogram",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "problemStatement": "Given an array of integers heights representing the histogram's bar heights where each bar has width 1, return the area of the largest rectangle that can be formed within the histogram.",
+      "examples": [
+        { "input": "heights = [2,1,5,6,2,3]", "output": "10", "explanation": "The largest rectangle has height 5 and width 2 (bars at indices 2,3 with heights 5,6 -- limited to height 5), giving area 10." }
+      ],
+      "constraints": ["1 <= heights.length <= 10^5", "0 <= heights[i] <= 10^4"],
+      "hints": ["A monotonic (increasing) stack of indices: when a shorter bar is found, it means every taller bar still on the stack has just found its RIGHT boundary -- pop and compute that bar's maximal rectangle area."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every pair of bars, compute the rectangle limited by the shorter of the two, tracking the maximum.",
+          "code": "class Solution {\n    public int largestRectangleArea(int[] heights) {\n        int maxArea = 0;\n        for (int i = 0; i < heights.length; i++) {\n            int minHeight = heights[i];\n            for (int j = i; j < heights.length; j++) {\n                minHeight = Math.min(minHeight, heights[j]);\n                maxArea = Math.max(maxArea, minHeight * (j - i + 1));\n            }\n        }\n        return maxArea;\n    }\n}",
+          "output": "For heights = [2,1,5,6,2,3]: 10",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A monotonic increasing stack of indices -- popping a taller bar when a shorter one arrives lets us compute its maximal rectangle using the new shorter bar's position as the right boundary.",
+          "code": "class Solution {\n    public int largestRectangleArea(int[] heights) {\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n        int maxArea = 0;\n        int n = heights.length;\n\n        for (int i = 0; i <= n; i++) {\n            int currentHeight = (i == n) ? 0 : heights[i];\n            while (!stack.isEmpty() && heights[stack.peek()] >= currentHeight) {\n                int height = heights[stack.pop()];\n                int width = stack.isEmpty() ? i : i - stack.peek() - 1;\n                maxArea = Math.max(maxArea, height * width);\n            }\n            stack.push(i);\n        }\n        return maxArea;\n    }\n}",
+          "output": "For heights = [2,1,5,6,2,3]: 10",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-42-stack",
+      "number": 42,
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/trapping-rain-water/",
+      "problemStatement": "Given n non-negative integers representing an elevation map, compute how much water it can trap after raining. (Same problem as covered under Two Pointers -- reframed here with a monotonic-stack based solution.)",
+      "examples": [
+        { "input": "height = [0,1,0,2,1,0,1,3,2,1,2,1]", "output": "6" }
+      ],
+      "constraints": ["1 <= height.length <= 2*10^4"],
+      "hints": ["A monotonic decreasing stack of indices -- when a taller bar arrives, it forms the RIGHT wall of a trapped-water region, with the stack's new top as the left wall and the just-popped index as the bottom."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Same brute force as the Two Pointers version -- for every index, scan both directions for maxLeft/maxRight.",
+          "code": "class Solution {\n    public int trap(int[] height) {\n        int total = 0;\n        for (int i = 0; i < height.length; i++) {\n            int maxLeft = 0;\n            for (int j = 0; j <= i; j++) maxLeft = Math.max(maxLeft, height[j]);\n            int maxRight = 0;\n            for (int j = i; j < height.length; j++) maxRight = Math.max(maxRight, height[j]);\n            total += Math.min(maxLeft, maxRight) - height[i];\n        }\n        return total;\n    }\n}",
+          "output": "For height = [0,1,0,2,1,0,1,3,2,1,2,1]: 6",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal (Monotonic Stack)",
+          "explanation": "A monotonic decreasing stack of indices -- popping the bottom of a 'valley' whenever a taller bar arrives, computing trapped water bounded by the new top (left wall) and current index (right wall).",
+          "code": "class Solution {\n    public int trap(int[] height) {\n        java.util.Deque<Integer> stack = new java.util.ArrayDeque<>();\n        int total = 0;\n\n        for (int i = 0; i < height.length; i++) {\n            while (!stack.isEmpty() && height[stack.peek()] < height[i]) {\n                int bottom = stack.pop();\n                if (stack.isEmpty()) break;\n                int left = stack.peek();\n                int width = i - left - 1;\n                int boundedHeight = Math.min(height[left], height[i]) - height[bottom];\n                total += width * boundedHeight;\n            }\n            stack.push(i);\n        }\n        return total;\n    }\n}",
+          "output": "For height = [0,1,0,2,1,0,1,3,2,1,2,1]: 6",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack"
+        }
+      ]
     }
   ],
   "codeExamples": [
