@@ -1,0 +1,162 @@
+{
+  "id": "java-dp-intro",
+  "moduleId": "greedy-dp",
+  "title": "Dynamic Programming: Memoization vs Tabulation",
+  "description": "Formally naming Dynamic Programming, revisiting the Fibonacci memoization from Recursion in DSA, and introducing tabulation -- building answers bottom-up instead of top-down.",
+  "objectives": [
+    "Understand overlapping sub-problems and optimal substructure -- the two properties DP needs",
+    "Recognize memoization (top-down) as what Recursion in DSA already demonstrated",
+    "Implement tabulation (bottom-up) for the same problem, and compare the two approaches"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Naming What We Already Did"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Recursion in DSA, naive Fibonacci was O(2^n) due to repeated work, and we fixed it with a HashMap cache -- that fix already WAS Dynamic Programming (DP). Today we name it formally and add its second technique: tabulation."
+    },
+    {
+      "type": "definition",
+      "term": "Dynamic Programming",
+      "text": "A technique for solving problems by breaking them into overlapping sub-problems, solving each sub-problem only once, and storing (caching) its result for reuse -- applicable when a problem has both overlapping sub-problems and optimal substructure."
+    },
+    {
+      "type": "table",
+      "title": "The two conditions DP requires",
+      "headers": ["Property", "Meaning"],
+      "rows": [
+        ["Overlapping sub-problems", "The same smaller sub-problem is needed multiple times (fib(3) needed by both fib(5) and fib(4))"],
+        ["Optimal substructure", "An optimal solution to the whole problem can be built from optimal solutions to its sub-problems (same requirement Greedy Algorithms also needed)"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "2. Memoization: Top-Down (Recap)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static Map<Integer, Integer> memo = new HashMap<>();\n\n    static int fibMemo(int n) {\n        if (n <= 1) return n;\n        if (memo.containsKey(n)) return memo.get(n);\n\n        int result = fibMemo(n - 1) + fibMemo(n - 2);\n        memo.put(n, result);\n        return result;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibMemo(10));\n    }\n}",
+      "output": "55",
+      "retypePractice": true,
+      "retypeId": "java-dp-memo-fib"
+    },
+    {
+      "type": "definition",
+      "term": "Memoization (top-down)",
+      "text": "Solving a problem recursively, exactly as you naturally would, but caching each sub-problem's result the first time it's computed and reusing it on later requests."
+    },
+    {
+      "type": "heading",
+      "text": "3. Tabulation: Bottom-Up (New)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int fibTabulation(int n) {\n        if (n <= 1) return n;\n\n        int[] dp = new int[n + 1];\n        dp[0] = 0;\n        dp[1] = 1;\n\n        for (int i = 2; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n        return dp[n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibTabulation(10));\n    }\n}",
+      "output": "55",
+      "retypePractice": true,
+      "retypeId": "java-dp-tabulation-fib"
+    },
+    {
+      "type": "definition",
+      "term": "Tabulation (bottom-up)",
+      "text": "Solving a problem iteratively by filling a table (usually an array) starting from the smallest base cases, building up to the final answer -- no recursion involved."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing fibTabulation(10)'s dp array as it fills",
+      "steps": [
+        "dp[0]=0, dp[1]=1 (base cases, set directly)",
+        "dp[2] = dp[1]+dp[0] = 1+0 = 1",
+        "dp[3] = dp[2]+dp[1] = 1+1 = 2",
+        "dp[4] = dp[3]+dp[2] = 2+1 = 3",
+        "... continuing this pattern ...",
+        "dp[9] = 34, dp[10] = dp[9]+dp[8] = 34+21 = 55",
+        "Return dp[10] = 55"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Comparing the Two Approaches"
+    },
+    {
+      "type": "table",
+      "title": "Memoization vs tabulation",
+      "headers": ["", "Memoization (top-down)", "Tabulation (bottom-up)"],
+      "rows": [
+        ["Direction", "Starts from the ORIGINAL problem, recurses down to base cases", "Starts from BASE cases, builds up to the original problem"],
+        ["Style", "Recursive, with a cache", "Iterative, filling a table"],
+        ["Risk", "Deep recursion can StackOverflowError on very large n (Recursion Basics)", "No recursion -- no stack overflow risk"],
+        ["Computes every sub-problem?", "Only the ones actually needed for this call", "Typically all of them, in order, even ones not strictly required"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Both approaches give the SAME correct answer and the SAME O(n) time complexity for Fibonacci -- the choice between them is about STYLE and practical constraints (like avoiding deep recursion), not correctness. Later DP lessons (1D DP, 2D DP) will use both styles depending on which fits the problem more naturally."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming memoization and tabulation are entirely different algorithms -- they solve the same problem with the same underlying recurrence, just built in opposite directions.",
+        "Forgetting tabulation needs its base cases set explicitly BEFORE the loop starts filling in the rest of the table.",
+        "Using memoization on a problem with a very large n, risking a StackOverflowError that tabulation would have avoided entirely.",
+        "Trying to apply DP to a problem that lacks overlapping sub-problems -- if every sub-problem is genuinely distinct (like plain factorial), there's nothing to cache, and DP offers no benefit over simple recursion."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What two properties must a problem have for Dynamic Programming to apply?",
+          "answer": "Overlapping sub-problems (the same smaller sub-problem is needed multiple times) and optimal substructure (an optimal solution to the whole problem can be built from optimal solutions to its sub-problems)."
+        },
+        {
+          "question": "What is the difference between memoization and tabulation?",
+          "answer": "Memoization is top-down: solve the problem recursively as you naturally would, caching each sub-problem's result the first time it's computed. Tabulation is bottom-up: iteratively fill a table starting from the base cases, building up to the final answer, with no recursion."
+        },
+        {
+          "question": "Why might tabulation be preferred over memoization for very large inputs?",
+          "answer": "Memoization relies on recursion, which can exhaust the call stack and cause a StackOverflowError for very large inputs. Tabulation is purely iterative, avoiding that risk entirely."
+        }
+      ],
+      "thirtySecondAnswer": "Dynamic Programming applies to problems with overlapping sub-problems and optimal substructure, solving each distinct sub-problem only once instead of recomputing it. Memoization (top-down) solves the problem recursively as naturally written, caching each sub-problem's result on first computation -- exactly what fixed naive Fibonacci's O(2^n) blowup in Recursion in DSA. Tabulation (bottom-up) instead iteratively fills a table starting from the base cases up to the final answer, with no recursion and therefore no stack overflow risk. Both give the same correct answer and complexity for a given problem; the choice is about style and practical constraints, not correctness."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Memoization = solve top-down, jot the answer in the margin as you go (recursive + cache). Tabulation = solve bottom-up, filling a table row by row from the smallest case upward (iterative + table). Same destination, opposite starting points."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What two properties does a problem need for DP to apply?",
+        "What's the key difference between memoization and tabulation?",
+        "Why might tabulation avoid a risk that memoization has for very large inputs?",
+        "Do memoization and tabulation give different answers for the same problem?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-dp-memo-fib", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static Map<Integer, Integer> memo = new HashMap<>();\n\n    static int fibMemo(int n) {\n        if (n <= 1) return n;\n        if (memo.containsKey(n)) return memo.get(n);\n\n        int result = fibMemo(n - 1) + fibMemo(n - 2);\n        memo.put(n, result);\n        return result;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibMemo(10));\n    }\n}", "output": "55" },
+    { "id": "java-dp-tabulation-fib", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int fibTabulation(int n) {\n        if (n <= 1) return n;\n\n        int[] dp = new int[n + 1];\n        dp[0] = 0;\n        dp[1] = 1;\n\n        for (int i = 2; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n        return dp[n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibTabulation(10));\n    }\n}", "output": "55" }
+  ],
+  "retypePractice": [
+    { "id": "java-dp-memo-fib", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static Map<Integer, Integer> memo = new HashMap<>();\n\n    static int fibMemo(int n) {\n        if (n <= 1) return n;\n        if (memo.containsKey(n)) return memo.get(n);\n\n        int result = fibMemo(n - 1) + fibMemo(n - 2);\n        memo.put(n, result);\n        return result;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibMemo(10));\n    }\n}" },
+    { "id": "java-dp-tabulation-fib", "reference": "public class Main {\n    static int fibTabulation(int n) {\n        if (n <= 1) return n;\n\n        int[] dp = new int[n + 1];\n        dp[0] = 0;\n        dp[1] = 1;\n\n        for (int i = 2; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n        return dp[n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibTabulation(10));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-dp-memo-fib", "java-dp-tabulation-fib"]
+  }
+}

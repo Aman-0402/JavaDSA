@@ -164,7 +164,8 @@
       "id": "greedy-dp",
       "title": "Greedy & Dynamic Programming",
       "topics": [
-        { "id": "java-greedy-algorithms", "title": "Greedy Algorithms", "lesson": "java-greedy-algorithms" }
+        { "id": "java-greedy-algorithms", "title": "Greedy Algorithms", "lesson": "java-greedy-algorithms" },
+        { "id": "java-dp-intro", "title": "Dynamic Programming: Memoization vs Tabulation", "lesson": "java-dp-intro" }
       ]
     }
   ]
