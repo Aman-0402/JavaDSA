@@ -120,6 +120,78 @@
         "Why does BFS find the shortest path in an unweighted graph?",
         "Does BFS's shortest-path guarantee hold for weighted graphs?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-200",
+      "number": 200,
+      "title": "Number of Islands",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/number-of-islands/",
+      "problemStatement": "Given an m x n grid of '1' (land) and '0' (water), return the number of islands (connected groups of land, 4-directionally).",
+      "examples": [
+        { "input": "grid = [[\"1\",\"1\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\"],[\"0\",\"0\",\"0\",\"1\"]]", "output": "3" }
+      ],
+      "constraints": ["1 <= rows, cols <= 300"],
+      "hints": ["Scan every cell; on an unvisited '1', that's a new island -- BFS/DFS from it, marking all connected land as visited (or sinking it to '0')."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Scan the grid; each time an unvisited land cell is found, increment the island count and BFS outward marking all connected land cells as visited so they aren't recounted.",
+          "code": "class Solution {\n    public int numIslands(char[][] grid) {\n        int rows = grid.length, cols = grid[0].length;\n        int count = 0;\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (grid[r][c] == '1') {\n                    count++;\n                    bfs(grid, r, c);\n                }\n            }\n        }\n        return count;\n    }\n\n    private void bfs(char[][] grid, int r, int c) {\n        Queue<int[]> queue = new LinkedList<>();\n        queue.offer(new int[]{r, c});\n        grid[r][c] = '0';\n        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};\n        while (!queue.isEmpty()) {\n            int[] cell = queue.poll();\n            for (int[] d : dirs) {\n                int nr = cell[0] + d[0], nc = cell[1] + d[1];\n                if (nr >= 0 && nc >= 0 && nr < grid.length && nc < grid[0].length && grid[nr][nc] == '1') {\n                    grid[nr][nc] = '0';\n                    queue.offer(new int[]{nr, nc});\n                }\n            }\n        }\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(rows * cols)",
+          "spaceComplexity": "O(rows * cols)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-733",
+      "number": 733,
+      "title": "Flood Fill",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/flood-fill/",
+      "problemStatement": "Given an image grid, a starting pixel (sr, sc), and a new color, perform a flood fill: change the starting pixel's color and all 4-directionally connected pixels with the SAME original color to the new color.",
+      "examples": [
+        { "input": "image = [[1,1,1],[1,1,0],[1,0,1]], sr = 1, sc = 1, color = 2", "output": "[[2,2,2],[2,2,0],[2,0,1]]" }
+      ],
+      "constraints": ["1 <= rows, cols <= 50"],
+      "hints": ["If the new color equals the starting pixel's original color, do nothing (or you'd infinite-loop re-visiting cells).", "BFS/DFS from (sr, sc), recoloring every connected pixel matching the ORIGINAL color."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Record the starting color; if it already equals the new color, return immediately (avoids infinite recursion). Otherwise BFS from the start, recoloring each connected pixel that still matches the original color.",
+          "code": "class Solution {\n    public int[][] floodFill(int[][] image, int sr, int sc, int color) {\n        int oldColor = image[sr][sc];\n        if (oldColor == color) return image;\n        Queue<int[]> queue = new LinkedList<>();\n        queue.offer(new int[]{sr, sc});\n        image[sr][sc] = color;\n        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};\n        while (!queue.isEmpty()) {\n            int[] cell = queue.poll();\n            for (int[] d : dirs) {\n                int nr = cell[0] + d[0], nc = cell[1] + d[1];\n                if (nr >= 0 && nc >= 0 && nr < image.length && nc < image[0].length && image[nr][nc] == oldColor) {\n                    image[nr][nc] = color;\n                    queue.offer(new int[]{nr, nc});\n                }\n            }\n        }\n        return image;\n    }\n}",
+          "output": "[[2,2,2],[2,2,0],[2,0,1]]",
+          "timeComplexity": "O(rows * cols)",
+          "spaceComplexity": "O(rows * cols)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-130",
+      "number": 130,
+      "title": "Surrounded Regions",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/surrounded-regions/",
+      "problemStatement": "Given an m x n board of 'X' and 'O', capture (flip to 'X') every region of 'O's that is completely surrounded by 'X's (not connected to the border).",
+      "examples": [
+        { "input": "board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]", "output": "[[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]", "explanation": "The O's connected to the middle region get captured. The bottom-left O touches the border, so it survives." }
+      ],
+      "constraints": ["1 <= rows, cols <= 200"],
+      "hints": ["Any 'O' connected to the border can NEVER be captured -- flood fill from every border 'O' first and mark those as safe.", "After marking safe O's, flip every remaining (unmarked) 'O' to 'X', then restore the safe marks back to 'O'."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "BFS/DFS from every border cell that is 'O', marking the whole connected region as a temporary safe marker (e.g. '#'). After that pass, any 'O' left untouched is fully enclosed -> flip to 'X'. Finally flip all '#' markers back to 'O'.",
+          "code": "class Solution {\n    public void solve(char[][] board) {\n        int rows = board.length, cols = board[0].length;\n        for (int r = 0; r < rows; r++) {\n            markSafe(board, r, 0);\n            markSafe(board, r, cols - 1);\n        }\n        for (int c = 0; c < cols; c++) {\n            markSafe(board, 0, c);\n            markSafe(board, rows - 1, c);\n        }\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (board[r][c] == 'O') board[r][c] = 'X';\n                else if (board[r][c] == '#') board[r][c] = 'O';\n            }\n        }\n    }\n\n    private void markSafe(char[][] board, int r, int c) {\n        if (r < 0 || c < 0 || r >= board.length || c >= board[0].length || board[r][c] != 'O') return;\n        board[r][c] = '#';\n        markSafe(board, r + 1, c);\n        markSafe(board, r - 1, c);\n        markSafe(board, r, c + 1);\n        markSafe(board, r, c - 1);\n    }\n}",
+          "output": "[[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+          "timeComplexity": "O(rows * cols)",
+          "spaceComplexity": "O(rows * cols) recursion stack worst case"
+        }
+      ]
     }
   ],
   "codeExamples": [
