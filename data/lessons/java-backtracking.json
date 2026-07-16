@@ -137,6 +137,297 @@
         "Why must you add a copy of the current list to the results, not the list itself?",
         "How many permutations exist for an array of n distinct elements?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-78",
+      "number": 78,
+      "title": "Subsets",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/subsets/",
+      "problemStatement": "Given an integer array nums of unique elements, return all possible subsets (the power set). The solution set must not contain duplicate subsets.",
+      "examples": [
+        { "input": "nums = [1,2,3]", "output": "[[],[1],[1,2],[1,2,3],[1,3],[2],[2,3],[3]]" }
+      ],
+      "constraints": ["1 <= nums.length <= 10", "-10 <= nums[i] <= 10", "All elements are unique"],
+      "hints": ["At every recursive call, first record the CURRENT partial subset as a valid answer, then try extending it with each remaining element from a growing start index."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use bitmasking: each of the 2^n numbers from 0 to 2^n-1 represents one subset, where bit i decides whether nums[i] is included.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> subsets(int[] nums) {\n        int n = nums.length;\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n\n        for (int mask = 0; mask < (1 << n); mask++) {\n            java.util.List<Integer> subset = new java.util.ArrayList<>();\n            for (int i = 0; i < n; i++) {\n                if ((mask & (1 << i)) != 0) {\n                    subset.add(nums[i]);\n                }\n            }\n            result.add(subset);\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,2,3]: 8 subsets total, including [] and [1,2,3]",
+          "timeComplexity": "O(n * 2^n)",
+          "spaceComplexity": "O(n * 2^n) for the result"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Backtracking: record the current subset at every call, then extend it with each remaining element starting from a growing index.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> subsets(int[] nums) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        backtrack(nums, 0, new java.util.ArrayList<>(), result);\n        return result;\n    }\n\n    private void backtrack(int[] nums, int start, java.util.List<Integer> current, java.util.List<java.util.List<Integer>> result) {\n        result.add(new java.util.ArrayList<>(current));\n        for (int i = start; i < nums.length; i++) {\n            current.add(nums[i]);\n            backtrack(nums, i + 1, current, result);\n            current.remove(current.size() - 1);\n        }\n    }\n}",
+          "output": "For nums = [1,2,3]: [[],[1],[1,2],[1,2,3],[1,3],[2],[2,3],[3]]",
+          "timeComplexity": "O(n * 2^n)",
+          "spaceComplexity": "O(n * 2^n) for the result, O(n) recursion depth"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-46",
+      "number": 46,
+      "title": "Permutations",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/permutations/",
+      "problemStatement": "Given an array nums of distinct integers, return all possible permutations, in any order.",
+      "examples": [
+        { "input": "nums = [1,2,3]", "output": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]" }
+      ],
+      "constraints": ["1 <= nums.length <= 6", "All elements are unique"],
+      "hints": ["This is exactly this lesson's permute() function -- choose an unused element, recurse, then unchoose it (mark unused again)."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Same backtracking shape is really the standard approach here -- there isn't a meaningfully different 'brute force' beyond generating and checking every arrangement, which backtracking already does minimally.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> permute(int[] nums) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        java.util.List<Integer> current = new java.util.ArrayList<>();\n        boolean[] used = new boolean[nums.length];\n        backtrack(nums, current, used, result);\n        return result;\n    }\n\n    private void backtrack(int[] nums, java.util.List<Integer> current, boolean[] used, java.util.List<java.util.List<Integer>> result) {\n        if (current.size() == nums.length) {\n            result.add(new java.util.ArrayList<>(current));\n            return;\n        }\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) continue;\n            used[i] = true;\n            current.add(nums[i]);\n            backtrack(nums, current, used, result);\n            current.remove(current.size() - 1);\n            used[i] = false;\n        }\n    }\n}",
+          "output": "For nums = [1,2,3]: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+          "timeComplexity": "O(n * n!)",
+          "spaceComplexity": "O(n * n!) for the result"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Identical backtracking approach -- for permutations, this IS the standard efficient solution, since n! permutations must all be produced regardless.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> permute(int[] nums) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        backtrack(nums, new java.util.ArrayList<>(), new boolean[nums.length], result);\n        return result;\n    }\n\n    private void backtrack(int[] nums, java.util.List<Integer> current, boolean[] used, java.util.List<java.util.List<Integer>> result) {\n        if (current.size() == nums.length) {\n            result.add(new java.util.ArrayList<>(current));\n            return;\n        }\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) continue;\n            used[i] = true;\n            current.add(nums[i]);\n            backtrack(nums, current, used, result);\n            current.remove(current.size() - 1);\n            used[i] = false;\n        }\n    }\n}",
+          "output": "For nums = [1,2,3]: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+          "timeComplexity": "O(n * n!)",
+          "spaceComplexity": "O(n) recursion depth beyond the result"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-77",
+      "number": 77,
+      "title": "Combinations",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/combinations/",
+      "problemStatement": "Given two integers n and k, return all possible combinations of k numbers chosen from the range [1, n].",
+      "examples": [
+        { "input": "n = 4, k = 2", "output": "[[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]" }
+      ],
+      "constraints": ["1 <= n <= 20", "1 <= k <= n"],
+      "hints": ["Same backtracking shape as Subsets, but only record the current combination once it reaches exactly length k, instead of at every call."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Generate every subset of [1..n] via bitmasking, then keep only those of size k.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> combine(int n, int k) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        for (int mask = 0; mask < (1 << n); mask++) {\n            if (Integer.bitCount(mask) != k) continue;\n            java.util.List<Integer> combo = new java.util.ArrayList<>();\n            for (int i = 0; i < n; i++) {\n                if ((mask & (1 << i)) != 0) combo.add(i + 1);\n            }\n            result.add(combo);\n        }\n        return result;\n    }\n}",
+          "output": "For n = 4, k = 2: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]",
+          "timeComplexity": "O(n * 2^n)",
+          "spaceComplexity": "O(n * 2^n) considering all masks checked"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Backtracking with a growing start index, recording the combination only when it reaches length k.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> combine(int n, int k) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        backtrack(n, k, 1, new java.util.ArrayList<>(), result);\n        return result;\n    }\n\n    private void backtrack(int n, int k, int start, java.util.List<Integer> current, java.util.List<java.util.List<Integer>> result) {\n        if (current.size() == k) {\n            result.add(new java.util.ArrayList<>(current));\n            return;\n        }\n        for (int i = start; i <= n; i++) {\n            current.add(i);\n            backtrack(n, k, i + 1, current, result);\n            current.remove(current.size() - 1);\n        }\n    }\n}",
+          "output": "For n = 4, k = 2: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]",
+          "timeComplexity": "O(k * C(n,k))",
+          "spaceComplexity": "O(k) recursion depth beyond the result"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-39",
+      "number": 39,
+      "title": "Combination Sum",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/combination-sum/",
+      "problemStatement": "Given an array of distinct integers candidates and a target integer target, return all unique combinations where the chosen numbers sum to target. The same number may be chosen an unlimited number of times.",
+      "examples": [
+        { "input": "candidates = [2,3,6,7], target = 7", "output": "[[2,2,3],[7]]" }
+      ],
+      "constraints": ["2 <= candidates.length <= 30", "2 <= candidates[i] <= 40", "1 <= target <= 40"],
+      "hints": ["This is exactly the combinationSum function already built in this lesson's Section 4, including the pruning step for when target goes negative."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Backtracking WITHOUT the target < 0 pruning -- still correct, but explores many more dead-end branches before failing.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> combinationSum(int[] candidates, int target) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        backtrack(candidates, target, 0, new java.util.ArrayList<>(), result);\n        return result;\n    }\n\n    private void backtrack(int[] candidates, int remaining, int start, java.util.List<Integer> current, java.util.List<java.util.List<Integer>> result) {\n        if (remaining == 0) {\n            result.add(new java.util.ArrayList<>(current));\n            return;\n        }\n        for (int i = start; i < candidates.length; i++) {\n            if (candidates[i] <= remaining) { // still checks validity, but explores less aggressively pruned paths overall\n                current.add(candidates[i]);\n                backtrack(candidates, remaining - candidates[i], i, current, result);\n                current.remove(current.size() - 1);\n            }\n        }\n    }\n}",
+          "output": "For candidates = [2,3,6,7], target = 7: [[2,2,3],[7]]",
+          "timeComplexity": "Exponential in the worst case, without early pruning",
+          "spaceComplexity": "O(target / min(candidates)) recursion depth"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Backtracking with explicit target < 0 pruning, exactly as built in this lesson.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> combinationSum(int[] candidates, int target) {\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n        backtrack(candidates, target, 0, new java.util.ArrayList<>(), result);\n        return result;\n    }\n\n    private void backtrack(int[] candidates, int remaining, int start, java.util.List<Integer> current, java.util.List<java.util.List<Integer>> result) {\n        if (remaining == 0) {\n            result.add(new java.util.ArrayList<>(current));\n            return;\n        }\n        if (remaining < 0) {\n            return; // PRUNE\n        }\n        for (int i = start; i < candidates.length; i++) {\n            current.add(candidates[i]);\n            backtrack(candidates, remaining - candidates[i], i, current, result);\n            current.remove(current.size() - 1);\n        }\n    }\n}",
+          "output": "For candidates = [2,3,6,7], target = 7: [[2,2,3],[7]]",
+          "timeComplexity": "Exponential worst case, but with pruning explores far fewer branches in practice",
+          "spaceComplexity": "O(target / min(candidates)) recursion depth"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-17",
+      "number": 17,
+      "title": "Letter Combinations of a Phone Number",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+      "problemStatement": "Given a string containing digits from 2-9, return all possible letter combinations the number could represent, based on the standard telephone keypad mapping.",
+      "examples": [
+        { "input": "digits = \"23\"", "output": "[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]" }
+      ],
+      "constraints": ["0 <= digits.length <= 4", "digits[i] is a digit in the range ['2', '9']"],
+      "hints": ["For each digit, CHOOSE one of its mapped letters, recurse into the next digit, then UNCHOOSE (implicitly, by not appending) to try the next letter."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Iteratively build up the result list, expanding it by every possible letter of each new digit -- correct, but less naturally recursive.",
+          "code": "class Solution {\n    public java.util.List<String> letterCombinations(String digits) {\n        if (digits.isEmpty()) return new java.util.ArrayList<>();\n        String[] mapping = {\"\", \"\", \"abc\", \"def\", \"ghi\", \"jkl\", \"mno\", \"pqrs\", \"tuv\", \"wxyz\"};\n\n        java.util.List<String> result = new java.util.ArrayList<>();\n        result.add(\"\");\n        for (char digit : digits.toCharArray()) {\n            java.util.List<String> next = new java.util.ArrayList<>();\n            String letters = mapping[digit - '0'];\n            for (String prefix : result) {\n                for (char letter : letters.toCharArray()) {\n                    next.add(prefix + letter);\n                }\n            }\n            result = next;\n        }\n        return result;\n    }\n}",
+          "output": "For digits = \"23\": [\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]",
+          "timeComplexity": "O(4^n * n), n = digits.length",
+          "spaceComplexity": "O(4^n * n) for the result"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Backtracking: for each digit position, try every mapped letter, recurse to the next digit, then backtrack.",
+          "code": "class Solution {\n    private final String[] mapping = {\"\", \"\", \"abc\", \"def\", \"ghi\", \"jkl\", \"mno\", \"pqrs\", \"tuv\", \"wxyz\"};\n\n    public java.util.List<String> letterCombinations(String digits) {\n        java.util.List<String> result = new java.util.ArrayList<>();\n        if (digits.isEmpty()) return result;\n        backtrack(digits, 0, new StringBuilder(), result);\n        return result;\n    }\n\n    private void backtrack(String digits, int index, StringBuilder current, java.util.List<String> result) {\n        if (index == digits.length()) {\n            result.add(current.toString());\n            return;\n        }\n        String letters = mapping[digits.charAt(index) - '0'];\n        for (char letter : letters.toCharArray()) {\n            current.append(letter);\n            backtrack(digits, index + 1, current, result);\n            current.deleteCharAt(current.length() - 1);\n        }\n    }\n}",
+          "output": "For digits = \"23\": [\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]",
+          "timeComplexity": "O(4^n * n)",
+          "spaceComplexity": "O(n) recursion depth beyond the result"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-22",
+      "number": 22,
+      "title": "Generate Parentheses",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/generate-parentheses/",
+      "problemStatement": "Given n pairs of parentheses, generate all combinations of well-formed parentheses.",
+      "examples": [
+        { "input": "n = 3", "output": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]" }
+      ],
+      "constraints": ["1 <= n <= 8"],
+      "hints": ["Track the count of open and close parentheses used so far. You can add '(' if openCount < n; you can add ')' only if closeCount < openCount (a valid prefix never has more closes than opens) -- this pruning is what keeps every generated string well-formed."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Generate ALL possible 2n-length strings of '(' and ')', then check each for validity using a stack-based check.",
+          "code": "class Solution {\n    public java.util.List<String> generateParenthesis(int n) {\n        java.util.List<String> result = new java.util.ArrayList<>();\n        generateAll(new char[2 * n], 0, result);\n        return result;\n    }\n\n    private void generateAll(char[] current, int pos, java.util.List<String> result) {\n        if (pos == current.length) {\n            if (isValid(current)) result.add(new String(current));\n            return;\n        }\n        current[pos] = '(';\n        generateAll(current, pos + 1, result);\n        current[pos] = ')';\n        generateAll(current, pos + 1, result);\n    }\n\n    private boolean isValid(char[] s) {\n        int balance = 0;\n        for (char c : s) {\n            balance += (c == '(') ? 1 : -1;\n            if (balance < 0) return false;\n        }\n        return balance == 0;\n    }\n}",
+          "output": "For n = 3: [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]",
+          "timeComplexity": "O(2^(2n) * n)",
+          "spaceComplexity": "O(2^(2n) * n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Backtracking that only ever builds VALID prefixes, tracking open/close counts directly, so no invalid strings are ever generated or checked afterward.",
+          "code": "class Solution {\n    public java.util.List<String> generateParenthesis(int n) {\n        java.util.List<String> result = new java.util.ArrayList<>();\n        backtrack(n, 0, 0, new StringBuilder(), result);\n        return result;\n    }\n\n    private void backtrack(int n, int openCount, int closeCount, StringBuilder current, java.util.List<String> result) {\n        if (current.length() == 2 * n) {\n            result.add(current.toString());\n            return;\n        }\n        if (openCount < n) {\n            current.append('(');\n            backtrack(n, openCount + 1, closeCount, current, result);\n            current.deleteCharAt(current.length() - 1);\n        }\n        if (closeCount < openCount) {\n            current.append(')');\n            backtrack(n, openCount, closeCount + 1, current, result);\n            current.deleteCharAt(current.length() - 1);\n        }\n    }\n}",
+          "output": "For n = 3: [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]",
+          "timeComplexity": "O(4^n / sqrt(n)) -- bounded by the nth Catalan number",
+          "spaceComplexity": "O(n) recursion depth beyond the result"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-79",
+      "number": 79,
+      "title": "Word Search",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/word-search/",
+      "problemStatement": "Given an m x n grid of characters board and a string word, return true if word exists in the grid, formed by adjacent cells (horizontally or vertically), without reusing the same cell twice.",
+      "examples": [
+        { "input": "board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCCED\"", "output": "true" }
+      ],
+      "constraints": ["m == board.length", "n == board[i].length", "1 <= m, n <= 6", "1 <= word.length <= 15"],
+      "hints": ["From each matching cell, backtrack into its 4 neighbors, temporarily marking the current cell as visited (e.g. overwrite it) so the path can't reuse it, then restore it when backtracking."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Try starting the search from EVERY cell, using a separate visited boolean grid instead of marking the board directly.",
+          "code": "class Solution {\n    public boolean exist(char[][] board, String word) {\n        int m = board.length, n = board[0].length;\n        boolean[][] visited = new boolean[m][n];\n\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (search(board, word, 0, i, j, visited)) return true;\n            }\n        }\n        return false;\n    }\n\n    private boolean search(char[][] board, String word, int index, int row, int col, boolean[][] visited) {\n        if (index == word.length()) return true;\n        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) return false;\n        if (visited[row][col] || board[row][col] != word.charAt(index)) return false;\n\n        visited[row][col] = true;\n        boolean found = search(board, word, index + 1, row + 1, col, visited)\n                     || search(board, word, index + 1, row - 1, col, visited)\n                     || search(board, word, index + 1, row, col + 1, visited)\n                     || search(board, word, index + 1, row, col - 1, visited);\n        visited[row][col] = false;\n        return found;\n    }\n}",
+          "output": "For the given board and word = \"ABCCED\": true",
+          "timeComplexity": "O(m * n * 4^L), L = word length",
+          "spaceComplexity": "O(m * n) for the visited grid"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Same backtracking, but mark visited cells by temporarily overwriting the board itself (e.g. with a sentinel character), avoiding a separate visited grid.",
+          "code": "class Solution {\n    public boolean exist(char[][] board, String word) {\n        int m = board.length, n = board[0].length;\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (search(board, word, 0, i, j)) return true;\n            }\n        }\n        return false;\n    }\n\n    private boolean search(char[][] board, String word, int index, int row, int col) {\n        if (index == word.length()) return true;\n        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) return false;\n        if (board[row][col] != word.charAt(index)) return false;\n\n        char temp = board[row][col];\n        board[row][col] = '#'; // mark visited in place\n\n        boolean found = search(board, word, index + 1, row + 1, col)\n                     || search(board, word, index + 1, row - 1, col)\n                     || search(board, word, index + 1, row, col + 1)\n                     || search(board, word, index + 1, row, col - 1);\n\n        board[row][col] = temp; // restore\n        return found;\n    }\n}",
+          "output": "For the given board and word = \"ABCCED\": true",
+          "timeComplexity": "O(m * n * 4^L)",
+          "spaceComplexity": "O(L) recursion depth, no extra grid needed"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-51",
+      "number": 51,
+      "title": "N-Queens",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/n-queens/",
+      "problemStatement": "The n-queens puzzle is placing n queens on an n x n chessboard so that no two queens attack each other. Return all distinct board configurations, each represented as a list of strings using 'Q' and '.'.",
+      "examples": [
+        { "input": "n = 4", "output": "[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]", "explanation": "2 distinct solutions exist for the 4-queens puzzle." }
+      ],
+      "constraints": ["1 <= n <= 9"],
+      "hints": ["Place one queen per ROW, choosing its column via backtracking -- track which columns and both diagonals are already under attack to prune invalid placements immediately."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Try every possible column for the current row, checking the FULL board for conflicts each time (rather than tracking attacked columns/diagonals incrementally).",
+          "code": "class Solution {\n    public java.util.List<java.util.List<String>> solveNQueens(int n) {\n        java.util.List<java.util.List<String>> result = new java.util.ArrayList<>();\n        int[] queens = new int[n]; // queens[row] = column\n        backtrack(n, 0, queens, result);\n        return result;\n    }\n\n    private void backtrack(int n, int row, int[] queens, java.util.List<java.util.List<String>> result) {\n        if (row == n) {\n            result.add(buildBoard(n, queens));\n            return;\n        }\n        for (int col = 0; col < n; col++) {\n            if (isSafe(queens, row, col)) {\n                queens[row] = col;\n                backtrack(n, row + 1, queens, result);\n            }\n        }\n    }\n\n    private boolean isSafe(int[] queens, int row, int col) {\n        for (int r = 0; r < row; r++) {\n            int c = queens[r];\n            if (c == col || Math.abs(c - col) == Math.abs(r - row)) return false;\n        }\n        return true;\n    }\n\n    private java.util.List<String> buildBoard(int n, int[] queens) {\n        java.util.List<String> board = new java.util.ArrayList<>();\n        for (int row = 0; row < n; row++) {\n            StringBuilder sb = new StringBuilder();\n            for (int col = 0; col < n; col++) {\n                sb.append(col == queens[row] ? 'Q' : '.');\n            }\n            board.add(sb.toString());\n        }\n        return board;\n    }\n}",
+          "output": "For n = 4: 2 solutions found",
+          "timeComplexity": "O(n!) roughly, with an O(row) safety check per placement",
+          "spaceComplexity": "O(n) for the queens array plus the result"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Track attacked columns and both diagonals with boolean sets, giving O(1) safety checks instead of rescanning previous rows each time.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<String>> solveNQueens(int n) {\n        java.util.List<java.util.List<String>> result = new java.util.ArrayList<>();\n        int[] queens = new int[n];\n        boolean[] cols = new boolean[n];\n        boolean[] diag1 = new boolean[2 * n]; // row + col\n        boolean[] diag2 = new boolean[2 * n]; // row - col + n\n        backtrack(n, 0, queens, cols, diag1, diag2, result);\n        return result;\n    }\n\n    private void backtrack(int n, int row, int[] queens, boolean[] cols, boolean[] diag1, boolean[] diag2, java.util.List<java.util.List<String>> result) {\n        if (row == n) {\n            result.add(buildBoard(n, queens));\n            return;\n        }\n        for (int col = 0; col < n; col++) {\n            int d1 = row + col, d2 = row - col + n;\n            if (cols[col] || diag1[d1] || diag2[d2]) continue;\n\n            queens[row] = col;\n            cols[col] = diag1[d1] = diag2[d2] = true;\n\n            backtrack(n, row + 1, queens, cols, diag1, diag2, result);\n\n            cols[col] = diag1[d1] = diag2[d2] = false;\n        }\n    }\n\n    private java.util.List<String> buildBoard(int n, int[] queens) {\n        java.util.List<String> board = new java.util.ArrayList<>();\n        for (int row = 0; row < n; row++) {\n            StringBuilder sb = new StringBuilder();\n            for (int col = 0; col < n; col++) {\n                sb.append(col == queens[row] ? 'Q' : '.');\n            }\n            board.add(sb.toString());\n        }\n        return board;\n    }\n}",
+          "output": "For n = 4: 2 solutions found",
+          "timeComplexity": "O(n!) roughly, with O(1) safety checks per placement",
+          "spaceComplexity": "O(n) for the tracking arrays plus the result"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-37",
+      "number": 37,
+      "title": "Sudoku Solver",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/sudoku-solver/",
+      "problemStatement": "Write a program to solve a Sudoku puzzle by filling the empty cells, following the standard Sudoku rules: each row, column, and 3x3 sub-box must contain the digits 1-9 without repetition. The board is modified in place.",
+      "examples": [
+        { "input": "A partially filled 9x9 board with '.' marking empty cells", "output": "The same board, fully solved in place (too large to display cell-by-cell here -- see the official LeetCode example)." }
+      ],
+      "constraints": ["board.length == 9", "board[i].length == 9", "The given board has exactly one solution"],
+      "hints": [
+        "For each empty cell, try digits 1-9; a digit is valid if it doesn't already appear in the same row, column, or 3x3 box.",
+        "This is a much larger backtracking search space than N-Queens, but the same choose/explore/unchoose skeleton applies -- place a digit, recurse to the next empty cell, and if no digit leads to a solution, undo and try the next candidate."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force (conceptually -- still requires backtracking)",
+          "explanation": "There is no meaningfully simpler brute force for Sudoku beyond backtracking itself -- exhaustively trying every possible full board assignment without pruning is computationally infeasible, so even the 'naive' solution must backtrack.",
+          "code": "class Solution {\n    public void solveSudoku(char[][] board) {\n        solve(board);\n    }\n\n    private boolean solve(char[][] board) {\n        for (int row = 0; row < 9; row++) {\n            for (int col = 0; col < 9; col++) {\n                if (board[row][col] == '.') {\n                    for (char digit = '1'; digit <= '9'; digit++) {\n                        if (isValid(board, row, col, digit)) {\n                            board[row][col] = digit;\n                            if (solve(board)) return true;\n                            board[row][col] = '.'; // undo\n                        }\n                    }\n                    return false; // no digit works here -- backtrack further up\n                }\n            }\n        }\n        return true; // no empty cells left -- solved\n    }\n\n    private boolean isValid(char[][] board, int row, int col, char digit) {\n        for (int i = 0; i < 9; i++) {\n            if (board[row][i] == digit) return false;\n            if (board[i][col] == digit) return false;\n            int boxRow = 3 * (row / 3) + i / 3;\n            int boxCol = 3 * (col / 3) + i % 3;\n            if (board[boxRow][boxCol] == digit) return false;\n        }\n        return true;\n    }\n}",
+          "output": "Board is solved in place -- no return value needed",
+          "timeComplexity": "Exponential in the worst case (bounded by 9^(number of empty cells))",
+          "spaceComplexity": "O(1) extra space (beyond the recursion stack) -- the board itself is modified in place"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Same backtracking skeleton -- this problem doesn't have a fundamentally faster general algorithm, so the optimization is in the isValid check's efficiency and pruning as early as possible, exactly as shown.",
+          "code": "class Solution {\n    public void solveSudoku(char[][] board) {\n        solve(board);\n    }\n\n    private boolean solve(char[][] board) {\n        for (int row = 0; row < 9; row++) {\n            for (int col = 0; col < 9; col++) {\n                if (board[row][col] == '.') {\n                    for (char digit = '1'; digit <= '9'; digit++) {\n                        if (isValid(board, row, col, digit)) {\n                            board[row][col] = digit;\n                            if (solve(board)) return true;\n                            board[row][col] = '.';\n                        }\n                    }\n                    return false;\n                }\n            }\n        }\n        return true;\n    }\n\n    private boolean isValid(char[][] board, int row, int col, char digit) {\n        for (int i = 0; i < 9; i++) {\n            if (board[row][i] == digit) return false;\n            if (board[i][col] == digit) return false;\n            int boxRow = 3 * (row / 3) + i / 3;\n            int boxCol = 3 * (col / 3) + i % 3;\n            if (board[boxRow][boxCol] == digit) return false;\n        }\n        return true;\n    }\n}",
+          "output": "Board is solved in place -- no return value needed",
+          "timeComplexity": "Exponential in the worst case, but the constant-size 9x9 board and early pruning make it fast in practice",
+          "spaceComplexity": "O(1) extra space beyond the recursion stack"
+        }
+      ]
     }
   ],
   "codeExamples": [
