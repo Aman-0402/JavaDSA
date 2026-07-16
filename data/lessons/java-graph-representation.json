@@ -133,6 +133,103 @@
         "Why do you need to add an edge in both directions for an undirected graph's adjacency list?",
         "When would you prefer an adjacency matrix over an adjacency list?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1971",
+      "number": 1971,
+      "title": "Find if Path Exists in Graph",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/find-if-path-exists-in-graph/",
+      "problemStatement": "Given an undirected graph as an edge list and a source and destination node, return whether a path exists between them.",
+      "examples": [
+        { "input": "n = 3, edges = [[0,1],[1,2],[2,0]], source = 0, destination = 2", "output": "true" }
+      ],
+      "constraints": ["1 <= n <= 2 * 10^5", "0 <= edges.length <= 2 * 10^5"],
+      "hints": ["Build an adjacency list, then run BFS or DFS from source and check if destination is ever visited."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Build an adjacency list from the edge list, then BFS from source, marking visited nodes, and check whether destination gets visited.",
+          "code": "class Solution {\n    public boolean validPath(int n, int[][] edges, int source, int destination) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] edge : edges) {\n            adj.get(edge[0]).add(edge[1]);\n            adj.get(edge[1]).add(edge[0]);\n        }\n        boolean[] visited = new boolean[n];\n        Queue<Integer> queue = new LinkedList<>();\n        queue.offer(source);\n        visited[source] = true;\n        while (!queue.isEmpty()) {\n            int node = queue.poll();\n            if (node == destination) return true;\n            for (int neighbor : adj.get(node)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true;\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return false;\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(V + E)",
+          "spaceComplexity": "O(V + E)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1791",
+      "number": 1791,
+      "title": "Find Center of Star Graph",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/find-center-of-star-graph/",
+      "problemStatement": "A star graph has one center node connected to every other node. Given its edges, return the center node.",
+      "examples": [
+        { "input": "edges = [[1,2],[2,3],[4,2]]", "output": "2", "explanation": "Node 2 appears in all three edges." }
+      ],
+      "constraints": ["3 <= n <= 10^5"],
+      "hints": ["The center node appears in EVERY edge -- so it must appear in both of the first two edges.", "Just check which node of edges[0] also appears in edges[1]."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "The center is the node shared between the first two edges -- no need to scan the whole list. Check if edges[0][0] equals either endpoint of edges[1]; if so that's the center, otherwise edges[0][1] is.",
+          "code": "class Solution {\n    public int findCenter(int[][] edges) {\n        int a = edges[0][0], b = edges[0][1];\n        int c = edges[1][0], d = edges[1][1];\n        return (a == c || a == d) ? a : b;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(1)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-997",
+      "number": 997,
+      "title": "Find the Town Judge",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/find-the-town-judge/",
+      "problemStatement": "In a town of n people, trust is a list of [a, b] meaning a trusts b. The judge trusts nobody but is trusted by everyone else. Return the judge, or -1 if none exists.",
+      "examples": [
+        { "input": "n = 3, trust = [[1,3],[2,3]]", "output": "3", "explanation": "3 is trusted by 1 and 2, and trusts nobody -- exactly n-1 = 2 people trust them." },
+        { "input": "n = 3, trust = [[1,3],[2,3],[3,1]]", "output": "-1", "explanation": "3 trusts 1, so 3 can't be the judge (judge must trust nobody), and no one else qualifies either." }
+      ],
+      "constraints": ["1 <= n <= 1000", "0 <= trust.length <= 10^4"],
+      "hints": ["Track a net score per person: -1 for each outgoing trust (they trust someone), +1 for each incoming trust (someone trusts them).", "The judge is the unique person with score exactly n-1."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "For each [a, b] in trust: decrement a's score (a trusts someone, disqualifying a) and increment b's score (someone trusts b). The judge is whoever ends with score n-1 (trusted by everyone else, trusts no one).",
+          "code": "class Solution {\n    public int findJudge(int n, int[][] trust) {\n        int[] score = new int[n + 1];\n        for (int[] t : trust) {\n            score[t[0]]--;\n            score[t[1]]++;\n        }\n        for (int person = 1; person <= n; person++) {\n            if (score[person] == n - 1) return person;\n        }\n        return -1;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n + trust.length)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-802",
+      "number": 802,
+      "title": "Keys and Rooms",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/keys-and-rooms/",
+      "problemStatement": "There are n rooms labeled 0 to n-1. Room 0 is unlocked initially. rooms[i] is a list of keys found in room i, each key opens the room with that number. Return whether all rooms can be visited.",
+      "examples": [
+        { "input": "rooms = [[1],[2],[3],[]]", "output": "true", "explanation": "Start in room 0, get key 1, go to room 1, get key 2, go to room 2, get key 3, go to room 3." }
+      ],
+      "constraints": ["n == rooms.length", "1 <= n <= 1000"],
+      "hints": ["This is graph reachability from node 0: a directed edge exists from room i to every key found in it.", "DFS or BFS from room 0, collecting visited rooms, then check if all n rooms were reached."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Treat each room as a graph node and each key as a directed edge to that room. DFS from room 0, marking visited rooms, then check the visited count equals n.",
+          "code": "class Solution {\n    public boolean canVisitAllRooms(List<List<Integer>> rooms) {\n        boolean[] visited = new boolean[rooms.size()];\n        dfs(0, rooms, visited);\n        for (boolean v : visited) {\n            if (!v) return false;\n        }\n        return true;\n    }\n\n    private void dfs(int room, List<List<Integer>> rooms, boolean[] visited) {\n        if (visited[room]) return;\n        visited[room] = true;\n        for (int key : rooms.get(room)) {\n            dfs(key, rooms, visited);\n        }\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(V + E)",
+          "spaceComplexity": "O(V)"
+        }
+      ]
     }
   ],
   "codeExamples": [
