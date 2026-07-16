@@ -100,7 +100,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 5 | Object-Oriented Programming | ✅ done | Classes and Objects, Constructors, this Keyword, Encapsulation and Access Modifiers, Inheritance, Polymorphism, Abstract Classes, Interfaces, Packages |
 | 6 | Advanced Java | ✅ done | Exception Handling, Generics, Enums, Autoboxing and Unboxing, Annotations Basics |
 | 7 | Java Collections Framework | ✅ done | JCF Overview, List (ArrayList vs LinkedList), Set (HashSet/TreeSet/LinkedHashSet), Map (HashMap/TreeMap/LinkedHashMap), Queue/Deque (ArrayDeque/PriorityQueue), Iterator, Comparable vs Comparator, Collections Utility Class |
-| 8 | DSA Foundations | ⬜ | — |
+| 8 | DSA Foundations | ✅ done | Big-O Notation, Two Pointers, Sliding Window, Prefix Sum, Difference Array, Hashing, Binary Search, Sorting, Recursion in DSA, Backtracking |
 | 9 | Linked List | ⬜ | — |
 | 10 | Stacks & Queues | ⬜ | — |
 | 11 | Heap | ⬜ | — |
