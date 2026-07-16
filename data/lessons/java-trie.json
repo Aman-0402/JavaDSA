@@ -143,6 +143,142 @@
         "What's the key difference between search() and startsWith()?",
         "What real-world feature is a Trie's startsWith() the foundation of?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-208",
+      "number": 208,
+      "title": "Implement Trie (Prefix Tree)",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+      "problemStatement": "Implement a Trie with insert(word), search(word) (exact word match), and startsWith(prefix) (any word begins with prefix).",
+      "examples": [
+        { "input": "insert(\"apple\"); search(\"apple\") -> true; search(\"app\") -> false; startsWith(\"app\") -> true; insert(\"app\"); search(\"app\") -> true", "output": "true, false, true, true" }
+      ],
+      "constraints": ["1 <= word/prefix length <= 2000", "lowercase English letters only"],
+      "hints": ["Each node holds a fixed-size array (or map) of 26 children plus an isEndOfWord flag.", "search() requires landing on a node with isEndOfWord true; startsWith() just requires reaching the last character's node."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Classic array-based Trie node with 26 children slots. insert walks/creates nodes per character and marks the last one as end-of-word. search/startsWith share a helper that walks the path and differ only in whether they also check the isEndOfWord flag.",
+          "code": "class Trie {\n    private Trie[] children = new Trie[26];\n    private boolean isEndOfWord = false;\n\n    public void insert(String word) {\n        Trie node = this;\n        for (char c : word.toCharArray()) {\n            int idx = c - 'a';\n            if (node.children[idx] == null) node.children[idx] = new Trie();\n            node = node.children[idx];\n        }\n        node.isEndOfWord = true;\n    }\n\n    public boolean search(String word) {\n        Trie node = find(word);\n        return node != null && node.isEndOfWord;\n    }\n\n    public boolean startsWith(String prefix) {\n        return find(prefix) != null;\n    }\n\n    private Trie find(String s) {\n        Trie node = this;\n        for (char c : s.toCharArray()) {\n            int idx = c - 'a';\n            if (node.children[idx] == null) return null;\n            node = node.children[idx];\n        }\n        return node;\n    }\n}",
+          "output": "true, false, true, true",
+          "timeComplexity": "O(L) per operation, L = word length",
+          "spaceComplexity": "O(total characters inserted)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-211",
+      "number": 211,
+      "title": "Design Add and Search Words Data Structure",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+      "problemStatement": "Design a data structure supporting addWord(word) and search(word), where search's word may contain '.' as a wildcard matching any single letter.",
+      "examples": [
+        { "input": "addWord(\"bad\"); addWord(\"dad\"); addWord(\"mad\"); search(\"pad\") -> false; search(\"bad\") -> true; search(\".ad\") -> true; search(\"b..\") -> true", "output": "false, true, true, true" }
+      ],
+      "constraints": ["1 <= word length <= 25", "lowercase letters and '.' only in search queries"],
+      "hints": ["Same Trie insert as LC 208.", "search needs DFS/backtracking: on '.', try ALL 26 children recursively; on a normal letter, follow only that one child."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Trie insert identical to a standard trie. search uses a recursive helper that, upon hitting '.', tries every non-null child branch (backtracking), and upon a normal letter, follows just that one path.",
+          "code": "class WordDictionary {\n    private WordDictionary[] children = new WordDictionary[26];\n    private boolean isEndOfWord = false;\n\n    public void addWord(String word) {\n        WordDictionary node = this;\n        for (char c : word.toCharArray()) {\n            int idx = c - 'a';\n            if (node.children[idx] == null) node.children[idx] = new WordDictionary();\n            node = node.children[idx];\n        }\n        node.isEndOfWord = true;\n    }\n\n    public boolean search(String word) {\n        return dfs(word, 0, this);\n    }\n\n    private boolean dfs(String word, int index, WordDictionary node) {\n        if (node == null) return false;\n        if (index == word.length()) return node.isEndOfWord;\n        char c = word.charAt(index);\n        if (c == '.') {\n            for (WordDictionary child : node.children) {\n                if (dfs(word, index + 1, child)) return true;\n            }\n            return false;\n        }\n        return dfs(word, index + 1, node.children[c - 'a']);\n    }\n}",
+          "output": "false, true, true, true",
+          "timeComplexity": "O(26^k) worst case for k dots, O(L) typical",
+          "spaceComplexity": "O(total characters inserted)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-648",
+      "number": 648,
+      "title": "Replace Words",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/replace-words/",
+      "problemStatement": "Given a dictionary of root words and a sentence, replace every word in the sentence with the shortest root from the dictionary that is a prefix of it (if any).",
+      "examples": [
+        { "input": "dictionary = [\"cat\",\"bat\",\"rat\"], sentence = \"the cattle was rattled by the battery\"", "output": "\"the cat was rat by the bat\"" }
+      ],
+      "constraints": ["1 <= dictionary.length <= 1000", "1 <= sentence length <= 10^6"],
+      "hints": ["Insert every root into a Trie.", "For each sentence word, walk the Trie character by character; stop and replace as soon as you hit an isEndOfWord node (that's the SHORTEST matching root since you stop at the first match)."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Insert all roots into a Trie. For each word, walk down the Trie following its characters; the moment an isEndOfWord node is reached, that prefix is the shortest valid root -- use it and stop. If no such node is reached, keep the original word.",
+          "code": "class Solution {\n    static class TrieNode {\n        TrieNode[] children = new TrieNode[26];\n        boolean isEndOfWord = false;\n    }\n\n    public String replaceWords(List<String> dictionary, String sentence) {\n        TrieNode root = new TrieNode();\n        for (String rootWord : dictionary) {\n            TrieNode node = root;\n            for (char c : rootWord.toCharArray()) {\n                int idx = c - 'a';\n                if (node.children[idx] == null) node.children[idx] = new TrieNode();\n                node = node.children[idx];\n            }\n            node.isEndOfWord = true;\n        }\n\n        StringBuilder result = new StringBuilder();\n        for (String word : sentence.split(\" \")) {\n            if (result.length() > 0) result.append(\" \");\n            result.append(shortestRoot(word, root));\n        }\n        return result.toString();\n    }\n\n    private String shortestRoot(String word, TrieNode root) {\n        TrieNode node = root;\n        StringBuilder prefix = new StringBuilder();\n        for (char c : word.toCharArray()) {\n            int idx = c - 'a';\n            if (node.children[idx] == null) return word;\n            prefix.append(c);\n            node = node.children[idx];\n            if (node.isEndOfWord) return prefix.toString();\n        }\n        return word;\n    }\n}",
+          "output": "\"the cat was rat by the bat\"",
+          "timeComplexity": "O(total characters)",
+          "spaceComplexity": "O(total dictionary characters)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-677",
+      "number": 677,
+      "title": "Map Sum Pairs",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/map-sum-pairs/",
+      "problemStatement": "Design a structure with insert(key, val) (overwriting any previous value for that exact key) and sum(prefix) returning the sum of all values whose keys start with prefix.",
+      "examples": [
+        { "input": "insert(\"apple\", 3); sum(\"ap\") -> 3; insert(\"app\", 2); sum(\"ap\") -> 5", "output": "3, 5" }
+      ],
+      "constraints": ["1 <= key/prefix length <= 50", "keys consist of lowercase letters"],
+      "hints": ["Keep a HashMap<String, Integer> of exact key -> value for overwrite handling.", "For sum(prefix), the simplest correct approach is to iterate the map and add up values of matching keys -- a full Trie with subtree-sum caching is an optimization, not required for correctness."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Store key -> value in a HashMap (so re-inserting the same key correctly overwrites, not adds). For sum(prefix), scan all entries and add up values whose key startsWith(prefix).",
+          "code": "class MapSum {\n    private Map<String, Integer> map = new HashMap<>();\n\n    public void insert(String key, int val) {\n        map.put(key, val);\n    }\n\n    public int sum(String prefix) {\n        int total = 0;\n        for (Map.Entry<String, Integer> entry : map.entrySet()) {\n            if (entry.getKey().startsWith(prefix)) {\n                total += entry.getValue();\n            }\n        }\n        return total;\n    }\n}",
+          "output": "3, 5",
+          "timeComplexity": "O(n * L) per sum call",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Trie where each node caches the sum of all values in its subtree. On insert, compute the delta versus any previous value for that exact key, then add that delta to every node along the insertion path. sum(prefix) becomes a direct O(prefix length) lookup.",
+          "code": "class MapSum {\n    static class Node {\n        Node[] children = new Node[26];\n        int sum = 0;\n    }\n\n    private Node root = new Node();\n    private Map<String, Integer> exact = new HashMap<>();\n\n    public void insert(String key, int val) {\n        int delta = val - exact.getOrDefault(key, 0);\n        exact.put(key, val);\n        Node node = root;\n        node.sum += delta;\n        for (char c : key.toCharArray()) {\n            int idx = c - 'a';\n            if (node.children[idx] == null) node.children[idx] = new Node();\n            node = node.children[idx];\n            node.sum += delta;\n        }\n    }\n\n    public int sum(String prefix) {\n        Node node = root;\n        for (char c : prefix.toCharArray()) {\n            int idx = c - 'a';\n            if (node.children[idx] == null) return 0;\n            node = node.children[idx];\n        }\n        return node.sum;\n    }\n}",
+          "output": "3, 5",
+          "timeComplexity": "O(L) per operation",
+          "spaceComplexity": "O(total characters)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-212",
+      "number": 212,
+      "title": "Word Search II",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/word-search-ii/",
+      "problemStatement": "Given an m x n board of characters and a list of words, return all words that can be formed by a path of adjacent (up/down/left/right) cells, not reusing a cell within the same word.",
+      "examples": [
+        { "input": "board = [[\"o\",\"a\",\"a\",\"n\"],[\"e\",\"t\",\"a\",\"e\"],[\"i\",\"h\",\"k\",\"r\"],[\"i\",\"f\",\"l\",\"v\"]], words = [\"oath\",\"pea\",\"eat\",\"rain\"]", "output": "[\"oath\",\"eat\"]" }
+      ],
+      "constraints": ["1 <= board dimensions <= 12", "1 <= words.length <= 3 * 10^4"],
+      "hints": ["Backtracking each word individually against the board (like Word Search I) works but re-walks the board once per word -- wasteful when words share prefixes.", "Better: insert all words into a Trie, then do ONE DFS pass over the board following Trie edges, so shared prefixes are explored together."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each word independently, run a full backtracking search (like LeetCode 79 Word Search) over the board. With many words this repeats the same board exploration over and over.",
+          "code": "class Solution {\n    public List<String> findWords(char[][] board, String[] words) {\n        List<String> result = new ArrayList<>();\n        for (String word : words) {\n            if (existsInBoard(board, word)) result.add(word);\n        }\n        return result;\n    }\n\n    private boolean existsInBoard(char[][] board, String word) {\n        int rows = board.length, cols = board[0].length;\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (dfs(board, r, c, word, 0)) return true;\n            }\n        }\n        return false;\n    }\n\n    private boolean dfs(char[][] board, int r, int c, String word, int idx) {\n        if (idx == word.length()) return true;\n        if (r < 0 || c < 0 || r >= board.length || c >= board[0].length || board[r][c] != word.charAt(idx)) return false;\n        char temp = board[r][c];\n        board[r][c] = '#';\n        boolean found = dfs(board, r + 1, c, word, idx + 1) || dfs(board, r - 1, c, word, idx + 1)\n                || dfs(board, r, c + 1, word, idx + 1) || dfs(board, r, c - 1, word, idx + 1);\n        board[r][c] = temp;\n        return found;\n    }\n}",
+          "output": "[\"oath\",\"eat\"]",
+          "timeComplexity": "O(words * m * n * 4^L)",
+          "spaceComplexity": "O(L) recursion"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Insert all words into a Trie (storing the full word string at terminal nodes for easy retrieval). Do a single DFS from every board cell, following Trie children matching the board letters; when a Trie node marks a complete word, record it (and null out that word slot so it isn't added twice). Mark visited cells with a placeholder during the DFS and restore them on backtrack.",
+          "code": "class Solution {\n    static class TrieNode {\n        TrieNode[] children = new TrieNode[26];\n        String word = null;\n    }\n\n    public List<String> findWords(char[][] board, String[] words) {\n        TrieNode root = new TrieNode();\n        for (String word : words) {\n            TrieNode node = root;\n            for (char c : word.toCharArray()) {\n                int idx = c - 'a';\n                if (node.children[idx] == null) node.children[idx] = new TrieNode();\n                node = node.children[idx];\n            }\n            node.word = word;\n        }\n\n        List<String> result = new ArrayList<>();\n        for (int r = 0; r < board.length; r++) {\n            for (int c = 0; c < board[0].length; c++) {\n                dfs(board, r, c, root, result);\n            }\n        }\n        return result;\n    }\n\n    private void dfs(char[][] board, int r, int c, TrieNode node, List<String> result) {\n        if (r < 0 || c < 0 || r >= board.length || c >= board[0].length || board[r][c] == '#') return;\n        char ch = board[r][c];\n        TrieNode next = node.children[ch - 'a'];\n        if (next == null) return;\n        if (next.word != null) {\n            result.add(next.word);\n            next.word = null;\n        }\n        board[r][c] = '#';\n        dfs(board, r + 1, c, next, result);\n        dfs(board, r - 1, c, next, result);\n        dfs(board, r, c + 1, next, result);\n        dfs(board, r, c - 1, next, result);\n        board[r][c] = ch;\n    }\n}",
+          "output": "[\"oath\",\"eat\"]",
+          "timeComplexity": "O(m * n * 4^L) with shared-prefix pruning",
+          "spaceComplexity": "O(total characters in words)"
+        }
+      ]
     }
   ],
   "codeExamples": [
