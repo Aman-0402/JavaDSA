@@ -145,7 +145,8 @@
         { "id": "java-binary-search-trees", "title": "Binary Search Trees", "lesson": "java-binary-search-trees" },
         { "id": "java-tree-traversals", "title": "Tree Traversals: Pre-order, In-order, Post-order", "lesson": "java-tree-traversals" },
         { "id": "java-tree-bfs-level-order", "title": "BFS: Level Order Traversal", "lesson": "java-tree-bfs-level-order" },
-        { "id": "java-tree-dfs-iterative", "title": "DFS: Iterative Traversal with a Stack", "lesson": "java-tree-dfs-iterative" }
+        { "id": "java-tree-dfs-iterative", "title": "DFS: Iterative Traversal with a Stack", "lesson": "java-tree-dfs-iterative" },
+        { "id": "java-trie", "title": "Trie (Prefix Tree)", "lesson": "java-trie" }
       ]
     },
     { "id": "graphs", "title": "Graphs", "topics": [] },

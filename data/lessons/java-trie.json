@@ -1,0 +1,167 @@
+{
+  "id": "java-trie",
+  "moduleId": "trees",
+  "title": "Trie (Prefix Tree)",
+  "description": "A specialized tree for storing and searching strings efficiently -- each node has up to 26 children (one per letter), built with a HashMap instead of fixed left/right references.",
+  "objectives": [
+    "Understand a Trie's structure: one node per character, shared prefixes merged",
+    "Implement insert and search",
+    "Implement startsWith, and understand a Trie's real-world use case: autocomplete"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Beyond Two Children"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every tree so far (Binary Trees, BST) capped nodes at TWO children. A Trie (pronounced 'try', from re-TRIE-val) needs a variable number of children -- one per possible next character -- so instead of left/right fields, each node holds a Map from character to child node."
+    },
+    {
+      "type": "definition",
+      "term": "Trie",
+      "text": "A tree specialized for storing strings, where each node represents one character and a path from the root spells out a prefix -- nodes are shared between words with common prefixes."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Node: A HashMap of Children"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    public static void main(String[] args) {\n        TrieNode root = new TrieNode();\n        System.out.println(root.children.isEmpty());\n        System.out.println(root.isEndOfWord);\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-trie-node"
+    },
+    {
+      "type": "note",
+      "text": "children uses a HashMap (recall the Map lesson), mapping each possible next character to its child TrieNode. isEndOfWord marks whether a COMPLETE word ends at this exact node -- necessary because \"cat\" being stored doesn't mean \"ca\" is also a valid complete word, even though its nodes exist along the way."
+    },
+    {
+      "type": "heading",
+      "text": "3. Inserting a Word"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n        insert(\"dog\");\n\n        System.out.println(root.children.keySet());\n    }\n}",
+      "output": "[c, d]",
+      "retypePractice": true,
+      "retypeId": "java-trie-insert"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing insert(\"cat\") then insert(\"car\") -- sharing the \"ca\" prefix",
+      "steps": [
+        "insert(\"cat\"): root -> c (new) -> a (new) -> t (new, isEndOfWord=true)",
+        "insert(\"car\"): root -> c (EXISTS, reused) -> a (EXISTS, reused) -> r (new, isEndOfWord=true)",
+        "The nodes for 'c' and 'a' are SHARED between both words -- only 't' and 'r' branch separately",
+        "This sharing of common prefixes is the entire point of a Trie's name and structure"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "putIfAbsent(c, new TrieNode()) only creates a new node if that character isn't ALREADY a child -- this is exactly what makes 'car' reuse the 'c' and 'a' nodes already created by 'cat', instead of duplicating them."
+    },
+    {
+      "type": "heading",
+      "text": "4. Searching for a Complete Word"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    static boolean search(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            if (!current.children.containsKey(c)) {\n                return false;\n            }\n            current = current.children.get(c);\n        }\n        return current.isEndOfWord;\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n\n        System.out.println(search(\"cat\"));\n        System.out.println(search(\"ca\"));\n        System.out.println(search(\"cats\"));\n    }\n}",
+      "output": "true\nfalse\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-trie-search"
+    },
+    {
+      "type": "warning",
+      "text": "search(\"ca\") returns false, even though the 'c' and 'a' nodes clearly exist (they're part of 'cat' and 'car') -- because isEndOfWord is false at that node. \"ca\" was never explicitly INSERTED as a complete word, only passed through on the way to longer words."
+    },
+    {
+      "type": "heading",
+      "text": "5. startsWith: The Autocomplete Building Block"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    static boolean startsWith(String prefix) {\n        TrieNode current = root;\n        for (char c : prefix.toCharArray()) {\n            if (!current.children.containsKey(c)) {\n                return false;\n            }\n            current = current.children.get(c);\n        }\n        return true; // reached the end of the prefix -- no need to check isEndOfWord\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n\n        System.out.println(startsWith(\"ca\"));\n        System.out.println(startsWith(\"do\"));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-trie-startswith"
+    },
+    {
+      "type": "note",
+      "text": "startsWith(\"ca\") is true, unlike search(\"ca\") which was false -- the difference is exactly isEndOfWord. startsWith only cares whether the PATH exists, not whether a complete word ends there. This is precisely how autocomplete suggestions work: typing 'ca' shows every word whose path passes through that point."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing search() (requires isEndOfWord true) with startsWith() (only requires the path to exist) -- 'ca' can be a valid prefix without being a valid complete word.",
+        "Forgetting to mark isEndOfWord = true at the end of insert() -- without it, no word would ever be found by search(), even if all its characters were inserted.",
+        "Using putIfAbsent incorrectly, or always creating a new node regardless of whether one exists -- this breaks prefix-sharing, defeating the Trie's whole purpose.",
+        "Assuming a Trie is limited to exactly 26 children like a fixed English-alphabet array -- using a Map (as done here) supports any character set naturally, at some cost to raw speed compared to a fixed-size array."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a Trie, and how does its structure differ from a binary tree?",
+          "answer": "A Trie is a tree specialized for storing strings, where each node represents one character and can have many children (one per possible next character), typically stored in a Map -- unlike a binary tree, which caps every node at exactly two children."
+        },
+        {
+          "question": "What is the purpose of the isEndOfWord flag?",
+          "answer": "It marks whether a complete, explicitly inserted word ends at that exact node -- distinguishing a node that's merely part of a longer word's path from one that represents a full word by itself."
+        },
+        {
+          "question": "What is the difference between search() and startsWith() in a Trie?",
+          "answer": "search() requires both that the full path exists AND that isEndOfWord is true at the final node -- it checks for a complete inserted word. startsWith() only requires the path to exist, regardless of isEndOfWord -- it checks for a valid prefix, which may or may not also be a complete word."
+        }
+      ],
+      "thirtySecondAnswer": "A Trie stores strings by giving each node a Map of children, one per possible next character, letting words with shared prefixes reuse the same nodes along their common path. isEndOfWord marks nodes where a complete inserted word actually ends, which is what distinguishes search() (requires a full path AND isEndOfWord true) from startsWith() (only requires the path to exist). This distinction is exactly what powers autocomplete: startsWith identifies every stored word sharing a typed prefix, without caring whether that prefix is itself a complete word."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Trie = a shared hallway of letters -- 'cat' and 'car' walk the SAME c-a hallway before splitting at the last letter. isEndOfWord = a door marked 'complete word here.' startsWith just checks the hallway exists; search also checks for that door."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "How does a Trie node's children differ from a binary tree node's left/right?",
+        "What does the isEndOfWord flag mark?",
+        "What's the key difference between search() and startsWith()?",
+        "What real-world feature is a Trie's startsWith() the foundation of?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-trie-node", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    public static void main(String[] args) {\n        TrieNode root = new TrieNode();\n        System.out.println(root.children.isEmpty());\n        System.out.println(root.isEndOfWord);\n    }\n}", "output": "true\nfalse" },
+    { "id": "java-trie-insert", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n        insert(\"dog\");\n\n        System.out.println(root.children.keySet());\n    }\n}", "output": "[c, d]" },
+    { "id": "java-trie-search", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    static boolean search(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            if (!current.children.containsKey(c)) {\n                return false;\n            }\n            current = current.children.get(c);\n        }\n        return current.isEndOfWord;\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n\n        System.out.println(search(\"cat\"));\n        System.out.println(search(\"ca\"));\n        System.out.println(search(\"cats\"));\n    }\n}", "output": "true\nfalse\nfalse" },
+    { "id": "java-trie-startswith", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    static boolean startsWith(String prefix) {\n        TrieNode current = root;\n        for (char c : prefix.toCharArray()) {\n            if (!current.children.containsKey(c)) {\n                return false;\n            }\n            current = current.children.get(c);\n        }\n        return true; // reached the end of the prefix -- no need to check isEndOfWord\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n\n        System.out.println(startsWith(\"ca\"));\n        System.out.println(startsWith(\"do\"));\n    }\n}", "output": "true\nfalse" }
+  ],
+  "retypePractice": [
+    { "id": "java-trie-node", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    public static void main(String[] args) {\n        TrieNode root = new TrieNode();\n        System.out.println(root.children.isEmpty());\n        System.out.println(root.isEndOfWord);\n    }\n}" },
+    { "id": "java-trie-insert", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n        insert(\"dog\");\n\n        System.out.println(root.children.keySet());\n    }\n}" },
+    { "id": "java-trie-search", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    static boolean search(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            if (!current.children.containsKey(c)) {\n                return false;\n            }\n            current = current.children.get(c);\n        }\n        return current.isEndOfWord;\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n\n        System.out.println(search(\"cat\"));\n        System.out.println(search(\"ca\"));\n        System.out.println(search(\"cats\"));\n    }\n}" },
+    { "id": "java-trie-startswith", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static class TrieNode {\n        Map<Character, TrieNode> children = new HashMap<>();\n        boolean isEndOfWord;\n    }\n\n    static TrieNode root = new TrieNode();\n\n    static void insert(String word) {\n        TrieNode current = root;\n        for (char c : word.toCharArray()) {\n            current.children.putIfAbsent(c, new TrieNode());\n            current = current.children.get(c);\n        }\n        current.isEndOfWord = true;\n    }\n\n    static boolean startsWith(String prefix) {\n        TrieNode current = root;\n        for (char c : prefix.toCharArray()) {\n            if (!current.children.containsKey(c)) {\n                return false;\n            }\n            current = current.children.get(c);\n        }\n        return true; // reached the end of the prefix -- no need to check isEndOfWord\n    }\n\n    public static void main(String[] args) {\n        insert(\"cat\");\n        insert(\"car\");\n\n        System.out.println(startsWith(\"ca\"));\n        System.out.println(startsWith(\"do\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-trie-node", "java-trie-insert", "java-trie-search", "java-trie-startswith"]
+  }
+}
