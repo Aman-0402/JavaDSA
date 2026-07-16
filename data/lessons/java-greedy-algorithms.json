@@ -1,0 +1,160 @@
+{
+  "id": "java-greedy-algorithms",
+  "moduleId": "greedy-dp",
+  "title": "Greedy Algorithms",
+  "description": "Making the locally best choice at every step and hoping (correctly, for the right problems) it leads to a globally best answer.",
+  "objectives": [
+    "Understand the greedy strategy: locally optimal choices, never reconsidered",
+    "Solve activity selection and coin change with greedy approaches",
+    "Recognize when greedy fails and a different strategy is needed"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Greedy Idea"
+    },
+    {
+      "type": "definition",
+      "term": "Greedy algorithm",
+      "text": "An approach that makes the choice that looks best RIGHT NOW, at each step, without reconsidering it later, hoping this sequence of local choices produces a globally optimal result."
+    },
+    {
+      "type": "warning",
+      "text": "Greedy does NOT try every possibility like Backtracking did -- it commits immediately and never looks back. This makes greedy algorithms fast, but they only give the CORRECT answer for problems that have a specific property (covered below) -- using greedy on the wrong problem gives a wrong answer, confidently."
+    },
+    {
+      "type": "heading",
+      "text": "2. Activity Selection: Choosing Non-Overlapping Intervals"
+    },
+    {
+      "type": "paragraph",
+      "text": "Given start/end times for several activities, select the MAXIMUM number that don't overlap. The greedy insight: always pick the activity that finishes EARLIEST among the remaining options -- this leaves the most room for future activities."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Arrays;\nimport java.util.Comparator;\n\npublic class Main {\n    static int maxActivities(int[][] activities) {\n        Arrays.sort(activities, Comparator.comparingInt(a -> a[1])); // sort by END time\n\n        int count = 1;\n        int lastEnd = activities[0][1];\n\n        for (int i = 1; i < activities.length; i++) {\n            if (activities[i][0] >= lastEnd) {\n                count++;\n                lastEnd = activities[i][1];\n            }\n        }\n        return count;\n    }\n\n    public static void main(String[] args) {\n        int[][] activities = {{1, 3}, {2, 5}, {4, 6}, {6, 8}, {5, 9}};\n        System.out.println(maxActivities(activities));\n    }\n}",
+      "output": "3",
+      "retypePractice": true,
+      "retypeId": "java-greedy-activity-selection"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing after sorting by end time",
+      "steps": [
+        "Original activities already happen to be in end-time order: [1,3] (end 3), [2,5] (end 5), [4,6] (end 6), [6,8] (end 8), [5,9] (end 9)",
+        "count=1, lastEnd=3 (from [1,3])",
+        "[2,5]: start 2 < lastEnd 3 -- overlaps, skip",
+        "[4,6]: start 4 >= lastEnd 3 -- take it! count=2, lastEnd=6",
+        "[6,8]: start 6 >= lastEnd 6 -- take it! count=3, lastEnd=8",
+        "[5,9]: start 5 < lastEnd 8 -- overlaps, skip",
+        "Final count: 3 -- activities [1,3], [4,6], [6,8]"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Arrays.sort(activities, Comparator.comparingInt(a -> a[1])) uses a Comparator (Comparable vs Comparator) with a lambda to sort a 2D array of intervals by their END time (index 1) -- this sorting step is what makes the greedy 'earliest finish first' rule actually work."
+    },
+    {
+      "type": "heading",
+      "text": "3. Greedy Coin Change (Works for SOME Coin Systems)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int minCoinsGreedy(int[] coins, int amount) {\n        int count = 0;\n        for (int i = coins.length - 1; i >= 0; i--) {\n            while (amount >= coins[i]) {\n                amount -= coins[i];\n                count++;\n            }\n        }\n        return amount == 0 ? count : -1;\n    }\n\n    public static void main(String[] args) {\n        int[] coins = {1, 5, 10, 25}; // sorted ascending -- standard US coins\n        System.out.println(minCoinsGreedy(coins, 41));\n    }\n}",
+      "output": "4",
+      "retypePractice": true,
+      "retypeId": "java-greedy-coin-change"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing minCoinsGreedy({1,5,10,25}, 41)",
+      "steps": [
+        "i=3 (coin 25): 41>=25 -- take one, amount=16, count=1. 16<25 -- stop this coin",
+        "i=2 (coin 10): 16>=10 -- take one, amount=6, count=2. 6<10 -- stop",
+        "i=1 (coin 5): 6>=5 -- take one, amount=1, count=3. 1<5 -- stop",
+        "i=0 (coin 1): 1>=1 -- take one, amount=0, count=4. 0<1 -- stop",
+        "amount==0 -- return count=4 (one 25, one 10, one 5, one 1)"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Greedy coin change ONLY gives the correct (minimum) answer for certain coin systems, like standard currency (1, 5, 10, 25). For an ARBITRARY coin system -- say coins {1, 3, 4} needing to make 6 -- greedy picks 4 then 1 then 1 (three coins: 4+1+1), but the true minimum is 3+3 (two coins)! This is a classic example of greedy FAILING -- the real solution for arbitrary coin systems needs Dynamic Programming, covered starting in the next lesson."
+    },
+    {
+      "type": "heading",
+      "text": "4. When Does Greedy Actually Work?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "The property greedy problems need",
+      "points": [
+        "Greedy choice property: a locally optimal choice at each step leads to a globally optimal solution -- this must be PROVABLE for the specific problem, not just assumed",
+        "Optimal substructure: an optimal solution to the whole problem contains optimal solutions to its sub-problems (this property is ALSO required by Dynamic Programming, covered next)",
+        "If a problem lacks the greedy choice property, greedy will produce a WRONG answer, sometimes without any obvious sign something went wrong"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming greedy always works because it 'seems reasonable' -- it must be specifically PROVEN correct for that problem; intuition alone is not proof.",
+        "Using greedy coin change on an arbitrary coin system and trusting the result -- it only guarantees correctness for specific systems like standard currency denominations.",
+        "Forgetting to sort by the correct criterion (like end time for activity selection) before applying the greedy rule -- the greedy choice depends on processing items in the right order.",
+        "Confusing greedy (commit immediately, never reconsider) with backtracking (try, and UNDO if it doesn't work out) -- they're fundamentally different strategies."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a greedy algorithm?",
+          "answer": "An approach that makes the locally best choice at each step, without reconsidering it later, hoping the sequence of local choices produces a globally optimal result -- unlike backtracking, greedy never undoes a decision."
+        },
+        {
+          "question": "Why does greedy activity selection sort by END time rather than start time or duration?",
+          "answer": "Picking whichever remaining activity finishes earliest leaves the maximum possible room for future activities to also fit without overlapping -- sorting by start time or duration doesn't guarantee this same property."
+        },
+        {
+          "question": "Does greedy coin change always give the minimum number of coins? Give a counterexample if not.",
+          "answer": "No -- only for specific coin systems like standard currency. For coins {1, 3, 4} and amount 6, greedy picks 4+1+1 (three coins), but the true minimum is 3+3 (two coins). Arbitrary coin systems require Dynamic Programming for a guaranteed correct answer."
+        }
+      ],
+      "thirtySecondAnswer": "Greedy algorithms commit to the locally best choice at each step and never reconsider it, unlike backtracking's try-then-undo approach. This works correctly only for problems with the greedy choice property, provable case by case -- activity selection (always pick the earliest-finishing remaining activity) is a genuine example. Greedy coin change works for standard currency denominations but fails for arbitrary coin systems (e.g. {1,3,4} making 6: greedy gives 3 coins, but 2 is possible) -- such cases require Dynamic Programming, which explores overlapping sub-problems more carefully instead of committing blindly."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Greedy = grab the best-looking option RIGHT NOW and never look back -- fast, but only safe when you've PROVEN local best = global best. When in doubt, greedy is a guess dressed up as a strategy."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What defines a greedy algorithm's strategy?",
+        "Why does activity selection's greedy rule sort by end time specifically?",
+        "Give a coin system where greedy coin change fails.",
+        "What property must a problem have for greedy to guarantee a correct answer?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-greedy-activity-selection", "lang": "java", "filename": "Main.java", "code": "import java.util.Arrays;\nimport java.util.Comparator;\n\npublic class Main {\n    static int maxActivities(int[][] activities) {\n        Arrays.sort(activities, Comparator.comparingInt(a -> a[1])); // sort by END time\n\n        int count = 1;\n        int lastEnd = activities[0][1];\n\n        for (int i = 1; i < activities.length; i++) {\n            if (activities[i][0] >= lastEnd) {\n                count++;\n                lastEnd = activities[i][1];\n            }\n        }\n        return count;\n    }\n\n    public static void main(String[] args) {\n        int[][] activities = {{1, 3}, {2, 5}, {4, 6}, {6, 8}, {5, 9}};\n        System.out.println(maxActivities(activities));\n    }\n}", "output": "3" },
+    { "id": "java-greedy-coin-change", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int minCoinsGreedy(int[] coins, int amount) {\n        int count = 0;\n        for (int i = coins.length - 1; i >= 0; i--) {\n            while (amount >= coins[i]) {\n                amount -= coins[i];\n                count++;\n            }\n        }\n        return amount == 0 ? count : -1;\n    }\n\n    public static void main(String[] args) {\n        int[] coins = {1, 5, 10, 25}; // sorted ascending -- standard US coins\n        System.out.println(minCoinsGreedy(coins, 41));\n    }\n}", "output": "4" }
+  ],
+  "retypePractice": [
+    { "id": "java-greedy-activity-selection", "reference": "import java.util.Arrays;\nimport java.util.Comparator;\n\npublic class Main {\n    static int maxActivities(int[][] activities) {\n        Arrays.sort(activities, Comparator.comparingInt(a -> a[1])); // sort by END time\n\n        int count = 1;\n        int lastEnd = activities[0][1];\n\n        for (int i = 1; i < activities.length; i++) {\n            if (activities[i][0] >= lastEnd) {\n                count++;\n                lastEnd = activities[i][1];\n            }\n        }\n        return count;\n    }\n\n    public static void main(String[] args) {\n        int[][] activities = {{1, 3}, {2, 5}, {4, 6}, {6, 8}, {5, 9}};\n        System.out.println(maxActivities(activities));\n    }\n}" },
+    { "id": "java-greedy-coin-change", "reference": "public class Main {\n    static int minCoinsGreedy(int[] coins, int amount) {\n        int count = 0;\n        for (int i = coins.length - 1; i >= 0; i--) {\n            while (amount >= coins[i]) {\n                amount -= coins[i];\n                count++;\n            }\n        }\n        return amount == 0 ? count : -1;\n    }\n\n    public static void main(String[] args) {\n        int[] coins = {1, 5, 10, 25}; // sorted ascending -- standard US coins\n        System.out.println(minCoinsGreedy(coins, 41));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-greedy-activity-selection", "java-greedy-coin-change"]
+  }
+}

@@ -160,6 +160,12 @@
         { "id": "java-union-find", "title": "Union-Find (Disjoint Set Union)", "lesson": "java-union-find" }
       ]
     },
-    { "id": "greedy-dp", "title": "Greedy & Dynamic Programming", "topics": [] }
+    {
+      "id": "greedy-dp",
+      "title": "Greedy & Dynamic Programming",
+      "topics": [
+        { "id": "java-greedy-algorithms", "title": "Greedy Algorithms", "lesson": "java-greedy-algorithms" }
+      ]
+    }
   ]
 }
