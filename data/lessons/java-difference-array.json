@@ -1,0 +1,170 @@
+{
+  "id": "java-difference-array",
+  "moduleId": "dsa-foundations",
+  "title": "Difference Array",
+  "description": "The mirror-image trick of Prefix Sum -- applying many range UPDATES efficiently instead of answering many range sum QUERIES.",
+  "objectives": [
+    "Understand difference array as the inverse problem of prefix sum",
+    "Apply a range update in O(1) using a difference array",
+    "Reconstruct the final array with a prefix sum pass"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: Many Range Updates"
+    },
+    {
+      "type": "paragraph",
+      "text": "Prefix Sum solved: many range-sum QUERIES on a fixed array. Difference array solves the opposite kind of problem: many range UPDATES (\"add 5 to every element from index 2 to 5\") applied to an array, where we only care about the FINAL result after all updates."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static void updateDirect(int[] arr, int left, int right, int value) {\n    for (int i = left; i <= right; i++) {\n        arr[i] += value;\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "Each direct update is O(range length). Applying q such updates costs O(q * n) in the worst case -- exactly the same shape of problem prefix sum solved, just for updates instead of queries."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Difference Array Idea"
+    },
+    {
+      "type": "definition",
+      "term": "Difference array",
+      "text": "An auxiliary array where each position holds the DIFFERENCE between consecutive elements of the original array, allowing a range update to be applied in O(1) by only touching the two endpoints."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 6;\n        int[] diff = new int[n + 1]; // one extra slot for the boundary\n\n        // Add 5 to range [1, 3]\n        diff[1] += 5;\n        diff[4] -= 5; // one past the end of the range\n\n        // Add 3 to range [2, 5]\n        diff[2] += 3;\n        diff[6] -= 3;\n\n        int[] result = new int[n];\n        result[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] + diff[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(result));\n    }\n}",
+      "output": "[0, 5, 8, 8, 3, 3]",
+      "retypePractice": true,
+      "retypeId": "java-diff-array-basic"
+    },
+    {
+      "type": "warning",
+      "text": "diff[left] += value marks 'start adding value from here.' diff[right + 1] -= value marks 'stop adding it after here.' Each range update touches only TWO positions -- O(1) -- no matter how large the range is. The final prefix-sum pass (recall Prefix Sum's exact running-total technique) reconstructs the true values in one O(n) pass."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing the reconstruction",
+      "steps": [
+        "diff array (indices 0-6): [0, 5, 3, 0, -5, 0, -3]",
+        "result[0] = diff[0] = 0",
+        "result[1] = result[0] + diff[1] = 0 + 5 = 5",
+        "result[2] = result[1] + diff[2] = 5 + 3 = 8",
+        "result[3] = result[2] + diff[3] = 8 + 0 = 8",
+        "result[4] = result[3] + diff[4] = 8 + (-5) = 3",
+        "result[5] = result[4] + diff[5] = 3 + 0 = 3",
+        "Final result: [0, 5, 8, 8, 3, 3] -- matches applying both updates directly!"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Verifying Against Direct Updates"
+    },
+    {
+      "type": "paragraph",
+      "text": "Starting from all zeros: adding 5 to [1,3] gives [0,5,5,5,0,0]. Then adding 3 to [2,5] gives [0,5,8,8,3,3]. This matches the difference array's reconstructed result exactly -- confirming the technique."
+    },
+    {
+      "type": "heading",
+      "text": "4. Why This Is Faster"
+    },
+    {
+      "type": "table",
+      "title": "Direct range update vs difference array, for q updates on n elements",
+      "headers": ["Approach", "Per-update cost", "Final reconstruction", "Total for q updates"],
+      "rows": [
+        ["Direct update", "O(range length)", "Not needed", "O(q * n) worst case"],
+        ["Difference array", "O(1)", "O(n), once, at the end", "O(q + n)"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int[] diff = new int[n + 1];\n\n        int[][] updates = {{0, 1, 10}, {1, 3, 20}, {2, 4, -5}};\n        for (int[] u : updates) {\n            int left = u[0];\n            int right = u[1];\n            int value = u[2];\n            diff[left] += value;\n            diff[right + 1] -= value;\n        }\n\n        int[] result = new int[n];\n        result[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] + diff[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(result));\n    }\n}",
+      "output": "[10, 30, 15, 15, -5]",
+      "retypePractice": true,
+      "retypeId": "java-diff-array-multi-update"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Verifying by hand"
+      ,
+      "points": [
+        "Update 1: +10 to [0,1] -> [10, 10, 0, 0, 0]",
+        "Update 2: +20 to [1,3] -> [10, 30, 20, 20, 0]",
+        "Update 3: -5 to [2,4] -> [10, 30, 15, 15, -5]",
+        "This matches the difference array's reconstructed result exactly"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the diff array needs ONE EXTRA slot (size n+1) to safely mark right+1 even when right is the last valid index.",
+        "Forgetting the final reconstruction step -- the diff array alone is NOT the answer; you must run a prefix-sum pass over it to get final values.",
+        "Mixing up which index gets +value and which gets -value -- it's always diff[left] += value and diff[right + 1] -= value.",
+        "Using a difference array for a problem that also needs range-sum QUERIES between updates -- difference array only helps when you can apply ALL updates first and read the final result afterward."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What problem does a difference array solve?",
+          "answer": "Applying many range updates (adding a value to every element in a range) efficiently -- each update costs O(1) by only touching two positions, instead of O(range length) to update every element directly."
+        },
+        {
+          "question": "How do you apply a range update [left, right] with value v using a difference array?",
+          "answer": "diff[left] += v and diff[right + 1] -= v -- marking where the addition starts and where it should stop, without touching anything in between."
+        },
+        {
+          "question": "How do you get the final array values from a difference array?",
+          "answer": "Run a prefix sum pass over the difference array itself -- result[i] = result[i-1] + diff[i] -- which reconstructs the cumulative effect of every applied update."
+        }
+      ],
+      "thirtySecondAnswer": "A difference array is the mirror image of prefix sum: instead of answering range-sum queries quickly, it applies range UPDATES quickly. Adding a value v to every element in [left, right] only requires diff[left] += v and diff[right + 1] -= v -- O(1) per update, regardless of range size. After all updates are applied, a single prefix-sum pass over the difference array reconstructs the final values in O(n). This turns q range updates from O(q*n) worst case down to O(q + n) total, as long as you only need the final result after all updates, not intermediate query answers."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Difference array = mark the START (+value) and the STOP (-value) of an effect, then let a prefix-sum pass 'fill in' everything in between. Prefix Sum answers range QUERIES fast; Difference Array applies range UPDATES fast -- mirror images of each other."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What problem does a difference array solve, and how does it relate to prefix sum?",
+        "How do you apply a range update [left, right] with value v to a difference array?",
+        "How do you reconstruct final array values from a difference array?",
+        "Why does the difference array need one extra slot beyond the original array's size?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-diff-array-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 6;\n        int[] diff = new int[n + 1]; // one extra slot for the boundary\n\n        // Add 5 to range [1, 3]\n        diff[1] += 5;\n        diff[4] -= 5; // one past the end of the range\n\n        // Add 3 to range [2, 5]\n        diff[2] += 3;\n        diff[6] -= 3;\n\n        int[] result = new int[n];\n        result[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] + diff[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(result));\n    }\n}", "output": "[0, 5, 8, 8, 3, 3]" },
+    { "id": "java-diff-array-multi-update", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int[] diff = new int[n + 1];\n\n        int[][] updates = {{0, 1, 10}, {1, 3, 20}, {2, 4, -5}};\n        for (int[] u : updates) {\n            int left = u[0];\n            int right = u[1];\n            int value = u[2];\n            diff[left] += value;\n            diff[right + 1] -= value;\n        }\n\n        int[] result = new int[n];\n        result[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] + diff[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(result));\n    }\n}", "output": "[10, 30, 15, 15, -5]" }
+  ],
+  "retypePractice": [
+    { "id": "java-diff-array-basic", "reference": "public class Main {\n    public static void main(String[] args) {\n        int n = 6;\n        int[] diff = new int[n + 1]; // one extra slot for the boundary\n\n        // Add 5 to range [1, 3]\n        diff[1] += 5;\n        diff[4] -= 5; // one past the end of the range\n\n        // Add 3 to range [2, 5]\n        diff[2] += 3;\n        diff[6] -= 3;\n\n        int[] result = new int[n];\n        result[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] + diff[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(result));\n    }\n}" },
+    { "id": "java-diff-array-multi-update", "reference": "public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int[] diff = new int[n + 1];\n\n        int[][] updates = {{0, 1, 10}, {1, 3, 20}, {2, 4, -5}};\n        for (int[] u : updates) {\n            int left = u[0];\n            int right = u[1];\n            int value = u[2];\n            diff[left] += value;\n            diff[right + 1] -= value;\n        }\n\n        int[] result = new int[n];\n        result[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] + diff[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(result));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-diff-array-basic", "java-diff-array-multi-update"]
+  }
+}
