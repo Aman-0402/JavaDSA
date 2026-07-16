@@ -1,0 +1,154 @@
+{
+  "id": "java-stack-monotonic-stack",
+  "moduleId": "stacks-queues",
+  "title": "Stack and Monotonic Stack",
+  "description": "java.util.Stack vs the recommended ArrayDeque-as-stack from Queue and Deque, plus the monotonic stack pattern for next-greater-element problems.",
+  "objectives": [
+    "Use ArrayDeque as a stack, and know why it's preferred over java.util.Stack",
+    "Solve balanced parentheses (recap) and next greater element with a stack",
+    "Understand the monotonic stack pattern and why it's O(n)"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Two Ways to Get a Stack in Java"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Queue and Deque, we previewed using ArrayDeque with push()/pop() for LIFO (stack) behavior. Java also has an older class, java.util.Stack -- but it's now considered legacy."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "import java.util.Stack;\n\nStack<Integer> oldStack = new Stack<>();\noldStack.push(1);\noldStack.push(2);\nSystem.out.println(oldStack.pop()); // 2"
+    },
+    {
+      "type": "warning",
+      "text": "java.util.Stack extends Vector, an older, synchronized (thread-safety-overhead) class from early Java -- it works, but is not recommended for new code. ArrayDeque is faster and is Java's officially recommended stack implementation today."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(1);\n        stack.push(2);\n        stack.push(3);\n\n        System.out.println(stack.peek());\n        System.out.println(stack.pop());\n        System.out.println(stack);\n    }\n}",
+      "output": "3\n3\n[2, 1]",
+      "retypePractice": true,
+      "retypeId": "java-stack-arraydeque-basic"
+    },
+    {
+      "type": "heading",
+      "text": "2. Recap: Balanced Parentheses"
+    },
+    {
+      "type": "paragraph",
+      "text": "We already solved this exact problem in Queue and Deque -- push every opening bracket, pop on a matching close, and check the stack is empty at the end. It's worth recognizing this is fundamentally a STACK problem: the most RECENT unmatched opener must be matched first, which is exactly LIFO order."
+    },
+    {
+      "type": "heading",
+      "text": "3. Next Greater Element: A New Stack Pattern"
+    },
+    {
+      "type": "paragraph",
+      "text": "For each element, find the next element to its right that's GREATER than it. Brute force checks every pair -- O(n^2), like the Big-O Notation hasDuplicate example. A monotonic stack solves it in O(n)."
+    },
+    {
+      "type": "definition",
+      "term": "Monotonic stack",
+      "text": "A stack maintained so its elements are always in increasing (or decreasing) order -- new elements pop off anything on top that violates this order before being pushed, often computing something useful during each pop."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static int[] nextGreaterElement(int[] nums) {\n        int[] result = new int[nums.length];\n        java.util.Arrays.fill(result, -1);\n        Deque<Integer> stack = new ArrayDeque<>(); // stores INDICES\n\n        for (int i = 0; i < nums.length; i++) {\n            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {\n                int index = stack.pop();\n                result[index] = nums[i];\n            }\n            stack.push(i);\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {2, 1, 3, 4, 2};\n        System.out.println(java.util.Arrays.toString(nextGreaterElement(nums)));\n    }\n}",
+      "output": "[3, 3, 4, -1, -1]",
+      "retypePractice": true,
+      "retypeId": "java-stack-next-greater"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing nextGreaterElement({2,1,3,4,2})",
+      "steps": [
+        "i=0 (val 2): stack empty -- push index 0. stack=[0]",
+        "i=1 (val 1): nums[1]=1 > nums[stack.peek()=0]=2? No -- push index 1. stack=[0,1]",
+        "i=2 (val 3): nums[2]=3 > nums[1]=1? Yes -- pop 1, result[1]=3. Now nums[2]=3 > nums[0]=2? Yes -- pop 0, result[0]=3. stack empty -- push index 2. stack=[2]",
+        "i=3 (val 4): nums[3]=4 > nums[2]=3? Yes -- pop 2, result[2]=4. stack empty -- push index 3. stack=[3]",
+        "i=4 (val 2): nums[4]=2 > nums[3]=4? No -- push index 4. stack=[3,4]",
+        "Loop ends. Indices 3 and 4 never found a greater element to their right -- their result stays -1",
+        "Final result: [3, 3, 4, -1, -1]"
+      ]
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this is O(n), not O(n^2)",
+      "points": [
+        "Each index is pushed onto the stack EXACTLY ONCE",
+        "Each index is popped AT MOST ONCE",
+        "Total push+pop operations across the whole run: at most 2n -- O(n) overall, despite the nested while loop appearing to suggest otherwise"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "The stack holds INDICES, not values -- this lets us write the answer directly into result[index] at the moment we pop, and still compare using nums[stack.peek()] for the actual value at that position."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using java.util.Stack in new code instead of the recommended ArrayDeque -- it still works, but isn't the modern preferred choice.",
+        "Storing VALUES on the monotonic stack instead of INDICES, losing the ability to write results back into the correct array position.",
+        "Assuming the nested while loop makes next-greater-element O(n^2) -- each element is pushed and popped at most once total, giving O(n) overall, not O(n) per outer iteration.",
+        "Forgetting to initialize the result array to a sentinel value (like -1) for elements that never find a next greater element."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why is ArrayDeque preferred over java.util.Stack for stack behavior in modern Java?",
+          "answer": "java.util.Stack extends the older, synchronized Vector class, carrying unnecessary thread-safety overhead for typical use. ArrayDeque is faster and is Java's officially recommended general-purpose stack implementation today."
+        },
+        {
+          "question": "What is a monotonic stack?",
+          "answer": "A stack maintained so its elements stay in increasing or decreasing order -- when a new element would violate that order, elements are popped off (often computing a useful result during each pop) before the new one is pushed."
+        },
+        {
+          "question": "Why is the next-greater-element algorithm O(n) despite having a nested while loop inside a for loop?",
+          "answer": "Each index is pushed onto the stack exactly once and popped at most once across the entire algorithm, so the total number of push/pop operations is bounded by O(n), not O(n) per outer iteration."
+        }
+      ],
+      "thirtySecondAnswer": "ArrayDeque is Java's modern recommended stack implementation via push()/pop()/peek(), preferred over the legacy, Vector-based java.util.Stack. A monotonic stack maintains its elements in increasing or decreasing order, popping off violating elements (often computing a result during each pop) before pushing the new one. The classic example is next-greater-element: storing indices on the stack, popping whenever the current value is greater than the value at the stack's top index, and recording that as the popped index's answer. Despite a nested while loop, each index is pushed and popped at most once total, giving O(n) overall rather than O(n^2)."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Monotonic stack = a lineup of bouncers, shortest to tallest (or vice versa) -- when someone taller shows up, they KNOCK OUT everyone shorter below them first (that's their 'next greater'), before taking their own spot in line."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why is ArrayDeque preferred over java.util.Stack?",
+        "What does 'monotonic' mean in the context of a monotonic stack?",
+        "Why does next-greater-element run in O(n) despite its nested while loop?",
+        "Why does the stack store indices rather than values in this pattern?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-stack-arraydeque-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(1);\n        stack.push(2);\n        stack.push(3);\n\n        System.out.println(stack.peek());\n        System.out.println(stack.pop());\n        System.out.println(stack);\n    }\n}", "output": "3\n3\n[2, 1]" },
+    { "id": "java-stack-next-greater", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static int[] nextGreaterElement(int[] nums) {\n        int[] result = new int[nums.length];\n        java.util.Arrays.fill(result, -1);\n        Deque<Integer> stack = new ArrayDeque<>(); // stores INDICES\n\n        for (int i = 0; i < nums.length; i++) {\n            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {\n                int index = stack.pop();\n                result[index] = nums[i];\n            }\n            stack.push(i);\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {2, 1, 3, 4, 2};\n        System.out.println(java.util.Arrays.toString(nextGreaterElement(nums)));\n    }\n}", "output": "[3, 3, 4, -1, -1]" }
+  ],
+  "retypePractice": [
+    { "id": "java-stack-arraydeque-basic", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(1);\n        stack.push(2);\n        stack.push(3);\n\n        System.out.println(stack.peek());\n        System.out.println(stack.pop());\n        System.out.println(stack);\n    }\n}" },
+    { "id": "java-stack-next-greater", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static int[] nextGreaterElement(int[] nums) {\n        int[] result = new int[nums.length];\n        java.util.Arrays.fill(result, -1);\n        Deque<Integer> stack = new ArrayDeque<>(); // stores INDICES\n\n        for (int i = 0; i < nums.length; i++) {\n            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {\n                int index = stack.pop();\n                result[index] = nums[i];\n            }\n            stack.push(i);\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {2, 1, 3, 4, 2};\n        System.out.println(java.util.Arrays.toString(nextGreaterElement(nums)));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-stack-arraydeque-basic", "java-stack-next-greater"]
+  }
+}

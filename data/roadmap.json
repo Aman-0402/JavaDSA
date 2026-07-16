@@ -119,7 +119,13 @@
         { "id": "java-circular-linked-list", "title": "Circular Linked List", "lesson": "java-circular-linked-list" }
       ]
     },
-    { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },
+    {
+      "id": "stacks-queues",
+      "title": "Stacks & Queues",
+      "topics": [
+        { "id": "java-stack-monotonic-stack", "title": "Stack and Monotonic Stack", "lesson": "java-stack-monotonic-stack" }
+      ]
+    },
     {
       "id": "heap",
       "title": "Heap",
