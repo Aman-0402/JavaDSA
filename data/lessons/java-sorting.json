@@ -1,0 +1,186 @@
+{
+  "id": "java-sorting",
+  "moduleId": "dsa-foundations",
+  "title": "Sorting",
+  "description": "Java's built-in Arrays.sort()/Collections.sort() plus manual implementations of bubble sort and selection sort, to understand what's actually happening underneath.",
+  "objectives": [
+    "Use Arrays.sort() and Collections.sort() for everyday sorting",
+    "Implement bubble sort and selection sort manually",
+    "Compare their O(n^2) complexity against built-in sort's better guarantees"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Java's Built-In Sorting"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Arrays;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9, 3};\n        Arrays.sort(arr);\n        System.out.println(Arrays.toString(arr));\n    }\n}",
+      "output": "[1, 2, 3, 5, 8, 9]",
+      "retypePractice": true,
+      "retypeId": "java-sorting-arrays-sort"
+    },
+    {
+      "type": "note",
+      "text": "Arrays.sort() works on plain arrays. Collections.sort() (recall the Collections Utility Class lesson) does the equivalent for a List. Both are highly optimized -- for primitives, Java's Arrays.sort() uses a dual-pivot quicksort variant, generally O(n log n) on average, far better than the manual algorithms we'll build below."
+    },
+    {
+      "type": "heading",
+      "text": "2. Bubble Sort: Repeatedly Swap Adjacent Out-of-Order Pairs"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static void bubbleSort(int[] arr) {\n        for (int i = 0; i < arr.length - 1; i++) {\n            for (int j = 0; j < arr.length - 1 - i; j++) {\n                if (arr[j] > arr[j + 1]) {\n                    int temp = arr[j];\n                    arr[j] = arr[j + 1];\n                    arr[j + 1] = temp;\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9};\n        bubbleSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}",
+      "output": "[1, 2, 5, 8, 9]",
+      "retypePractice": true,
+      "retypeId": "java-sorting-bubble"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing bubbleSort's first outer pass on {5,2,8,1,9}",
+      "steps": [
+        "Compare (5,2): 5>2, swap -> {2,5,8,1,9}",
+        "Compare (5,8): 5<8, no swap -> {2,5,8,1,9}",
+        "Compare (8,1): 8>1, swap -> {2,5,1,8,9}",
+        "Compare (8,9): 8<9, no swap -> {2,5,1,8,9}",
+        "After pass 1: the LARGEST element (9) has 'bubbled' to its correct final position at the end"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Each full pass 'bubbles' the largest remaining unsorted element to its correct position at the end -- that's why the inner loop's upper bound shrinks by i each time (arr.length - 1 - i): the last i elements are already confirmed sorted and don't need rechecking."
+    },
+    {
+      "type": "warning",
+      "text": "Bubble sort is O(n^2) -- nested loops, similar in shape to the Big-O Notation hasDuplicate example. It's taught for understanding, not used in real production code, since Arrays.sort() is dramatically faster for anything beyond tiny inputs."
+    },
+    {
+      "type": "heading",
+      "text": "3. Selection Sort: Repeatedly Find the Minimum"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static void selectionSort(int[] arr) {\n        for (int i = 0; i < arr.length - 1; i++) {\n            int minIndex = i;\n            for (int j = i + 1; j < arr.length; j++) {\n                if (arr[j] < arr[minIndex]) {\n                    minIndex = j;\n                }\n            }\n            int temp = arr[i];\n            arr[i] = arr[minIndex];\n            arr[minIndex] = temp;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9};\n        selectionSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}",
+      "output": "[1, 2, 5, 8, 9]",
+      "retypePractice": true,
+      "retypeId": "java-sorting-selection"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing selectionSort's first outer pass on {5,2,8,1,9}",
+      "steps": [
+        "i=0: scan from j=1 to 4 for the smallest value -- minIndex ends at 3 (value 1)",
+        "Swap arr[0] and arr[3]: {1, 2, 8, 5, 9}",
+        "Position 0 is now permanently correct -- next pass (i=1) will find the minimum of the REMAINING unsorted portion"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Selection sort finds the MINIMUM of the remaining unsorted portion and swaps it into place -- the opposite direction of bubble sort's repeated adjacent swaps, but the same O(n^2) complexity, since it's still a nested loop over the same input."
+    },
+    {
+      "type": "heading",
+      "text": "4. Comparing the Approaches"
+    },
+    {
+      "type": "table",
+      "title": "Sorting approaches compared",
+      "headers": ["Approach", "Time complexity", "Notes"],
+      "rows": [
+        ["Arrays.sort() / Collections.sort()", "O(n log n) typical", "Use this in real code -- highly optimized, battle-tested"],
+        ["Bubble sort", "O(n^2)", "Educational -- repeatedly swaps adjacent out-of-order pairs"],
+        ["Selection sort", "O(n^2)", "Educational -- repeatedly selects the minimum of the remaining unsorted portion"]
+      ]
+    },
+    {
+      "type": "tip",
+      "text": "In real-world code, always reach for Arrays.sort() or Collections.sort() (with a custom Comparator when needed, from the Comparable vs Comparator lesson). Manual sorts like bubble and selection sort exist here purely to build intuition for how sorting algorithms actually work -- important groundwork for understanding time complexity trade-offs in general."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> scores = new ArrayList<>();\n        scores.add(72);\n        scores.add(45);\n        scores.add(89);\n        scores.add(60);\n\n        Collections.sort(scores);\n        System.out.println(\"Sorted: \" + scores);\n        System.out.println(\"Median-ish middle value: \" + scores.get(scores.size() / 2));\n    }\n}",
+      "output": "Sorted: [45, 60, 72, 89]\nMedian-ish middle value: 72",
+      "retypePractice": true,
+      "retypeId": "java-sorting-collections-sort"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Implementing bubble sort or selection sort by hand in real production code, instead of using the far more efficient built-in Arrays.sort()/Collections.sort().",
+        "Forgetting to shrink bubble sort's inner loop bound (arr.length - 1 - i) -- without it, already-sorted elements at the end get needlessly rechecked every pass.",
+        "Confusing selection sort's approach (find minimum, swap into place) with bubble sort's approach (repeatedly swap adjacent pairs) -- both are O(n^2) but via different mechanics.",
+        "Forgetting Arrays.sort() operates on arrays while Collections.sort() operates on Lists -- they aren't interchangeable syntax."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the time complexity of Java's built-in Arrays.sort() for primitive arrays, and how does it compare to bubble sort?",
+          "answer": "Arrays.sort() for primitives typically runs in O(n log n) on average, using a highly optimized dual-pivot quicksort variant -- significantly faster than bubble sort's O(n^2) for large inputs."
+        },
+        {
+          "question": "How does bubble sort work?",
+          "answer": "It repeatedly steps through the array, swapping adjacent elements that are out of order. Each full pass 'bubbles' the largest remaining unsorted element to its correct final position at the end."
+        },
+        {
+          "question": "How does selection sort work?",
+          "answer": "It repeatedly finds the minimum value in the remaining unsorted portion of the array and swaps it into the next correct position -- moving the sorted boundary forward by one element each pass."
+        },
+        {
+          "question": "Why would you use manual sorting algorithms like bubble sort in practice?",
+          "answer": "Generally you wouldn't in production code -- Arrays.sort()/Collections.sort() are far more efficient. Manual implementations are primarily educational, building intuition for algorithmic thinking and complexity analysis."
+        }
+      ],
+      "thirtySecondAnswer": "Java's Arrays.sort() and Collections.sort() are the practical, real-world tools for sorting -- typically O(n log n) and highly optimized. Bubble sort and selection sort are both O(n^2) educational algorithms: bubble sort repeatedly swaps adjacent out-of-order elements, bubbling the largest remaining value to the end each pass; selection sort repeatedly finds the minimum of the remaining unsorted portion and swaps it into place. Both use nested loops over the same input, giving quadratic complexity, but demonstrate two different strategies for the same underlying goal -- valuable groundwork for reasoning about algorithm design and complexity trade-offs."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Bubble sort = big bubbles float to the top (end), one swap at a time. Selection sort = repeatedly SELECT the smallest remaining item and place it. Both are O(n^2) -- fine to learn, never to ship; Arrays.sort() ships."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is the time complexity of bubble sort and selection sort?",
+        "How does bubble sort differ from selection sort in approach?",
+        "What should you use for sorting in real production code?",
+        "Why does bubble sort's inner loop bound shrink with each outer pass?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-sorting-arrays-sort", "lang": "java", "filename": "Main.java", "code": "import java.util.Arrays;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9, 3};\n        Arrays.sort(arr);\n        System.out.println(Arrays.toString(arr));\n    }\n}", "output": "[1, 2, 3, 5, 8, 9]" },
+    { "id": "java-sorting-bubble", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static void bubbleSort(int[] arr) {\n        for (int i = 0; i < arr.length - 1; i++) {\n            for (int j = 0; j < arr.length - 1 - i; j++) {\n                if (arr[j] > arr[j + 1]) {\n                    int temp = arr[j];\n                    arr[j] = arr[j + 1];\n                    arr[j + 1] = temp;\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9};\n        bubbleSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}", "output": "[1, 2, 5, 8, 9]" },
+    { "id": "java-sorting-selection", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static void selectionSort(int[] arr) {\n        for (int i = 0; i < arr.length - 1; i++) {\n            int minIndex = i;\n            for (int j = i + 1; j < arr.length; j++) {\n                if (arr[j] < arr[minIndex]) {\n                    minIndex = j;\n                }\n            }\n            int temp = arr[i];\n            arr[i] = arr[minIndex];\n            arr[minIndex] = temp;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9};\n        selectionSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}", "output": "[1, 2, 5, 8, 9]" },
+    { "id": "java-sorting-collections-sort", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> scores = new ArrayList<>();\n        scores.add(72);\n        scores.add(45);\n        scores.add(89);\n        scores.add(60);\n\n        Collections.sort(scores);\n        System.out.println(\"Sorted: \" + scores);\n        System.out.println(\"Median-ish middle value: \" + scores.get(scores.size() / 2));\n    }\n}", "output": "Sorted: [45, 60, 72, 89]\nMedian-ish middle value: 72" }
+  ],
+  "retypePractice": [
+    { "id": "java-sorting-arrays-sort", "reference": "import java.util.Arrays;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9, 3};\n        Arrays.sort(arr);\n        System.out.println(Arrays.toString(arr));\n    }\n}" },
+    { "id": "java-sorting-bubble", "reference": "public class Main {\n    static void bubbleSort(int[] arr) {\n        for (int i = 0; i < arr.length - 1; i++) {\n            for (int j = 0; j < arr.length - 1 - i; j++) {\n                if (arr[j] > arr[j + 1]) {\n                    int temp = arr[j];\n                    arr[j] = arr[j + 1];\n                    arr[j + 1] = temp;\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9};\n        bubbleSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}" },
+    { "id": "java-sorting-selection", "reference": "public class Main {\n    static void selectionSort(int[] arr) {\n        for (int i = 0; i < arr.length - 1; i++) {\n            int minIndex = i;\n            for (int j = i + 1; j < arr.length; j++) {\n                if (arr[j] < arr[minIndex]) {\n                    minIndex = j;\n                }\n            }\n            int temp = arr[i];\n            arr[i] = arr[minIndex];\n            arr[minIndex] = temp;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 2, 8, 1, 9};\n        selectionSort(arr);\n        System.out.println(java.util.Arrays.toString(arr));\n    }\n}" },
+    { "id": "java-sorting-collections-sort", "reference": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> scores = new ArrayList<>();\n        scores.add(72);\n        scores.add(45);\n        scores.add(89);\n        scores.add(60);\n\n        Collections.sort(scores);\n        System.out.println(\"Sorted: \" + scores);\n        System.out.println(\"Median-ish middle value: \" + scores.get(scores.size() / 2));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-sorting-arrays-sort", "java-sorting-bubble", "java-sorting-selection", "java-sorting-collections-sort"]
+  }
+}
