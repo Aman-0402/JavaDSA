@@ -142,6 +142,230 @@
         "How do Sliding Window and Hashing combine in the longest-unique-substring problem?",
         "Why is pattern recognition more valuable than memorizing individual solutions?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-53",
+      "number": 53,
+      "title": "Maximum Subarray",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/maximum-subarray/",
+      "problemStatement": "Given an integer array, find the contiguous subarray with the largest sum and return that sum.",
+      "examples": [
+        { "input": "nums = [-2,1,-3,4,-1,2,1,-5,4]", "output": "6", "explanation": "Subarray [4,-1,2,1] sums to 6." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5"],
+      "hints": ["Kadane's algorithm: at each position, decide whether to extend the current running subarray or start fresh from this element -- whichever gives a larger sum."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Kadane's algorithm: track current running sum, resetting to just the current element whenever the running sum would drop below it (i.e. the prior run was net-negative), tracking the best sum seen.",
+          "code": "class Solution {\n    public int maxSubArray(int[] nums) {\n        int best = nums[0];\n        int current = nums[0];\n        for (int i = 1; i < nums.length; i++) {\n            current = Math.max(nums[i], current + nums[i]);\n            best = Math.max(best, current);\n        }\n        return best;\n    }\n}",
+          "output": "6",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-238-patterns",
+      "number": 238,
+      "title": "Product of Array Except Self",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/product-of-array-except-self/",
+      "problemStatement": "Given an array, return an array where each element is the product of all OTHER elements, without using division and in O(n) time.",
+      "examples": [
+        { "input": "nums = [1,2,3,4]", "output": "[24,12,8,6]" }
+      ],
+      "constraints": ["2 <= nums.length <= 10^5"],
+      "hints": ["result[i] = (product of everything to the left of i) * (product of everything to the right of i).", "Compute left-products in one pass, then multiply in right-products in a second pass -- no extra array needed for the right side if done in-place."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "First pass left to right fills result[i] with the product of all elements to i's left. Second pass right to left multiplies in a running right-product, avoiding division entirely and using only O(1) extra space beyond the output.",
+          "code": "class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        int n = nums.length;\n        int[] result = new int[n];\n        result[0] = 1;\n        for (int i = 1; i < n; i++) {\n            result[i] = result[i - 1] * nums[i - 1];\n        }\n        int rightProduct = 1;\n        for (int i = n - 1; i >= 0; i--) {\n            result[i] *= rightProduct;\n            rightProduct *= nums[i];\n        }\n        return result;\n    }\n}",
+          "output": "[24,12,8,6]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra (excluding output)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-560",
+      "number": 560,
+      "title": "Subarray Sum Equals K",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/subarray-sum-equals-k/",
+      "problemStatement": "Given an integer array and an integer k, return the number of contiguous subarrays whose sum equals k.",
+      "examples": [
+        { "input": "nums = [1,1,1], k = 2", "output": "2", "explanation": "Subarrays [1,1] (indices 0-1) and [1,1] (indices 1-2) both sum to 2." }
+      ],
+      "constraints": ["1 <= nums.length <= 2 * 10^4"],
+      "hints": ["A subarray [i+1..j] sums to k exactly when prefixSum[j] - prefixSum[i] == k.", "Keep a hashmap of prefixSum -> count of times seen; at each j, look up prefixSum[j] - k to count how many earlier prefixes would give a valid subarray."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Track running prefix sum and a hashmap of prefix-sum frequencies (seeded with {0: 1} for subarrays starting at index 0). At each step, add the count of (currentSum - k) seen so far to the answer, then record the current sum.",
+          "code": "class Solution {\n    public int subarraySum(int[] nums, int k) {\n        Map<Integer, Integer> prefixCounts = new HashMap<>();\n        prefixCounts.put(0, 1);\n        int sum = 0, count = 0;\n        for (int num : nums) {\n            sum += num;\n            count += prefixCounts.getOrDefault(sum - k, 0);\n            prefixCounts.merge(sum, 1, Integer::sum);\n        }\n        return count;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-287",
+      "number": 287,
+      "title": "Find the Duplicate Number",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/find-the-duplicate-number/",
+      "problemStatement": "Given an array of n+1 integers where each is in [1, n], exactly one value repeats (possibly more than once). Find it without modifying the array and using O(1) extra space.",
+      "examples": [
+        { "input": "nums = [1,3,4,2,2]", "output": "2" }
+      ],
+      "constraints": ["1 <= n <= 10^5"],
+      "hints": ["Treat values as pointers: index i points to nums[i]. Because a duplicate exists, following these pointers repeatedly must enter a cycle.", "This becomes Floyd's cycle detection (same as Linked List Cycle II) -- find the meeting point, then find the cycle's entrance, which is the duplicate value."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Floyd's Tortoise and Hare on the implicit 'linked list' formed by treating nums[i] as a pointer to index nums[i]. Phase 1 finds a meeting point inside the cycle. Phase 2 resets one pointer to the start; both now move one step at a time and meet exactly at the cycle's entrance, which is the duplicate.",
+          "code": "class Solution {\n    public int findDuplicate(int[] nums) {\n        int slow = nums[0], fast = nums[0];\n        do {\n            slow = nums[slow];\n            fast = nums[nums[fast]];\n        } while (slow != fast);\n\n        slow = nums[0];\n        while (slow != fast) {\n            slow = nums[slow];\n            fast = nums[fast];\n        }\n        return slow;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-41",
+      "number": 41,
+      "title": "First Missing Positive",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/first-missing-positive/",
+      "problemStatement": "Given an unsorted integer array, find the smallest missing positive integer, in O(n) time and O(1) extra space.",
+      "examples": [
+        { "input": "nums = [3,4,-1,1]", "output": "2", "explanation": "1 is present, but 2 is missing." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5"],
+      "hints": ["The answer must be in range [1, n+1], so values outside that range (negatives, zero, or too large) can be ignored.", "Use the array ITSELF as a hash set: place each value v (1 <= v <= n) at index v-1 by swapping, then scan for the first index i where nums[i] != i+1 -- that gap is the answer."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Cyclic placement: for each index, while its value is a valid positive in range [1, n] and not already correctly placed, swap it to its 'home' index (value v goes to index v-1). Afterward, the first index where nums[i] != i+1 reveals the missing positive; if all match, the answer is n+1.",
+          "code": "class Solution {\n    public int firstMissingPositive(int[] nums) {\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            while (nums[i] > 0 && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {\n                int temp = nums[nums[i] - 1];\n                nums[nums[i] - 1] = nums[i];\n                nums[i] = temp;\n            }\n        }\n        for (int i = 0; i < n; i++) {\n            if (nums[i] != i + 1) return i + 1;\n        }\n        return n + 1;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-4",
+      "number": 4,
+      "title": "Median of Two Sorted Arrays",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+      "problemStatement": "Given two sorted arrays, return the median of the combined data, in O(log(m+n)) time.",
+      "examples": [
+        { "input": "nums1 = [1,3], nums2 = [2]", "output": "2.0", "explanation": "Merged sorted: [1,2,3], median is the middle value 2." }
+      ],
+      "constraints": ["0 <= m, n <= 1000", "not both empty"],
+      "hints": ["Merging both arrays is O(m+n), too slow for the required O(log(m+n)).", "Binary search on the SMALLER array for a partition point such that all elements on the left of both partitions are <= all elements on the right -- the median can be read directly from the four border values around that partition."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Merge both arrays (like merge step of merge sort) into one sorted array, then read off the middle element(s). Correct but O(m+n), not the required O(log(m+n)).",
+          "code": "class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        int[] merged = new int[nums1.length + nums2.length];\n        int i = 0, j = 0, k = 0;\n        while (i < nums1.length && j < nums2.length) {\n            merged[k++] = nums1[i] <= nums2[j] ? nums1[i++] : nums2[j++];\n        }\n        while (i < nums1.length) merged[k++] = nums1[i++];\n        while (j < nums2.length) merged[k++] = nums2[j++];\n\n        int n = merged.length;\n        if (n % 2 == 1) return merged[n / 2];\n        return (merged[n / 2 - 1] + merged[n / 2]) / 2.0;\n    }\n}",
+          "output": "2.0",
+          "timeComplexity": "O(m + n)",
+          "spaceComplexity": "O(m + n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search a partition index on the smaller array. For a candidate partition, the corresponding partition on the other array is determined by the combined-left-half size. Adjust the binary search until the max of the left halves <= the min of the right halves; the median is derived directly from those four boundary values.",
+          "code": "class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        if (nums1.length > nums2.length) return findMedianSortedArrays(nums2, nums1);\n        int m = nums1.length, n = nums2.length;\n        int lo = 0, hi = m;\n        int half = (m + n + 1) / 2;\n\n        while (lo <= hi) {\n            int cut1 = (lo + hi) / 2;\n            int cut2 = half - cut1;\n\n            int left1 = cut1 == 0 ? Integer.MIN_VALUE : nums1[cut1 - 1];\n            int left2 = cut2 == 0 ? Integer.MIN_VALUE : nums2[cut2 - 1];\n            int right1 = cut1 == m ? Integer.MAX_VALUE : nums1[cut1];\n            int right2 = cut2 == n ? Integer.MAX_VALUE : nums2[cut2];\n\n            if (left1 <= right2 && left2 <= right1) {\n                if ((m + n) % 2 == 0) {\n                    return (Math.max(left1, left2) + Math.min(right1, right2)) / 2.0;\n                }\n                return Math.max(left1, left2);\n            } else if (left1 > right2) {\n                hi = cut1 - 1;\n            } else {\n                lo = cut1 + 1;\n            }\n        }\n        return -1;\n    }\n}",
+          "output": "2.0",
+          "timeComplexity": "O(log(min(m, n)))",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-76-patterns",
+      "number": 76,
+      "title": "Minimum Window Substring",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/minimum-window-substring/",
+      "problemStatement": "Given strings s and t, return the smallest substring of s that contains every character of t (including duplicates), or \"\" if none exists.",
+      "examples": [
+        { "input": "s = \"ADOBECODEBANC\", t = \"ABC\"", "output": "\"BANC\"" }
+      ],
+      "constraints": ["1 <= s.length, t.length <= 10^5"],
+      "hints": ["Variable-size sliding window: expand the right edge until the window contains all of t's characters, then shrink from the left as much as possible while still valid, recording the smallest valid window along the way."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Track required character counts from t and a 'have' counter of how many distinct required characters are currently fully satisfied in the window. Expand right; whenever all requirements are satisfied, shrink left greedily, updating the best window, until a requirement is violated.",
+          "code": "class Solution {\n    public String minWindow(String s, String t) {\n        if (s.isEmpty() || t.isEmpty()) return \"\";\n        Map<Character, Integer> need = new HashMap<>();\n        for (char c : t.toCharArray()) need.merge(c, 1, Integer::sum);\n\n        Map<Character, Integer> window = new HashMap<>();\n        int have = 0, required = need.size();\n        int bestLen = Integer.MAX_VALUE, bestStart = 0;\n        int left = 0;\n\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            window.merge(c, 1, Integer::sum);\n            if (need.containsKey(c) && window.get(c).intValue() == need.get(c).intValue()) {\n                have++;\n            }\n\n            while (have == required) {\n                if (right - left + 1 < bestLen) {\n                    bestLen = right - left + 1;\n                    bestStart = left;\n                }\n                char leftChar = s.charAt(left);\n                window.put(leftChar, window.get(leftChar) - 1);\n                if (need.containsKey(leftChar) && window.get(leftChar) < need.get(leftChar)) {\n                    have--;\n                }\n                left++;\n            }\n        }\n        return bestLen == Integer.MAX_VALUE ? \"\" : s.substring(bestStart, bestStart + bestLen);\n    }\n}",
+          "output": "\"BANC\"",
+          "timeComplexity": "O(s.length + t.length)",
+          "spaceComplexity": "O(t.length)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-84-patterns",
+      "number": 84,
+      "title": "Largest Rectangle in Histogram",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "problemStatement": "Given an array of bar heights forming a histogram (each bar width 1), return the area of the largest rectangle that fits entirely within the histogram.",
+      "examples": [
+        { "input": "heights = [2,1,5,6,2,3]", "output": "10", "explanation": "Bars at indices 2-3 (heights 5, 6) give rectangle of height 5 spanning width 2 = 10." }
+      ],
+      "constraints": ["1 <= heights.length <= 10^5"],
+      "hints": ["Monotonic increasing stack of indices: when a shorter bar is encountered, it means the bars on the stack taller than it can't extend any further right -- pop and compute their rectangle area using the current index as the right boundary."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Maintain a monotonic increasing stack of bar indices. When the current bar is shorter than the stack's top, pop and compute the popped bar's rectangle area (height = popped bar, width = current index - new stack top index - 1), tracking the max. A sentinel 0-height bar appended at the end forces all remaining bars to be resolved.",
+          "code": "class Solution {\n    public int largestRectangleArea(int[] heights) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        int best = 0;\n        int n = heights.length;\n        for (int i = 0; i <= n; i++) {\n            int h = (i == n) ? 0 : heights[i];\n            while (!stack.isEmpty() && heights[stack.peek()] >= h) {\n                int height = heights[stack.pop()];\n                int width = stack.isEmpty() ? i : i - stack.peek() - 1;\n                best = Math.max(best, height * width);\n            }\n            stack.push(i);\n        }\n        return best;\n    }\n}",
+          "output": "10",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-239-patterns",
+      "number": 239,
+      "title": "Sliding Window Maximum",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/sliding-window-maximum/",
+      "problemStatement": "Given an array and a window size k, return the maximum value in each window as it slides from the start to the end of the array.",
+      "examples": [
+        { "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3", "output": "[3,3,5,5,6,7]" }
+      ],
+      "constraints": ["1 <= k <= nums.length <= 10^5"],
+      "hints": ["Maintain a monotonic DECREASING deque of indices -- the front always holds the current window's max index.", "Before adding a new index, pop smaller values from the back (they can never be the max while the new, later, bigger value is in the window). Pop from the front when it slides out of the window range."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Monotonic decreasing deque of indices. For each new index: remove back indices whose values are smaller than the current (they're dominated), remove the front index if it's now outside the window, push the current index, and once the window is full record the front's value as that window's max.",
+          "code": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        Deque<Integer> deque = new ArrayDeque<>();\n        int[] result = new int[nums.length - k + 1];\n        for (int i = 0; i < nums.length; i++) {\n            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {\n                deque.pollLast();\n            }\n            deque.offerLast(i);\n            if (deque.peekFirst() <= i - k) {\n                deque.pollFirst();\n            }\n            if (i >= k - 1) {\n                result[i - k + 1] = nums[deque.peekFirst()];\n            }\n        }\n        return result;\n    }\n}",
+          "output": "[3,3,5,5,6,7]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k)"
+        }
+      ]
     }
   ],
   "codeExamples": [
