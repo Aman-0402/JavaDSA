@@ -1,0 +1,165 @@
+{
+  "id": "java-sliding-window",
+  "moduleId": "dsa-foundations",
+  "title": "Sliding Window",
+  "description": "Maintaining a moving range over an array to avoid recomputing overlapping work -- another O(n) technique replacing an O(n^2) brute force.",
+  "objectives": [
+    "Recognize when a sliding window applies -- contiguous subarrays/substrings",
+    "Use a fixed-size window to find a maximum sum",
+    "Use a variable-size window for a smallest-subarray-with-a-condition problem"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: Recomputing the Same Sums"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we want the maximum sum of any 3 CONSECUTIVE elements in an array. The brute force way checks every group of 3 separately -- and ends up re-adding overlapping elements again and again."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int maxSumBruteForce(int[] arr, int k) {\n    int maxSum = Integer.MIN_VALUE;\n    for (int i = 0; i <= arr.length - k; i++) {\n        int sum = 0;\n        for (int j = i; j < i + k; j++) {\n            sum += arr[j];\n        }\n        maxSum = Math.max(maxSum, sum);\n    }\n    return maxSum;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "This is O(n * k) -- for every starting position i, the inner loop re-sums all k elements from scratch, even though most of them overlap with the PREVIOUS window. Sliding window eliminates this waste."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Sliding Window Idea"
+    },
+    {
+      "type": "definition",
+      "term": "Sliding window",
+      "text": "A technique that maintains a contiguous range (window) over an array or string, expanding and shrinking it incrementally -- adding one new element and removing one old element per step -- instead of recomputing the entire range from scratch."
+    },
+    {
+      "type": "heading",
+      "text": "3. Fixed-Size Window: Maximum Sum of k Elements"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int maxSumSlidingWindow(int[] arr, int k) {\n        int windowSum = 0;\n        for (int i = 0; i < k; i++) {\n            windowSum += arr[i];\n        }\n\n        int maxSum = windowSum;\n        for (int i = k; i < arr.length; i++) {\n            windowSum += arr[i] - arr[i - k];\n            maxSum = Math.max(maxSum, windowSum);\n        }\n        return maxSum;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 1, 5, 1, 3, 2};\n        System.out.println(maxSumSlidingWindow(arr, 3));\n    }\n}",
+      "output": "9",
+      "retypePractice": true,
+      "retypeId": "java-sliding-window-max-sum"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing maxSumSlidingWindow({2,1,5,1,3,2}, 3)",
+      "steps": [
+        "Initial window [2,1,5]: windowSum = 8, maxSum = 8",
+        "i=3: windowSum += arr[3] - arr[0] = 8 + 1 - 2 = 7 -- window is now [1,5,1], maxSum stays 8",
+        "i=4: windowSum += arr[4] - arr[1] = 7 + 3 - 1 = 9 -- window is now [5,1,3], maxSum becomes 9",
+        "i=5: windowSum += arr[5] - arr[2] = 9 + 2 - 5 = 6 -- window is now [1,3,2], maxSum stays 9",
+        "Final answer: 9"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "windowSum += arr[i] - arr[i - k] is the entire trick: ADD the new element entering the window, SUBTRACT the old element leaving it. This is O(1) work per step, giving O(n) total instead of O(n*k)."
+    },
+    {
+      "type": "heading",
+      "text": "4. Variable-Size Window: Smallest Subarray With Sum >= Target"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int smallestSubarrayLength(int[] arr, int target) {\n        int left = 0;\n        int windowSum = 0;\n        int minLength = Integer.MAX_VALUE;\n\n        for (int right = 0; right < arr.length; right++) {\n            windowSum += arr[right];\n\n            while (windowSum >= target) {\n                minLength = Math.min(minLength, right - left + 1);\n                windowSum -= arr[left];\n                left++;\n            }\n        }\n\n        return minLength == Integer.MAX_VALUE ? 0 : minLength;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 1, 5, 2, 3, 2};\n        System.out.println(smallestSubarrayLength(arr, 7));\n    }\n}",
+      "output": "2",
+      "retypePractice": true,
+      "retypeId": "java-sliding-window-min-length"
+    },
+    {
+      "type": "keyPoints",
+      "title": "How the window grows and shrinks here",
+      "points": [
+        "right expands the window every iteration, adding arr[right] to windowSum",
+        "Whenever windowSum >= target, we've found a valid window -- record its length, then SHRINK from the left (subtract arr[left], left++) to look for something even smaller",
+        "The answer 2 comes from the subarray [5, 2] (indices 2-3), which sums to 7 -- meeting the target with only 2 elements"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Unlike the fixed-size window, this window's SIZE changes as we go -- it's called a variable-size (or dynamic) sliding window. Both left and right only ever move forward, never backward, which is exactly why this is still O(n) overall, despite the nested while loop -- similar reasoning to the Two Pointers lesson's total-movement argument."
+    },
+    {
+      "type": "heading",
+      "text": "5. When Does Sliding Window Apply?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Recognizing a sliding window problem",
+      "points": [
+        "The problem involves a CONTIGUOUS range (subarray or substring), not scattered elements",
+        "You're looking for a max/min/count over all such ranges of some size (fixed or variable)",
+        "Brute force would recompute overlapping work for every range -- sliding window reuses that work instead"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Recomputing the window's sum from scratch every step instead of adding the new element and subtracting the old one.",
+        "Forgetting the fixed-size window's initial sum must be computed separately before the sliding loop begins.",
+        "Using a fixed-size window approach for a problem that actually needs a variable-size window (or vice versa) -- check whether the target window SIZE is given or must be discovered.",
+        "Forgetting to shrink the window's left edge in a variable-size window, causing it to only grow and never find a truly minimal answer."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the sliding window technique?",
+          "answer": "A technique for maintaining a contiguous range (window) over an array or string, incrementally adding one new element and removing one old element per step, instead of recomputing the entire range from scratch for every position."
+        },
+        {
+          "question": "What is the time complexity of a sliding window approach compared to a brute-force nested-loop approach?",
+          "answer": "Sliding window is typically O(n), since each element is added to and removed from the window at most once. The equivalent brute-force approach is often O(n*k) or O(n^2), recomputing overlapping work repeatedly."
+        },
+        {
+          "question": "What's the difference between a fixed-size and variable-size sliding window?",
+          "answer": "A fixed-size window always has the same length k, sliding forward by one position at a time. A variable-size window grows and shrinks dynamically based on a condition (like a sum threshold), expanding via a right pointer and shrinking via a left pointer as needed."
+        }
+      ],
+      "thirtySecondAnswer": "Sliding window maintains a contiguous range over an array or string, updating it incrementally -- adding the newly entering element and removing the one leaving -- instead of recomputing the whole range from scratch, turning an O(n*k) or O(n^2) brute force into O(n). A fixed-size window (like maximum sum of k consecutive elements) slides forward by exactly one position each step. A variable-size window (like the smallest subarray with a sum at least some target) expands via a right pointer and shrinks via a left pointer based on a condition, with both pointers only ever moving forward, keeping the overall approach O(n)."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Sliding window = a physical window frame sliding along a wall -- one brick appears on one side, one brick disappears on the other, you never rebuild the whole wall. Fixed size = the frame is a constant width. Variable size = the frame stretches and shrinks as needed."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What problem does sliding window solve compared to brute force?",
+        "What's the key update step when sliding a fixed-size window forward by one position?",
+        "What's the difference between a fixed-size and variable-size window?",
+        "Why is the variable-size window approach still O(n) despite having a nested while loop?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-sliding-window-max-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int maxSumSlidingWindow(int[] arr, int k) {\n        int windowSum = 0;\n        for (int i = 0; i < k; i++) {\n            windowSum += arr[i];\n        }\n\n        int maxSum = windowSum;\n        for (int i = k; i < arr.length; i++) {\n            windowSum += arr[i] - arr[i - k];\n            maxSum = Math.max(maxSum, windowSum);\n        }\n        return maxSum;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 1, 5, 1, 3, 2};\n        System.out.println(maxSumSlidingWindow(arr, 3));\n    }\n}", "output": "9" },
+    { "id": "java-sliding-window-min-length", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int smallestSubarrayLength(int[] arr, int target) {\n        int left = 0;\n        int windowSum = 0;\n        int minLength = Integer.MAX_VALUE;\n\n        for (int right = 0; right < arr.length; right++) {\n            windowSum += arr[right];\n\n            while (windowSum >= target) {\n                minLength = Math.min(minLength, right - left + 1);\n                windowSum -= arr[left];\n                left++;\n            }\n        }\n\n        return minLength == Integer.MAX_VALUE ? 0 : minLength;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 1, 5, 2, 3, 2};\n        System.out.println(smallestSubarrayLength(arr, 7));\n    }\n}", "output": "2" }
+  ],
+  "retypePractice": [
+    { "id": "java-sliding-window-max-sum", "reference": "public class Main {\n    static int maxSumSlidingWindow(int[] arr, int k) {\n        int windowSum = 0;\n        for (int i = 0; i < k; i++) {\n            windowSum += arr[i];\n        }\n\n        int maxSum = windowSum;\n        for (int i = k; i < arr.length; i++) {\n            windowSum += arr[i] - arr[i - k];\n            maxSum = Math.max(maxSum, windowSum);\n        }\n        return maxSum;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 1, 5, 1, 3, 2};\n        System.out.println(maxSumSlidingWindow(arr, 3));\n    }\n}" },
+    { "id": "java-sliding-window-min-length", "reference": "public class Main {\n    static int smallestSubarrayLength(int[] arr, int target) {\n        int left = 0;\n        int windowSum = 0;\n        int minLength = Integer.MAX_VALUE;\n\n        for (int right = 0; right < arr.length; right++) {\n            windowSum += arr[right];\n\n            while (windowSum >= target) {\n                minLength = Math.min(minLength, right - left + 1);\n                windowSum -= arr[left];\n                left++;\n            }\n        }\n\n        return minLength == Integer.MAX_VALUE ? 0 : minLength;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 1, 5, 2, 3, 2};\n        System.out.println(smallestSubarrayLength(arr, 7));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-sliding-window-max-sum", "java-sliding-window-min-length"]
+  }
+}
