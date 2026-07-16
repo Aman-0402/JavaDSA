@@ -135,6 +135,233 @@
         "Why is peek() faster than poll()?",
         "How does capping a min-heap at size k help find the kth largest element?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1046",
+      "number": 1046,
+      "title": "Last Stone Weight",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/last-stone-weight/",
+      "problemStatement": "You are given an array of stone weights. Repeatedly take the two heaviest stones and smash them together -- if equal, both are destroyed; otherwise the lighter is destroyed and the heavier becomes (heavier - lighter). Return the weight of the last remaining stone, or 0 if none remain.",
+      "examples": [
+        { "input": "stones = [2,7,4,1,8,1]", "output": "1", "explanation": "7,8 -> 1 remains. 2,4 -> 2 remains. 1,1 -> both destroyed. 2,1 -> 1 remains." }
+      ],
+      "constraints": ["1 <= stones.length <= 30", "1 <= stones[i] <= 1000"],
+      "hints": ["A max-heap always gives instant access to the two CURRENT heaviest stones -- exactly this lesson's max-heap pattern using Collections.reverseOrder()."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Sort the array on every iteration to find the two heaviest stones.",
+          "code": "class Solution {\n    public int lastStoneWeight(int[] stones) {\n        java.util.List<Integer> list = new java.util.ArrayList<>();\n        for (int s : stones) list.add(s);\n\n        while (list.size() > 1) {\n            java.util.Collections.sort(list, java.util.Collections.reverseOrder());\n            int first = list.remove(0);\n            int second = list.remove(0);\n            if (first != second) list.add(first - second);\n        }\n        return list.isEmpty() ? 0 : list.get(0);\n    }\n}",
+          "output": "For stones = [2,7,4,1,8,1]: 1",
+          "timeComplexity": "O(n^2 log n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A max-heap gives O(log n) access to the two heaviest stones on each round, instead of resorting the whole list.",
+          "code": "class Solution {\n    public int lastStoneWeight(int[] stones) {\n        java.util.PriorityQueue<Integer> maxHeap = new java.util.PriorityQueue<>(java.util.Collections.reverseOrder());\n        for (int s : stones) maxHeap.offer(s);\n\n        while (maxHeap.size() > 1) {\n            int first = maxHeap.poll();\n            int second = maxHeap.poll();\n            if (first != second) maxHeap.offer(first - second);\n        }\n        return maxHeap.isEmpty() ? 0 : maxHeap.poll();\n    }\n}",
+          "output": "For stones = [2,7,4,1,8,1]: 1",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(n) for the heap"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-703",
+      "number": 703,
+      "title": "Kth Largest Element in a Stream",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
+      "problemStatement": "Design a class to find the kth largest element in a stream of numbers, supporting adding new elements and retrieving the kth largest at any time.",
+      "examples": [
+        { "input": "KthLargest(3, [4,5,8,2]); add(3); add(5); add(10); add(9); add(4)", "output": "4, 5, 5, 8, 8", "explanation": "Maintaining a min-heap capped at size 3, its root is always the 3rd largest overall." }
+      ],
+      "constraints": ["1 <= k <= 10^4", "0 <= nums.length <= 10^4", "-10^4 <= nums[i] <= 10^4", "At least k elements will exist before a kth largest query is called"],
+      "hints": ["This is exactly this lesson's findKthLargest pattern, but maintained incrementally across add() calls instead of computed once."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Store all values in a list, sort on every add() call, and read off the kth largest.",
+          "code": "class KthLargest {\n    private java.util.List<Integer> nums;\n    private int k;\n\n    public KthLargest(int k, int[] nums) {\n        this.k = k;\n        this.nums = new java.util.ArrayList<>();\n        for (int n : nums) this.nums.add(n);\n    }\n\n    public int add(int val) {\n        nums.add(val);\n        java.util.Collections.sort(nums, java.util.Collections.reverseOrder());\n        return nums.get(k - 1);\n    }\n}",
+          "output": "Matches expected sequence: 4, 5, 5, 8, 8",
+          "timeComplexity": "O(n log n) per add",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A min-heap capped at size k -- exactly this lesson's findKthLargest technique, maintained incrementally.",
+          "code": "class KthLargest {\n    private java.util.PriorityQueue<Integer> minHeap;\n    private int k;\n\n    public KthLargest(int k, int[] nums) {\n        this.k = k;\n        minHeap = new java.util.PriorityQueue<>();\n        for (int n : nums) add(n);\n    }\n\n    public int add(int val) {\n        minHeap.offer(val);\n        if (minHeap.size() > k) {\n            minHeap.poll();\n        }\n        return minHeap.peek();\n    }\n}",
+          "output": "Matches expected sequence: 4, 5, 5, 8, 8",
+          "timeComplexity": "O(log k) per add",
+          "spaceComplexity": "O(k) for the heap"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-215",
+      "number": 215,
+      "title": "Kth Largest Element in an Array",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+      "problemStatement": "Given an integer array nums and an integer k, return the kth largest element in the array (the kth largest in sorted order, not the kth distinct value).",
+      "examples": [
+        { "input": "nums = [3,2,1,5,6,4], k = 2", "output": "5" }
+      ],
+      "constraints": ["1 <= k <= nums.length <= 10^5"],
+      "hints": ["This IS the exact findKthLargest function from this lesson's Section 2, unmodified."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Sort the array and index directly.",
+          "code": "class Solution {\n    public int findKthLargest(int[] nums, int k) {\n        java.util.Arrays.sort(nums);\n        return nums[nums.length - k];\n    }\n}",
+          "output": "For nums = [3,2,1,5,6,4], k = 2: 5",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(log n) for the sort"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A min-heap capped at size k, exactly as covered in this lesson's Section 2.",
+          "code": "class Solution {\n    public int findKthLargest(int[] nums, int k) {\n        java.util.PriorityQueue<Integer> minHeap = new java.util.PriorityQueue<>();\n        for (int num : nums) {\n            minHeap.offer(num);\n            if (minHeap.size() > k) {\n                minHeap.poll();\n            }\n        }\n        return minHeap.peek();\n    }\n}",
+          "output": "For nums = [3,2,1,5,6,4], k = 2: 5",
+          "timeComplexity": "O(n log k)",
+          "spaceComplexity": "O(k) for the heap"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-347",
+      "number": 347,
+      "title": "Top K Frequent Elements",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/top-k-frequent-elements/",
+      "problemStatement": "Given an integer array nums and an integer k, return the k most frequent elements, in any order.",
+      "examples": [
+        { "input": "nums = [1,1,1,2,2,3], k = 2", "output": "[1,2]" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "k is in the range [1, number of distinct elements]"],
+      "hints": ["Count frequencies with a HashMap (Hashing lesson), then use a min-heap capped at size k -- ordered by FREQUENCY instead of value -- to keep only the k most frequent."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Count frequencies with a HashMap, then sort all entries by frequency and take the top k.",
+          "code": "class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        java.util.Map<Integer, Integer> counts = new java.util.HashMap<>();\n        for (int num : nums) counts.put(num, counts.getOrDefault(num, 0) + 1);\n\n        java.util.List<Integer> keys = new java.util.ArrayList<>(counts.keySet());\n        keys.sort((a, b) -> counts.get(b) - counts.get(a));\n\n        int[] result = new int[k];\n        for (int i = 0; i < k; i++) result[i] = keys.get(i);\n        return result;\n    }\n}",
+          "output": "For nums = [1,1,1,2,2,3], k = 2: [1,2]",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Count frequencies, then use a min-heap of size k ordered by frequency -- keeping only the k most frequent, in O(n log k) instead of O(n log n).",
+          "code": "class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        java.util.Map<Integer, Integer> counts = new java.util.HashMap<>();\n        for (int num : nums) counts.put(num, counts.getOrDefault(num, 0) + 1);\n\n        java.util.PriorityQueue<Integer> minHeap = new java.util.PriorityQueue<>(\n            (a, b) -> counts.get(a) - counts.get(b)\n        );\n\n        for (int key : counts.keySet()) {\n            minHeap.offer(key);\n            if (minHeap.size() > k) {\n                minHeap.poll();\n            }\n        }\n\n        int[] result = new int[k];\n        for (int i = k - 1; i >= 0; i--) {\n            result[i] = minHeap.poll();\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,1,1,2,2,3], k = 2: [1,2]",
+          "timeComplexity": "O(n log k)",
+          "spaceComplexity": "O(n) for the frequency map, O(k) for the heap"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-973",
+      "number": 973,
+      "title": "K Closest Points to Origin",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/k-closest-points-to-origin/",
+      "problemStatement": "Given an array of points on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).",
+      "examples": [
+        { "input": "points = [[1,3],[-2,2]], k = 1", "output": "[[-2,2]]", "explanation": "Distance of [1,3] from origin is sqrt(10); distance of [-2,2] is sqrt(8). [-2,2] is closer." }
+      ],
+      "constraints": ["1 <= k <= points.length <= 10^4", "-10^4 <= xi, yi <= 10^4"],
+      "hints": ["Compare SQUARED distances (x^2 + y^2) to avoid unnecessary sqrt calls -- squared distance preserves the same relative ordering. Then it's the same max-heap-of-size-k pattern as finding the kth largest, applied to 'closest' instead."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Sort all points by squared distance, then take the first k.",
+          "code": "class Solution {\n    public int[][] kClosest(int[][] points, int k) {\n        java.util.Arrays.sort(points, (a, b) -> (a[0]*a[0] + a[1]*a[1]) - (b[0]*b[0] + b[1]*b[1]));\n        return java.util.Arrays.copyOfRange(points, 0, k);\n    }\n}",
+          "output": "For points = [[1,3],[-2,2]], k = 1: [[-2,2]]",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(log n) for the sort"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A max-heap of size k, ordered by squared distance -- keeping only the k CLOSEST points seen, discarding the farthest whenever the heap grows past k.",
+          "code": "class Solution {\n    public int[][] kClosest(int[][] points, int k) {\n        java.util.PriorityQueue<int[]> maxHeap = new java.util.PriorityQueue<>(\n            (a, b) -> (b[0]*b[0] + b[1]*b[1]) - (a[0]*a[0] + a[1]*a[1])\n        );\n\n        for (int[] point : points) {\n            maxHeap.offer(point);\n            if (maxHeap.size() > k) {\n                maxHeap.poll();\n            }\n        }\n        return maxHeap.toArray(new int[0][]);\n    }\n}",
+          "output": "For points = [[1,3],[-2,2]], k = 1: [[-2,2]]",
+          "timeComplexity": "O(n log k)",
+          "spaceComplexity": "O(k) for the heap"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-295",
+      "number": 295,
+      "title": "Find Median from Data Stream",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/find-median-from-data-stream/",
+      "problemStatement": "Design a data structure that supports adding integers from a data stream and finding the median of all elements added so far, at any point.",
+      "examples": [
+        { "input": "addNum(1); addNum(2); findMedian(); addNum(3); findMedian()", "output": "1.5, 2.0", "explanation": "After [1,2], median is (1+2)/2=1.5. After [1,2,3], median is 2." }
+      ],
+      "constraints": ["-10^5 <= num <= 10^5", "At most 5*10^4 calls to addNum and findMedian"],
+      "hints": [
+        "Maintain TWO heaps: a max-heap for the SMALLER half of numbers, and a min-heap for the LARGER half -- keep them balanced in size (differing by at most 1).",
+        "The median is then either the max-heap's root, the min-heap's root, or their average, depending on which heap (if either) has one more element."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Keep all numbers in a sorted list, inserting each new number into its correct sorted position.",
+          "code": "class MedianFinder {\n    private java.util.List<Integer> nums = new java.util.ArrayList<>();\n\n    public void addNum(int num) {\n        int i = 0;\n        while (i < nums.size() && nums.get(i) < num) i++;\n        nums.add(i, num);\n    }\n\n    public double findMedian() {\n        int n = nums.size();\n        if (n % 2 == 1) return nums.get(n / 2);\n        return (nums.get(n / 2 - 1) + nums.get(n / 2)) / 2.0;\n    }\n}",
+          "output": "Matches expected sequence: 1.5, 2.0",
+          "timeComplexity": "O(n) per addNum (insertion into a sorted list)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two heaps kept balanced: a max-heap for the lower half, a min-heap for the upper half -- addNum is O(log n), findMedian is O(1).",
+          "code": "class MedianFinder {\n    private java.util.PriorityQueue<Integer> lowerHalf = new java.util.PriorityQueue<>(java.util.Collections.reverseOrder()); // max-heap\n    private java.util.PriorityQueue<Integer> upperHalf = new java.util.PriorityQueue<>(); // min-heap\n\n    public void addNum(int num) {\n        lowerHalf.offer(num);\n        upperHalf.offer(lowerHalf.poll());\n\n        if (upperHalf.size() > lowerHalf.size()) {\n            lowerHalf.offer(upperHalf.poll());\n        }\n    }\n\n    public double findMedian() {\n        if (lowerHalf.size() > upperHalf.size()) {\n            return lowerHalf.peek();\n        }\n        return (lowerHalf.peek() + upperHalf.peek()) / 2.0;\n    }\n}",
+          "output": "Matches expected sequence: 1.5, 2.0",
+          "timeComplexity": "O(log n) for addNum, O(1) for findMedian",
+          "spaceComplexity": "O(n) across both heaps"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-23",
+      "number": 23,
+      "title": "Merge k Sorted Lists",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "problemStatement": "You are given an array of k linked-lists, each sorted in ascending order. Merge all the linked-lists into one sorted linked list and return it.",
+      "examples": [
+        { "input": "lists = [[1,4,5],[1,3,4],[2,6]]", "output": "[1,1,2,3,4,4,5,6]" }
+      ],
+      "constraints": ["k == lists.length", "0 <= k <= 10^4", "0 <= lists[i].length <= 500"],
+      "hints": ["A min-heap holding the CURRENT front node of each list -- always pop the smallest, add it to the result, then push that list's next node (if any) back in."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Merge Two Sorted Lists (Recursion category / Linked List category) applied repeatedly, merging the result with each subsequent list one at a time.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        ListNode result = null;\n        for (ListNode list : lists) {\n            result = mergeTwo(result, list);\n        }\n        return result;\n    }\n\n    private ListNode mergeTwo(ListNode a, ListNode b) {\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        while (a != null && b != null) {\n            if (a.val <= b.val) { tail.next = a; a = a.next; }\n            else { tail.next = b; b = b.next; }\n            tail = tail.next;\n        }\n        tail.next = (a != null) ? a : b;\n        return dummy.next;\n    }\n}",
+          "output": "For lists = [[1,4,5],[1,3,4],[2,6]]: [1,1,2,3,4,4,5,6]",
+          "timeComplexity": "O(k * n), where n is the total number of nodes",
+          "spaceComplexity": "O(1) extra space (reuses existing nodes)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A min-heap holding one node per list -- always extract the smallest, append it, and push its list's next node back into the heap.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        java.util.PriorityQueue<ListNode> minHeap = new java.util.PriorityQueue<>((a, b) -> a.val - b.val);\n        for (ListNode list : lists) {\n            if (list != null) minHeap.offer(list);\n        }\n\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        while (!minHeap.isEmpty()) {\n            ListNode smallest = minHeap.poll();\n            tail.next = smallest;\n            tail = tail.next;\n            if (smallest.next != null) {\n                minHeap.offer(smallest.next);\n            }\n        }\n        return dummy.next;\n    }\n}",
+          "output": "For lists = [[1,4,5],[1,3,4],[2,6]]: [1,1,2,3,4,4,5,6]",
+          "timeComplexity": "O(n log k), where n is the total number of nodes",
+          "spaceComplexity": "O(k) for the heap"
+        }
+      ]
     }
   ],
   "codeExamples": [
