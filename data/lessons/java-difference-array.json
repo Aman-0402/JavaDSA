@@ -150,6 +150,183 @@
         "How do you reconstruct final array values from a difference array?",
         "Why does the difference array need one extra slot beyond the original array's size?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1109",
+      "number": 1109,
+      "title": "Corporate Flight Bookings",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/corporate-flight-bookings/",
+      "problemStatement": "There are n flights labeled 1 to n. You are given an array of bookings where bookings[i] = [firsti, lasti, seatsi] means seatsi seats were reserved for flights firsti through lasti (inclusive) for every booking. Return an array answer of length n, where answer[i] is the total number of seats reserved on flight i+1.",
+      "examples": [
+        { "input": "bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5", "output": "[10,55,45,25,25]", "explanation": "Flight 1: 10. Flight 2: 10+20+25=55. Flight 3: 20+25=45. Flight 4: 25. Flight 5: 25." }
+      ],
+      "constraints": ["1 <= n <= 2*10^4", "1 <= bookings.length <= 2*10^4", "bookings[i].length == 3", "1 <= firsti <= lasti <= n", "1 <= seatsi <= 10^4"],
+      "hints": [
+        "Each booking is a range update: add seatsi to every flight from firsti to lasti -- exactly this lesson's core operation.",
+        "Remember bookings are 1-indexed (flight 1 to n); the difference array can use 0-indexing internally with a small offset adjustment."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every booking, directly add seats to every flight in its range.",
+          "code": "class Solution {\n    public int[] corpFlightBookings(int[][] bookings, int n) {\n        int[] answer = new int[n];\n        for (int[] b : bookings) {\n            int first = b[0], last = b[1], seats = b[2];\n            for (int i = first - 1; i <= last - 1; i++) {\n                answer[i] += seats;\n            }\n        }\n        return answer;\n    }\n}",
+          "output": "For bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5: [10,55,45,25,25]",
+          "timeComplexity": "O(bookings.length * n) worst case",
+          "spaceComplexity": "O(n) for the output"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Use a difference array: mark +seats at first-1 and -seats at last, then reconstruct with a prefix sum pass -- exactly this lesson's technique.",
+          "code": "class Solution {\n    public int[] corpFlightBookings(int[][] bookings, int n) {\n        int[] diff = new int[n + 1];\n\n        for (int[] b : bookings) {\n            int first = b[0], last = b[1], seats = b[2];\n            diff[first - 1] += seats;\n            diff[last] -= seats;\n        }\n\n        int[] answer = new int[n];\n        answer[0] = diff[0];\n        for (int i = 1; i < n; i++) {\n            answer[i] = answer[i - 1] + diff[i];\n        }\n        return answer;\n    }\n}",
+          "output": "For bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5: [10,55,45,25,25]",
+          "timeComplexity": "O(bookings.length + n)",
+          "spaceComplexity": "O(n) for the difference/answer arrays"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1094",
+      "number": 1094,
+      "title": "Car Pooling",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/car-pooling/",
+      "problemStatement": "There is a car with capacity empty seats. Given trips where trips[i] = [numPassengersi, fromi, toi] indicates that the ith trip has numPassengersi passengers boarding at fromi and alighting at toi, return true if it's possible to pick up and drop off all passengers without exceeding capacity at any point.",
+      "examples": [
+        { "input": "trips = [[2,1,5],[3,3,7]], capacity = 4", "output": "false", "explanation": "Between locations 3 and 5, both trips overlap: 2+3=5 passengers exceed capacity 4." },
+        { "input": "trips = [[2,1,5],[3,3,7]], capacity = 5", "output": "true" }
+      ],
+      "constraints": ["1 <= trips.length <= 1000", "trips[i].length == 3", "1 <= numPassengersi <= 100", "0 <= fromi < toi <= 1000", "0 <= capacity <= 10^5"],
+      "hints": [
+        "Each trip is a range update: add numPassengersi passengers from fromi up to (but NOT including) toi -- the passenger gets off exactly at toi.",
+        "After reconstructing passenger counts at every location, check if any point exceeds capacity."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every trip, directly add passengers to every location in its range, then scan for any location exceeding capacity.",
+          "code": "class Solution {\n    public boolean carPooling(int[][] trips, int capacity) {\n        int[] passengers = new int[1001];\n        for (int[] trip : trips) {\n            int num = trip[0], from = trip[1], to = trip[2];\n            for (int i = from; i < to; i++) {\n                passengers[i] += num;\n            }\n        }\n        for (int p : passengers) {\n            if (p > capacity) return false;\n        }\n        return true;\n    }\n}",
+          "output": "For trips = [[2,1,5],[3,3,7]], capacity = 4: false",
+          "timeComplexity": "O(trips.length * range size)",
+          "spaceComplexity": "O(1001) fixed array size"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Use a difference array: +num at 'from', -num at 'to' (since the passenger leaves exactly at 'to'), then reconstruct with a prefix sum pass, checking capacity as we go.",
+          "code": "class Solution {\n    public boolean carPooling(int[][] trips, int capacity) {\n        int[] diff = new int[1001];\n        for (int[] trip : trips) {\n            int num = trip[0], from = trip[1], to = trip[2];\n            diff[from] += num;\n            diff[to] -= num;\n        }\n\n        int current = 0;\n        for (int d : diff) {\n            current += d;\n            if (current > capacity) return false;\n        }\n        return true;\n    }\n}",
+          "output": "For trips = [[2,1,5],[3,3,7]], capacity = 4: false",
+          "timeComplexity": "O(trips.length + max location)",
+          "spaceComplexity": "O(1001) fixed array size"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-370",
+      "number": 370,
+      "title": "Range Addition",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/range-addition/",
+      "problemStatement": "You are given an integer length and an array of update queries. For each update[i] = [startIdx, endIdx, inc], increment all elements arr[startIdx..endIdx] (inclusive) by inc. Return the modified array after performing all the updates.",
+      "examples": [
+        { "input": "length = 5, updates = [[1,3,2],[2,4,3],[0,2,-2]]", "output": "[-2,0,3,5,3]" }
+      ],
+      "constraints": ["1 <= length <= 10^5", "0 <= updates.length <= 10^4", "0 <= startIdx <= endIdx < length"],
+      "hints": [
+        "This IS the difference array pattern in its purest, most direct form -- exactly the technique this lesson builds from scratch."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each update, directly add inc to every index in its range.",
+          "code": "class Solution {\n    public int[] getModifiedArray(int length, int[][] updates) {\n        int[] arr = new int[length];\n        for (int[] u : updates) {\n            int start = u[0], end = u[1], inc = u[2];\n            for (int i = start; i <= end; i++) {\n                arr[i] += inc;\n            }\n        }\n        return arr;\n    }\n}",
+          "output": "For length=5, updates=[[1,3,2],[2,4,3],[0,2,-2]]: [-2,0,3,5,3]",
+          "timeComplexity": "O(updates.length * length) worst case",
+          "spaceComplexity": "O(length) for the output"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Apply each update as a difference array operation (+inc at start, -inc at end+1), then reconstruct with one prefix sum pass.",
+          "code": "class Solution {\n    public int[] getModifiedArray(int length, int[][] updates) {\n        int[] diff = new int[length + 1];\n        for (int[] u : updates) {\n            int start = u[0], end = u[1], inc = u[2];\n            diff[start] += inc;\n            diff[end + 1] -= inc;\n        }\n\n        int[] arr = new int[length];\n        arr[0] = diff[0];\n        for (int i = 1; i < length; i++) {\n            arr[i] = arr[i - 1] + diff[i];\n        }\n        return arr;\n    }\n}",
+          "output": "For length=5, updates=[[1,3,2],[2,4,3],[0,2,-2]]: [-2,0,3,5,3]",
+          "timeComplexity": "O(updates.length + length)",
+          "spaceComplexity": "O(length) for the diff/output arrays"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-3355",
+      "number": 3355,
+      "title": "Zero Array Transformation I",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/zero-array-transformation-i/",
+      "problemStatement": "You are given an integer array nums of length n and a 2D array queries, where queries[i] = [li, ri]. For each query, decrement the values at all indices from li to ri (inclusive) by at most 1. Return true if it's possible to transform nums into a zero array (all zeros) after processing ALL queries in order, false otherwise.",
+      "examples": [
+        { "input": "nums = [1,0,1], queries = [[0,2]]", "output": "true", "explanation": "One decrement across [0,2] turns [1,0,1] into [0,-1,0]... but decrementing by AT MOST 1 per query lets us choose to decrement only indices 0 and 2, giving [0,0,0]." },
+        { "input": "nums = [4,3,2,1], queries = [[1,3],[0,2]]", "output": "false" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "0 <= nums[i] <= 10^5", "1 <= queries.length <= 10^5", "queries[i].length == 2"],
+      "hints": [
+        "Each query can decrement each covered index by at most 1 -- so the MAXIMUM possible total decrement at index i is exactly how many queries cover it.",
+        "Use a difference array to count how many queries cover each index (a range update of +1 per query), then check that count >= nums[i] for every index."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each query, directly increment a coverage-count array across its range, then compare against nums.",
+          "code": "class Solution {\n    public boolean isZeroArray(int[] nums, int[][] queries) {\n        int n = nums.length;\n        int[] coverage = new int[n];\n\n        for (int[] q : queries) {\n            for (int i = q[0]; i <= q[1]; i++) {\n                coverage[i]++;\n            }\n        }\n\n        for (int i = 0; i < n; i++) {\n            if (coverage[i] < nums[i]) return false;\n        }\n        return true;\n    }\n}",
+          "output": "For nums=[1,0,1], queries=[[0,2]]: true",
+          "timeComplexity": "O(queries.length * n) worst case",
+          "spaceComplexity": "O(n) for the coverage array"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Use a difference array to count query coverage per index in O(queries.length + n), then compare against nums.",
+          "code": "class Solution {\n    public boolean isZeroArray(int[] nums, int[][] queries) {\n        int n = nums.length;\n        int[] diff = new int[n + 1];\n\n        for (int[] q : queries) {\n            diff[q[0]]++;\n            diff[q[1] + 1]--;\n        }\n\n        int coverage = 0;\n        for (int i = 0; i < n; i++) {\n            coverage += diff[i];\n            if (coverage < nums[i]) return false;\n        }\n        return true;\n    }\n}",
+          "output": "For nums=[1,0,1], queries=[[0,2]]: true",
+          "timeComplexity": "O(queries.length + n)",
+          "spaceComplexity": "O(n) for the difference array"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-3356",
+      "number": 3356,
+      "title": "Zero Array Transformation II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/zero-array-transformation-ii/",
+      "problemStatement": "You are given an integer array nums and a 2D array queries where queries[i] = [li, ri, vali]. Each query decrements the values at indices li to ri (inclusive) by AT MOST vali (each index independently choosing any amount from 0 to vali). Return the minimum number of queries (processed as a prefix of the queries array, in order) needed to convert nums into a zero array, or -1 if it's impossible using all of them.",
+      "examples": [
+        { "input": "nums = [2,0,2], queries = [[0,2,1],[0,2,1],[1,1,3]]", "output": "2", "explanation": "Using only queries[0] ([0,2,1]) gives each index at most 1 total decrement capacity -- not enough for nums[0]=2. Using both queries[0] and queries[1] (both [0,2,1]) gives index 0 and index 2 a combined capacity of 2 each, which is exactly enough." },
+        { "input": "nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]", "output": "-1" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "0 <= nums[i] <= 5*10^5", "1 <= queries.length <= 10^5", "queries[i].length == 3"],
+      "hints": [
+        "This extends Zero Array Transformation I: instead of checking ALL queries at once, binary search (Binary Search lesson) on the NUMBER of queries used, since using more queries only ever helps (monotonic).",
+        "For a candidate count k, use a difference array to sum the max possible decrement (vali) each index can receive from the first k queries, then check every index's requirement is met."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every possible number of queries k from 1 to queries.length, rebuild the coverage using a fresh difference array and check feasibility.",
+          "code": "class Solution {\n    public int minZeroArray(int[] nums, int[][] queries) {\n        int n = nums.length;\n        for (int k = 0; k <= queries.length; k++) {\n            int[] diff = new int[n + 1];\n            for (int q = 0; q < k; q++) {\n                int l = queries[q][0], r = queries[q][1], val = queries[q][2];\n                diff[l] += val;\n                diff[r + 1] -= val;\n            }\n            int coverage = 0;\n            boolean ok = true;\n            for (int i = 0; i < n; i++) {\n                coverage += diff[i];\n                if (coverage < nums[i]) { ok = false; break; }\n            }\n            if (ok) return k;\n        }\n        return -1;\n    }\n}",
+          "output": "For nums=[2,0,2], queries=[[0,2,1],[0,2,1],[1,1,3]]: 2",
+          "timeComplexity": "O(queries.length * (queries.length + n))",
+          "spaceComplexity": "O(n) per candidate check"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search on the number of queries k -- feasibility is monotonic (more queries never hurts), so find the smallest k that works using the same difference-array feasibility check as a helper.",
+          "code": "class Solution {\n    private boolean feasible(int[] nums, int[][] queries, int k) {\n        int n = nums.length;\n        int[] diff = new int[n + 1];\n        for (int q = 0; q < k; q++) {\n            int l = queries[q][0], r = queries[q][1], val = queries[q][2];\n            diff[l] += val;\n            diff[r + 1] -= val;\n        }\n        int coverage = 0;\n        for (int i = 0; i < n; i++) {\n            coverage += diff[i];\n            if (coverage < nums[i]) return false;\n        }\n        return true;\n    }\n\n    public int minZeroArray(int[] nums, int[][] queries) {\n        if (feasible(nums, queries, 0)) return 0;\n\n        int left = 1, right = queries.length;\n        int answer = -1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (feasible(nums, queries, mid)) {\n                answer = mid;\n                right = mid - 1;\n            } else {\n                left = mid + 1;\n            }\n        }\n        return answer;\n    }\n}",
+          "output": "For nums=[2,0,2], queries=[[0,2,1],[0,2,1],[1,1,3]]: 2",
+          "timeComplexity": "O(log(queries.length) * (queries.length + n))",
+          "spaceComplexity": "O(n) per feasibility check"
+        }
+      ]
     }
   ],
   "codeExamples": [
