@@ -146,6 +146,267 @@
         "Why is there no index-based access on a linked list?",
         "What special case must delete() handle when removing the head node?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-206-linkedlist",
+      "number": 206,
+      "title": "Reverse Linked List",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/reverse-linked-list/",
+      "problemStatement": "Given the head of a singly linked list, reverse the list and return the new head. (Framed here with the ITERATIVE approach, building directly on this lesson's Node class; the recursive approach is covered under the Recursion category.)",
+      "examples": [
+        { "input": "head = [1,2,3,4,5]", "output": "[5,4,3,2,1]" }
+      ],
+      "constraints": ["The number of nodes is in the range [0, 5000]"],
+      "hints": ["Walk the list once, relinking each node's next pointer to point BACKWARD instead of forward -- you need a prev pointer, since the original next is about to be overwritten."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Store all node values in an ArrayList, then rebuild the list in reverse order.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode reverseList(ListNode head) {\n        java.util.List<Integer> values = new java.util.ArrayList<>();\n        ListNode current = head;\n        while (current != null) {\n            values.add(current.val);\n            current = current.next;\n        }\n\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        for (int i = values.size() - 1; i >= 0; i--) {\n            tail.next = new ListNode(values.get(i));\n            tail = tail.next;\n        }\n        return dummy.next;\n    }\n}",
+          "output": "For head = [1,2,3,4,5]: [5,4,3,2,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the values list and new nodes"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "In-place iterative reversal using prev/current pointers, exactly as covered in this lesson's own Node-based examples.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode reverseList(ListNode head) {\n        ListNode prev = null;\n        ListNode current = head;\n        while (current != null) {\n            ListNode nextTemp = current.next;\n            current.next = prev;\n            prev = current;\n            current = nextTemp;\n        }\n        return prev;\n    }\n}",
+          "output": "For head = [1,2,3,4,5]: [5,4,3,2,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-876",
+      "number": 876,
+      "title": "Middle of the Linked List",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/middle-of-the-linked-list/",
+      "problemStatement": "Given the head of a singly linked list, return the middle node. If there are two middle nodes, return the second one.",
+      "examples": [
+        { "input": "head = [1,2,3,4,5]", "output": "[3,4,5]", "explanation": "The middle node is 3, with the rest of the list [4,5] following it." },
+        { "input": "head = [1,2,3,4,5,6]", "output": "[4,5,6]", "explanation": "Two middle nodes (3 and 4) exist -- the SECOND one, 4, is returned." }
+      ],
+      "constraints": ["The number of nodes is in the range [1, 100]"],
+      "hints": ["Fast/slow pointers (recall Two Pointers): slow moves 1 step, fast moves 2 -- when fast reaches the end, slow is exactly at the middle."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Count the total length first, then walk halfway through in a second pass.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode middleNode(ListNode head) {\n        int length = 0;\n        ListNode current = head;\n        while (current != null) {\n            length++;\n            current = current.next;\n        }\n\n        current = head;\n        for (int i = 0; i < length / 2; i++) {\n            current = current.next;\n        }\n        return current;\n    }\n}",
+          "output": "For head = [1,2,3,4,5]: [3,4,5]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Fast/slow pointer technique -- a single pass, no length precomputation needed.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode middleNode(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n        return slow;\n    }\n}",
+          "output": "For head = [1,2,3,4,5]: [3,4,5]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-141",
+      "number": 141,
+      "title": "Linked List Cycle",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/linked-list-cycle/",
+      "problemStatement": "Given the head of a linked list, determine if the linked list has a cycle in it.",
+      "examples": [
+        { "input": "head = [3,2,0,-4], with a cycle back to node index 1", "output": "true" },
+        { "input": "head = [1], no cycle", "output": "false" }
+      ],
+      "constraints": ["The number of nodes is in the range [0, 10^4]"],
+      "hints": ["Floyd's Cycle Detection (fast/slow pointers): if there's a cycle, the fast pointer will eventually LAP the slow pointer and they'll meet at the same node."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Track every visited node in a HashSet -- if a node is seen twice, a cycle exists.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n}\n\npublic class Solution {\n    public boolean hasCycle(ListNode head) {\n        java.util.Set<ListNode> visited = new java.util.HashSet<>();\n        ListNode current = head;\n        while (current != null) {\n            if (!visited.add(current)) {\n                return true;\n            }\n            current = current.next;\n        }\n        return false;\n    }\n}",
+          "output": "For a linked list with a cycle: true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the HashSet"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Floyd's fast/slow pointer technique -- no extra memory needed; if they ever meet, a cycle exists.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n}\n\npublic class Solution {\n    public boolean hasCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) {\n                return true;\n            }\n        }\n        return false;\n    }\n}",
+          "output": "For a linked list with a cycle: true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-21-linkedlist",
+      "number": 21,
+      "title": "Merge Two Sorted Lists",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/merge-two-sorted-lists/",
+      "problemStatement": "Merge two sorted linked lists into one sorted list by splicing together their nodes. (Framed here with the ITERATIVE approach; the recursive version is covered under the Recursion category.)",
+      "examples": [
+        { "input": "list1 = [1,2,4], list2 = [1,3,4]", "output": "[1,1,2,3,4,4]" }
+      ],
+      "constraints": ["The number of nodes in both lists is in the range [0, 50]"],
+      "hints": ["Use a dummy head node to simplify edge cases, and a pointer that always advances to whichever list currently has the smaller value."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Collect all values into a list, sort it, then rebuild a new linked list from the sorted values.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {\n        java.util.List<Integer> values = new java.util.ArrayList<>();\n        for (ListNode n = list1; n != null; n = n.next) values.add(n.val);\n        for (ListNode n = list2; n != null; n = n.next) values.add(n.val);\n        java.util.Collections.sort(values);\n\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        for (int v : values) {\n            tail.next = new ListNode(v);\n            tail = tail.next;\n        }\n        return dummy.next;\n    }\n}",
+          "output": "For list1 = [1,2,4], list2 = [1,3,4]: [1,1,2,3,4,4]",
+          "timeComplexity": "O((n+m) log(n+m)) due to sorting",
+          "spaceComplexity": "O(n+m) for the values list and new nodes"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Iterative merge with a dummy head, splicing existing nodes directly -- no new nodes created, no sorting needed.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {\n        ListNode dummy = new ListNode(0);\n        ListNode current = dummy;\n\n        while (list1 != null && list2 != null) {\n            if (list1.val <= list2.val) {\n                current.next = list1;\n                list1 = list1.next;\n            } else {\n                current.next = list2;\n                list2 = list2.next;\n            }\n            current = current.next;\n        }\n        current.next = (list1 != null) ? list1 : list2;\n        return dummy.next;\n    }\n}",
+          "output": "For list1 = [1,2,4], list2 = [1,3,4]: [1,1,2,3,4,4]",
+          "timeComplexity": "O(n + m)",
+          "spaceComplexity": "O(1) extra space (reuses existing nodes)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-83",
+      "number": 83,
+      "title": "Remove Duplicates from Sorted List",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-list/",
+      "problemStatement": "Given the head of a sorted linked list, delete all duplicates such that each element appears only once, and return the sorted list.",
+      "examples": [
+        { "input": "head = [1,1,2,3,3]", "output": "[1,2,3]" }
+      ],
+      "constraints": ["The number of nodes is in the range [0, 300]"],
+      "hints": ["Since the list is SORTED, duplicates are always adjacent -- one pass, skipping a node whenever it matches the value right after it."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Collect distinct values into a Set (preserving order via LinkedHashSet), then rebuild the list.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode deleteDuplicates(ListNode head) {\n        java.util.Set<Integer> seen = new java.util.LinkedHashSet<>();\n        for (ListNode n = head; n != null; n = n.next) seen.add(n.val);\n\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        for (int v : seen) {\n            tail.next = new ListNode(v);\n            tail = tail.next;\n        }\n        return dummy.next;\n    }\n}",
+          "output": "For head = [1,1,2,3,3]: [1,2,3]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the Set and new nodes"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "One pass in place -- skip over any node whose value matches the current node's value, relying on the list being sorted.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode deleteDuplicates(ListNode head) {\n        ListNode current = head;\n        while (current != null && current.next != null) {\n            if (current.val == current.next.val) {\n                current.next = current.next.next;\n            } else {\n                current = current.next;\n            }\n        }\n        return head;\n    }\n}",
+          "output": "For head = [1,1,2,3,3]: [1,2,3]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-203",
+      "number": 203,
+      "title": "Remove Linked List Elements",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/remove-linked-list-elements/",
+      "problemStatement": "Given the head of a linked list and an integer val, remove all nodes with Node.val == val, and return the new head.",
+      "examples": [
+        { "input": "head = [1,2,6,3,4,5,6], val = 6", "output": "[1,2,3,4,5]" }
+      ],
+      "constraints": ["The number of nodes is in the range [0, 10^4]"],
+      "hints": ["A dummy node BEFORE head simplifies the special case of removing the head itself -- treat every removal the same way, including the first node."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Collect all non-matching values, then rebuild the list from scratch.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode removeElements(ListNode head, int val) {\n        java.util.List<Integer> kept = new java.util.ArrayList<>();\n        for (ListNode n = head; n != null; n = n.next) {\n            if (n.val != val) kept.add(n.val);\n        }\n\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        for (int v : kept) {\n            tail.next = new ListNode(v);\n            tail = tail.next;\n        }\n        return dummy.next;\n    }\n}",
+          "output": "For head = [1,2,6,3,4,5,6], val = 6: [1,2,3,4,5]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the new nodes"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A dummy node before head lets every removal (including the original head) be handled with the exact same relinking logic.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode removeElements(ListNode head, int val) {\n        ListNode dummy = new ListNode(0);\n        dummy.next = head;\n        ListNode current = dummy;\n\n        while (current.next != null) {\n            if (current.next.val == val) {\n                current.next = current.next.next;\n            } else {\n                current = current.next;\n            }\n        }\n        return dummy.next;\n    }\n}",
+          "output": "For head = [1,2,6,3,4,5,6], val = 6: [1,2,3,4,5]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-19",
+      "number": 19,
+      "title": "Remove Nth Node From End of List",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+      "problemStatement": "Given the head of a linked list, remove the nth node from the end of the list, and return its head.",
+      "examples": [
+        { "input": "head = [1,2,3,4,5], n = 2", "output": "[1,2,3,5]" }
+      ],
+      "constraints": ["The number of nodes is sz", "1 <= sz <= 30", "1 <= n <= sz"],
+      "hints": ["Two pointers with a GAP of n between them: advance the first pointer n steps ahead, then move both together -- when the front pointer reaches the end, the back pointer is right before the node to remove."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Count the total length first, then walk to the node just before the one to remove in a second pass.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        int length = 0;\n        for (ListNode cur = head; cur != null; cur = cur.next) length++;\n\n        ListNode dummy = new ListNode(0);\n        dummy.next = head;\n        ListNode current = dummy;\n        for (int i = 0; i < length - n; i++) {\n            current = current.next;\n        }\n        current.next = current.next.next;\n        return dummy.next;\n    }\n}",
+          "output": "For head = [1,2,3,4,5], n = 2: [1,2,3,5]",
+          "timeComplexity": "O(n) -- two passes",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers with a gap of n, moved in a single pass -- no length precomputation needed.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n    ListNode(int val) { this.val = val; }\n}\n\nclass Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        ListNode dummy = new ListNode(0);\n        dummy.next = head;\n        ListNode fast = dummy, slow = dummy;\n\n        for (int i = 0; i < n; i++) {\n            fast = fast.next;\n        }\n        while (fast.next != null) {\n            fast = fast.next;\n            slow = slow.next;\n        }\n        slow.next = slow.next.next;\n        return dummy.next;\n    }\n}",
+          "output": "For head = [1,2,3,4,5], n = 2: [1,2,3,5]",
+          "timeComplexity": "O(n) -- single pass",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-142",
+      "number": 142,
+      "title": "Linked List Cycle II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/linked-list-cycle-ii/",
+      "problemStatement": "Given the head of a linked list, return the node where the cycle begins, or null if there is no cycle.",
+      "examples": [
+        { "input": "head = [3,2,0,-4], cycle begins at node with value 2", "output": "Node with value 2" }
+      ],
+      "constraints": ["The number of nodes is in the range [0, 10^4]"],
+      "hints": [
+        "First, use Floyd's fast/slow pointers (as in Linked List Cycle) to detect a cycle and find the meeting point.",
+        "Then, reset one pointer to head and advance BOTH pointers one step at a time -- they will meet exactly at the cycle's start. This is a mathematical property of Floyd's algorithm."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Track visited nodes in a HashSet -- the first REPEATED node is exactly where the cycle begins.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n}\n\npublic class Solution {\n    public ListNode detectCycle(ListNode head) {\n        java.util.Set<ListNode> visited = new java.util.HashSet<>();\n        ListNode current = head;\n        while (current != null) {\n            if (!visited.add(current)) {\n                return current;\n            }\n            current = current.next;\n        }\n        return null;\n    }\n}",
+          "output": "For a list with a cycle starting at value 2: returns that node",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the HashSet"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Floyd's algorithm: detect the cycle with fast/slow pointers, then reset one pointer to head and advance both one step at a time until they meet -- that meeting point is the cycle's start.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n}\n\npublic class Solution {\n    public ListNode detectCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) {\n                ListNode pointer = head;\n                while (pointer != slow) {\n                    pointer = pointer.next;\n                    slow = slow.next;\n                }\n                return pointer;\n            }\n        }\n        return null;\n    }\n}",
+          "output": "For a list with a cycle starting at value 2: returns that node",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
     }
   ],
   "codeExamples": [
