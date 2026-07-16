@@ -1,0 +1,157 @@
+{
+  "id": "java-backtracking",
+  "moduleId": "dsa-foundations",
+  "title": "Backtracking",
+  "description": "Fully explaining the 'try, recurse, undo' pattern previewed with subsets in Recursion in DSA -- systematically exploring choices and abandoning ones that fail.",
+  "objectives": [
+    "Understand backtracking as choose -> explore -> unchoose",
+    "Generate all permutations of a small array",
+    "Solve a constrained problem (combinations that sum to a target) by pruning invalid paths early"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Recursion in DSA, generateSubsets tried each choice, recursed, then UNDID that choice with current.remove(...) before trying the next one. That pattern is backtracking, and today we go deeper."
+    },
+    {
+      "type": "definition",
+      "term": "Backtracking",
+      "text": "A systematic way of exploring all possible choices for a problem by making a choice, recursively exploring its consequences, and then undoing (backtracking) that choice to try the next alternative -- often abandoning a path early once it's known to be invalid."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Three-Step Pattern"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Choose -> Explore -> Unchoose",
+      "points": [
+        "CHOOSE: add a value to the current partial solution",
+        "EXPLORE: recurse deeper with that choice in place",
+        "UNCHOOSE: remove the value again, restoring state, before trying the next option"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Generating All Permutations"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void permute(int[] nums, List<Integer> current, boolean[] used, List<List<Integer>> result) {\n        if (current.size() == nums.length) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) {\n                continue;\n            }\n\n            current.add(nums[i]);   // CHOOSE\n            used[i] = true;\n\n            permute(nums, current, used, result); // EXPLORE\n\n            current.remove(current.size() - 1); // UNCHOOSE\n            used[i] = false;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3};\n        List<List<Integer>> result = new ArrayList<>();\n        permute(nums, new ArrayList<>(), new boolean[nums.length], result);\n        System.out.println(result.size());\n        System.out.println(result);\n    }\n}",
+      "output": "6\n[[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]",
+      "retypePractice": true,
+      "retypeId": "java-backtracking-permutations"
+    },
+    {
+      "type": "note",
+      "text": "used[] tracks which elements are already part of the current permutation, so we don't reuse one twice in the same arrangement. Every permutation of 3 elements gives 3! = 6 total arrangements, matching result.size()."
+    },
+    {
+      "type": "heading",
+      "text": "4. Pruning: Abandoning Invalid Paths Early"
+    },
+    {
+      "type": "paragraph",
+      "text": "Backtracking's real power shows up when we can DETECT a path is doomed before fully exploring it, and skip it immediately -- this is called pruning."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void combinationSum(int[] candidates, int target, int start, List<Integer> current, List<List<Integer>> result) {\n        if (target == 0) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n        if (target < 0) {\n            return; // PRUNE -- this path can never work, stop exploring it\n        }\n\n        for (int i = start; i < candidates.length; i++) {\n            current.add(candidates[i]);\n            combinationSum(candidates, target - candidates[i], i, current, result);\n            current.remove(current.size() - 1);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] candidates = {2, 3, 5};\n        List<List<Integer>> result = new ArrayList<>();\n        combinationSum(candidates, 7, 0, new ArrayList<>(), result);\n        System.out.println(result);\n    }\n}",
+      "output": "[[2, 2, 3], [2, 5]]",
+      "retypePractice": true,
+      "retypeId": "java-backtracking-combination-sum"
+    },
+    {
+      "type": "warning",
+      "text": "if (target < 0) { return; } is the PRUNE step -- the instant a partial sum overshoots the target, there is NO way adding more positive candidates fixes it, so we stop exploring that branch immediately rather than continuing pointlessly. Without pruning, backtracking still works, but explores far more dead-end paths than necessary."
+    },
+    {
+      "type": "note",
+      "text": "The loop starts at i = start (not 0), so once index i is chosen, later recursive calls can only pick from index i onward -- this is what keeps each combination in non-decreasing index order and avoids producing both [2,2,3] and [3,2,2] as separate results. current.add(candidates[i]) followed by recursing with i (not i + 1) is what allows the SAME candidate to be reused (like the two 2s in [2,2,3])."
+    },
+    {
+      "type": "heading",
+      "text": "5. Why Not Just Brute Force Every Possibility Blindly?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Backtracking vs pure brute force",
+      "points": [
+        "Pure brute force would generate EVERY possible combination first, THEN filter out invalid ones -- wasted work on paths that were doomed from the start",
+        "Backtracking checks validity AS IT GOES, abandoning a path (pruning) the moment it becomes impossible, rather than finishing it uselessly",
+        "This makes backtracking dramatically faster in practice, even though its worst-case complexity can still be exponential for genuinely hard problems"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the UNCHOOSE step (current.remove(...), used[i] = false) -- without it, state leaks between branches and results become incorrect.",
+        "Forgetting to add a PRUNE condition when one is available, exploring hopeless paths that waste time without changing the final answer.",
+        "Confusing backtracking with plain recursion -- backtracking specifically involves undoing a choice to explore alternatives, not just recursing once per call.",
+        "Adding the SAME reference (like current itself) to the result list instead of a COPY (new ArrayList<>(current)) -- since current keeps changing, the result would end up holding stale, incorrect, or all-identical references."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is backtracking?",
+          "answer": "A systematic technique for exploring all possible choices for a problem: make a choice, recursively explore its consequences, then undo (backtrack) that choice to try the next alternative -- often abandoning invalid paths early."
+        },
+        {
+          "question": "What are the three steps of the backtracking pattern?",
+          "answer": "Choose (make a tentative choice), Explore (recurse deeper with that choice in place), and Unchoose (undo the choice, restoring state, before trying the next option)."
+        },
+        {
+          "question": "What is pruning, and why does it matter?",
+          "answer": "Pruning means detecting that a partial solution can never lead to a valid answer, and abandoning that branch immediately instead of continuing to explore it uselessly -- this can dramatically reduce the actual work done, even though worst-case complexity can remain exponential."
+        },
+        {
+          "question": "Why must a COPY of the current partial solution be added to the results list, not the list itself?",
+          "answer": "Because current keeps being mutated (added to and removed from) as the recursion continues -- adding the same reference would mean every entry in the results list ends up reflecting current's FINAL state, not the state at the moment each solution was found."
+        }
+      ],
+      "thirtySecondAnswer": "Backtracking systematically explores all possible choices for a problem using a choose-explore-unchoose pattern: make a tentative choice, recurse deeper with it in place, then undo it to try the next alternative -- exactly what generateSubsets previewed in Recursion in DSA. Pruning strengthens this by detecting a partial solution can never succeed (like a running sum already exceeding the target) and abandoning that branch immediately, avoiding wasted exploration. A common bug is adding the live, mutating current list directly to a results list instead of a copy, since current changes throughout the recursion. Backtracking underlies permutation generation, combination-sum problems, and is the foundation for the Backtracking-tagged LeetCode problems covered later in this course."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Backtracking = exploring a maze by trying a path, and the MOMENT you hit a dead end, walking back to the last fork and trying a different direction -- never starting the whole maze over from scratch. Choose. Explore. Unchoose. Repeat."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What are the three steps of the backtracking pattern?",
+        "What does 'pruning' mean in backtracking, and why is it useful?",
+        "Why must you add a copy of the current list to the results, not the list itself?",
+        "How many permutations exist for an array of n distinct elements?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-backtracking-permutations", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void permute(int[] nums, List<Integer> current, boolean[] used, List<List<Integer>> result) {\n        if (current.size() == nums.length) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) {\n                continue;\n            }\n\n            current.add(nums[i]);   // CHOOSE\n            used[i] = true;\n\n            permute(nums, current, used, result); // EXPLORE\n\n            current.remove(current.size() - 1); // UNCHOOSE\n            used[i] = false;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3};\n        List<List<Integer>> result = new ArrayList<>();\n        permute(nums, new ArrayList<>(), new boolean[nums.length], result);\n        System.out.println(result.size());\n        System.out.println(result);\n    }\n}", "output": "6\n[[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]" },
+    { "id": "java-backtracking-combination-sum", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void combinationSum(int[] candidates, int target, int start, List<Integer> current, List<List<Integer>> result) {\n        if (target == 0) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n        if (target < 0) {\n            return; // PRUNE -- this path can never work, stop exploring it\n        }\n\n        for (int i = start; i < candidates.length; i++) {\n            current.add(candidates[i]);\n            combinationSum(candidates, target - candidates[i], i, current, result);\n            current.remove(current.size() - 1);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] candidates = {2, 3, 5};\n        List<List<Integer>> result = new ArrayList<>();\n        combinationSum(candidates, 7, 0, new ArrayList<>(), result);\n        System.out.println(result);\n    }\n}", "output": "[[2, 2, 3], [2, 5]]" }
+  ],
+  "retypePractice": [
+    { "id": "java-backtracking-permutations", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void permute(int[] nums, List<Integer> current, boolean[] used, List<List<Integer>> result) {\n        if (current.size() == nums.length) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) {\n                continue;\n            }\n\n            current.add(nums[i]);   // CHOOSE\n            used[i] = true;\n\n            permute(nums, current, used, result); // EXPLORE\n\n            current.remove(current.size() - 1); // UNCHOOSE\n            used[i] = false;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3};\n        List<List<Integer>> result = new ArrayList<>();\n        permute(nums, new ArrayList<>(), new boolean[nums.length], result);\n        System.out.println(result.size());\n        System.out.println(result);\n    }\n}" },
+    { "id": "java-backtracking-combination-sum", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void combinationSum(int[] candidates, int target, int start, List<Integer> current, List<List<Integer>> result) {\n        if (target == 0) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n        if (target < 0) {\n            return; // PRUNE -- this path can never work, stop exploring it\n        }\n\n        for (int i = start; i < candidates.length; i++) {\n            current.add(candidates[i]);\n            combinationSum(candidates, target - candidates[i], i, current, result);\n            current.remove(current.size() - 1);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] candidates = {2, 3, 5};\n        List<List<Integer>> result = new ArrayList<>();\n        combinationSum(candidates, 7, 0, new ArrayList<>(), result);\n        System.out.println(result);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-backtracking-permutations", "java-backtracking-combination-sum"]
+  }
+}

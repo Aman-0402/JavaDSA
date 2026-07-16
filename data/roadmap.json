@@ -106,7 +106,8 @@
         { "id": "java-hashing", "title": "Hashing", "lesson": "java-hashing" },
         { "id": "java-binary-search", "title": "Binary Search", "lesson": "java-binary-search" },
         { "id": "java-sorting", "title": "Sorting", "lesson": "java-sorting" },
-        { "id": "java-recursion-in-dsa", "title": "Recursion in DSA", "lesson": "java-recursion-in-dsa" }
+        { "id": "java-recursion-in-dsa", "title": "Recursion in DSA", "lesson": "java-recursion-in-dsa" },
+        { "id": "java-backtracking", "title": "Backtracking", "lesson": "java-backtracking" }
       ]
     },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
