@@ -106,6 +106,6 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 11 | Heap | ✅ done | PriorityQueue (Java's Built-In Heap), Manual Heap Implementation, Heap Sort |
 | 12 | Trees | ✅ done | Binary Trees, Binary Search Trees, Tree Traversals (Pre/In/Post-order), BFS (Level Order), DFS (Iterative with Stack), Trie |
 | 13 | Graphs | ✅ done | Graph Representation (Adjacency List/Matrix), Graph BFS, Graph DFS, Topological Sort, Union-Find (DSU) |
-| 14 | Greedy & Dynamic Programming | ⬜ | — |
+| 14 | Greedy & Dynamic Programming | ✅ done | Greedy Algorithms, DP: Memoization vs Tabulation, 1D DP, 2D DP, 0/1 Knapsack, LCS, LIS, Bit Manipulation, Advanced Patterns (Capstone) |
 
 LeetCode integration: not started (begins only when user says "start adding LeetCode problems").
