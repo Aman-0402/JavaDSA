@@ -99,7 +99,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 4 | Arrays & Strings | ✅ done | 1D Arrays, 2D Arrays, Strings and Immutability, Common String Methods, StringBuilder, Array vs ArrayList (Intro) |
 | 5 | Object-Oriented Programming | ✅ done | Classes and Objects, Constructors, this Keyword, Encapsulation and Access Modifiers, Inheritance, Polymorphism, Abstract Classes, Interfaces, Packages |
 | 6 | Advanced Java | ✅ done | Exception Handling, Generics, Enums, Autoboxing and Unboxing, Annotations Basics |
-| 7 | Java Collections Framework | ⬜ | — |
+| 7 | Java Collections Framework | ✅ done | JCF Overview, List (ArrayList vs LinkedList), Set (HashSet/TreeSet/LinkedHashSet), Map (HashMap/TreeMap/LinkedHashMap), Queue/Deque (ArrayDeque/PriorityQueue), Iterator, Comparable vs Comparator, Collections Utility Class |
 | 8 | DSA Foundations | ⬜ | — |
 | 9 | Linked List | ⬜ | — |
 | 10 | Stacks & Queues | ⬜ | — |
