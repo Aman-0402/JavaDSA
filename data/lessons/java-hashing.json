@@ -1,0 +1,190 @@
+{
+  "id": "java-hashing",
+  "moduleId": "dsa-foundations",
+  "title": "Hashing",
+  "description": "Using HashMap/HashSet as a hash table to solve lookup and counting problems in O(1) average time -- delivering the faster fix promised back in Big-O Notation for hasDuplicate.",
+  "objectives": [
+    "Understand hashing as O(1) average-case lookup, insert, and delete",
+    "Solve the duplicate-detection problem from Big-O Notation in O(n) using a HashSet",
+    "Solve a classic two-sum problem in O(n) using a HashMap"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Promise, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Big-O Notation, hasDuplicate used nested loops -- O(n^2) -- and we promised a faster O(n) version using a HashSet. Today we deliver on that promise, and explain WHY hashing makes it possible."
+    },
+    {
+      "type": "definition",
+      "term": "Hashing",
+      "text": "A technique that maps a value to a location (a bucket) using a hash function, enabling average O(1) lookup, insertion, and deletion -- the mechanism underlying HashMap and HashSet."
+    },
+    {
+      "type": "note",
+      "text": "We are not implementing a hash table's internals ourselves here -- Java's HashMap and HashSet (covered in the Set and Map lessons) already provide this. This lesson focuses on RECOGNIZING when hashing solves a problem, and USING it effectively."
+    },
+    {
+      "type": "heading",
+      "text": "2. Fixing hasDuplicate with a HashSet"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static boolean hasDuplicate(int[] numbers) {\n        Set<Integer> seen = new HashSet<>();\n        for (int num : numbers) {\n            if (seen.contains(num)) {\n                return true;\n            }\n            seen.add(num);\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 2};\n        System.out.println(hasDuplicate(nums));\n    }\n}",
+      "output": "true",
+      "retypePractice": true,
+      "retypeId": "java-hashing-has-duplicate"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this is O(n), not O(n^2)"
+      ,
+      "points": [
+        "One single loop through numbers -- no nested loop at all",
+        "seen.contains(num) and seen.add(num) are both O(1) AVERAGE case, thanks to hashing",
+        "Total work: n iterations * O(1) per iteration = O(n) overall -- dramatically faster than Big-O Notation's O(n^2) version for large arrays"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "HashSet's contains() and add() are O(1) on AVERAGE, not guaranteed worst-case -- in rare pathological cases they can degrade, but this is far beyond this course's scope. In virtually all practical situations, treat them as O(1)."
+    },
+    {
+      "type": "heading",
+      "text": "3. Two Sum: A Classic Hashing Problem"
+    },
+    {
+      "type": "paragraph",
+      "text": "Given an array and a target, find two numbers that add up to it -- and this time, the array is NOT sorted, so Two Pointers' approach doesn't directly apply."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static boolean hasPairBruteForce(int[] arr, int target) {\n    for (int i = 0; i < arr.length; i++) {\n        for (int j = i + 1; j < arr.length; j++) {\n            if (arr[i] + arr[j] == target) {\n                return true;\n            }\n        }\n    }\n    return false;\n}"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static boolean hasPairHashing(int[] arr, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int num : arr) {\n            int complement = target - num;\n            if (seen.contains(complement)) {\n                return true;\n            }\n            seen.add(num);\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {8, 3, 15, 6, 2};\n        System.out.println(hasPairHashing(arr, 9));\n        System.out.println(hasPairHashing(arr, 100));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-hashing-two-sum"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing hasPairHashing({8,3,15,6,2}, 9)",
+      "steps": [
+        "num=8: complement=9-8=1. seen={} doesn't contain 1. Add 8. seen={8}",
+        "num=3: complement=9-3=6. seen={8} doesn't contain 6. Add 3. seen={8,3}",
+        "num=15: complement=9-15=-6. seen={8,3} doesn't contain -6. Add 15. seen={8,3,15}",
+        "num=6: complement=9-6=3. seen={8,3,15} DOES contain 3! Return true immediately"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "complement = target - num asks: 'what value, paired with the current num, would hit target?' If we've already SEEN that complement earlier in the array, we've found our pair -- all in one single pass, no sorting required, no nested loop."
+    },
+    {
+      "type": "heading",
+      "text": "4. Counting with a HashMap: Word Frequency (Recap)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Map<String, Integer> counts = new HashMap<>();\nfor (String word : words) {\n    counts.put(word, counts.getOrDefault(word, 0) + 1);\n}"
+    },
+    {
+      "type": "note",
+      "text": "This is the exact same pattern from the Map lesson's word-count example -- HashMap's O(1) average put()/getOrDefault() is what makes counting occurrences across an entire array an O(n) operation overall, instead of something slower."
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together: First Non-Repeating Character"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static char firstNonRepeating(String text) {\n        Map<Character, Integer> counts = new HashMap<>();\n        for (char c : text.toCharArray()) {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n\n        for (char c : text.toCharArray()) {\n            if (counts.get(c) == 1) {\n                return c;\n            }\n        }\n        return '_'; // no non-repeating character found\n    }\n\n    public static void main(String[] args) {\n        System.out.println(firstNonRepeating(\"swiss\"));\n    }\n}",
+      "output": "w",
+      "retypePractice": true,
+      "retypeId": "java-hashing-first-non-repeat"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it for \"swiss\""
+      ,
+      "points": [
+        "First pass builds counts: s=3, w=1, i=1",
+        "Second pass walks the string IN ORDER again: 's' has count 3 (skip), 'w' has count 1 -- return 'w' immediately",
+        "Two passes, both O(n), so overall still O(n) -- much better than checking each character against every other character"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Reaching for nested loops out of habit for lookup/duplicate/pairing problems that a HashSet or HashMap could solve in a single O(n) pass.",
+        "Forgetting complement = target - num is the KEY insight for hashing-based pair-sum problems -- it turns 'find a pair' into 'have I seen this one specific value before?'",
+        "Assuming hashing requires the array to be sorted -- unlike Two Pointers, hashing works perfectly well on unsorted data.",
+        "Using counts.get(c) directly without getOrDefault() when a key might not exist yet, risking a null result where an int was expected (recall Autoboxing/Unboxing's null-unboxing pitfall)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why does using a HashSet turn duplicate-detection from O(n^2) into O(n)?",
+          "answer": "A single loop through the array suffices, since checking whether a value has been seen (contains()) and recording it (add()) are both O(1) on average -- eliminating the need for a nested loop to compare every pair."
+        },
+        {
+          "question": "How does hashing solve the two-sum problem without sorting the array?",
+          "answer": "For each number, compute its complement (target - num) and check if that complement has already been seen, using a HashSet. If it has, a valid pair exists. This works in one O(n) pass regardless of the array's order, unlike Two Pointers, which requires sorted data."
+        },
+        {
+          "question": "What is the average time complexity of HashMap/HashSet operations like get(), put(), contains(), and add()?",
+          "answer": "O(1) on average, which is what makes hashing such a powerful tool for lookup, counting, and pairing problems -- though in rare worst-case scenarios this can degrade, a detail beyond this course's scope."
+        }
+      ],
+      "thirtySecondAnswer": "Hashing maps values to locations via a hash function, giving HashMap and HashSet O(1) average-case lookup, insertion, and deletion. This turns many O(n^2) brute-force problems into O(n): checking for duplicates becomes a single pass with a HashSet tracking seen values, and two-sum becomes a single pass with a HashSet checking whether each number's complement (target - num) has already been seen. HashMap enables O(n) frequency counting via getOrDefault(), used in problems like finding the first non-repeating character. Hashing works on unsorted data, unlike Two Pointers, which requires sorted input."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Hashing = an instant lookup table -- 'have I seen this before?' answered in O(1), not by scanning. Two-sum's complement trick: don't search for the PAIR, search for whether its MATCH already walked past you."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why does a HashSet turn duplicate detection into O(n) instead of O(n^2)?",
+        "What is the 'complement' trick in hashing-based two-sum?",
+        "Does the hashing approach to two-sum require the array to be sorted?",
+        "What is the average time complexity of HashMap's get() and put()?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-hashing-has-duplicate", "lang": "java", "filename": "Main.java", "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static boolean hasDuplicate(int[] numbers) {\n        Set<Integer> seen = new HashSet<>();\n        for (int num : numbers) {\n            if (seen.contains(num)) {\n                return true;\n            }\n            seen.add(num);\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 2};\n        System.out.println(hasDuplicate(nums));\n    }\n}", "output": "true" },
+    { "id": "java-hashing-two-sum", "lang": "java", "filename": "Main.java", "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static boolean hasPairHashing(int[] arr, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int num : arr) {\n            int complement = target - num;\n            if (seen.contains(complement)) {\n                return true;\n            }\n            seen.add(num);\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {8, 3, 15, 6, 2};\n        System.out.println(hasPairHashing(arr, 9));\n        System.out.println(hasPairHashing(arr, 100));\n    }\n}", "output": "true\nfalse" },
+    { "id": "java-hashing-first-non-repeat", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static char firstNonRepeating(String text) {\n        Map<Character, Integer> counts = new HashMap<>();\n        for (char c : text.toCharArray()) {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n\n        for (char c : text.toCharArray()) {\n            if (counts.get(c) == 1) {\n                return c;\n            }\n        }\n        return '_'; // no non-repeating character found\n    }\n\n    public static void main(String[] args) {\n        System.out.println(firstNonRepeating(\"swiss\"));\n    }\n}", "output": "w" }
+  ],
+  "retypePractice": [
+    { "id": "java-hashing-has-duplicate", "reference": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static boolean hasDuplicate(int[] numbers) {\n        Set<Integer> seen = new HashSet<>();\n        for (int num : numbers) {\n            if (seen.contains(num)) {\n                return true;\n            }\n            seen.add(num);\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 2};\n        System.out.println(hasDuplicate(nums));\n    }\n}" },
+    { "id": "java-hashing-two-sum", "reference": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static boolean hasPairHashing(int[] arr, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int num : arr) {\n            int complement = target - num;\n            if (seen.contains(complement)) {\n                return true;\n            }\n            seen.add(num);\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {8, 3, 15, 6, 2};\n        System.out.println(hasPairHashing(arr, 9));\n        System.out.println(hasPairHashing(arr, 100));\n    }\n}" },
+    { "id": "java-hashing-first-non-repeat", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static char firstNonRepeating(String text) {\n        Map<Character, Integer> counts = new HashMap<>();\n        for (char c : text.toCharArray()) {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n\n        for (char c : text.toCharArray()) {\n            if (counts.get(c) == 1) {\n                return c;\n            }\n        }\n        return '_'; // no non-repeating character found\n    }\n\n    public static void main(String[] args) {\n        System.out.println(firstNonRepeating(\"swiss\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-hashing-has-duplicate", "java-hashing-two-sum", "java-hashing-first-non-repeat"]
+  }
+}
