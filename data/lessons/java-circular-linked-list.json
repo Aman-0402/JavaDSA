@@ -1,0 +1,152 @@
+{
+  "id": "java-circular-linked-list",
+  "moduleId": "linked-list",
+  "title": "Circular Linked List",
+  "description": "Making the last node point back to the first, forming a loop -- and the traversal trap this creates if you're not careful.",
+  "objectives": [
+    "Understand a circular linked list's defining trait: the last node points back to the first",
+    "Traverse a circular linked list without looping forever",
+    "Insert into a circular linked list correctly, preserving the loop"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Defining Difference"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Singly Linked List lesson, the last node's next was null, marking the end. A circular linked list instead makes the LAST node point back to the FIRST node -- there is no null at the end at all."
+    },
+    {
+      "type": "definition",
+      "term": "Circular linked list",
+      "text": "A linked list where the last node's next reference points back to the first node, forming a continuous loop with no null terminator."
+    },
+    {
+      "type": "heading",
+      "text": "2. Building a Small Circular Linked List"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.next = third;\n        third.next = first; // loops back to the start -- no null anywhere\n\n        System.out.println(third.next.data); // 10 -- following the loop back around\n        System.out.println(third.next.next.data); // 20\n    }\n}",
+      "output": "10\n20",
+      "retypePractice": true,
+      "retypeId": "java-cll-basic-loop"
+    },
+    {
+      "type": "warning",
+      "text": "third.next is NOT null here -- it's first. This is the entire structural difference from a singly linked list. Trying to traverse this the same way as before (while (current != null)) would NEVER stop, since current is never null -- an infinite loop, exactly the kind warned about back in the Loops lesson."
+    },
+    {
+      "type": "heading",
+      "text": "3. Traversing Safely: Stop After One Full Loop"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.next = third;\n        third.next = first;\n\n        Node current = first;\n        do {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        } while (current != first);\n    }\n}",
+      "output": "10 20 30 ",
+      "retypePractice": true,
+      "retypeId": "java-cll-safe-traverse"
+    },
+    {
+      "type": "note",
+      "text": "This uses the do-while loop from Control Flow -- specifically because we KNOW the body must run at least once (there's always at least the starting node), and the exit condition is checking whether we've come back around to first, not checking for null."
+    },
+    {
+      "type": "heading",
+      "text": "4. Inserting Into a Circular Linked List"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node last; // keep a reference to the LAST node for convenience\n\n    static void insertAtEnd(int data) {\n        Node newNode = new Node(data);\n        if (last == null) {\n            last = newNode;\n            newNode.next = newNode; // points to itself -- a circle of one\n            return;\n        }\n        newNode.next = last.next; // new node points to the current first node\n        last.next = newNode;      // old last points to the new node\n        last = newNode;           // new node becomes the last node\n    }\n\n    static void printList() {\n        if (last == null) return;\n        Node first = last.next;\n        Node current = first;\n        do {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        } while (current != first);\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtEnd(10);\n        insertAtEnd(20);\n        insertAtEnd(30);\n        printList();\n    }\n}",
+      "output": "10 20 30 ",
+      "retypePractice": true,
+      "retypeId": "java-cll-insert-end"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why tracking 'last' (instead of 'head') is convenient here",
+      "points": [
+        "last.next always gives us the FIRST node instantly -- no separate head reference needed",
+        "Inserting at the end just means: point the new node to the current first (last.next), then relink last.next to the new node, then update last",
+        "This mirrors real circular buffer implementations, often used for things like round-robin scheduling"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Real-World Use Case"
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Round-robin turn-taking",
+      "text": "Imagine a multiplayer game giving each player a turn, then cycling back to player 1 after the last player's turn, forever. A circular linked list models this naturally: 'the next player after the last one' is just first again, with zero special-case logic needed -- the loop itself IS the game's turn order."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Traversing a circular linked list with while (current != null) -- current is NEVER null, causing an infinite loop.",
+        "Forgetting the special case for inserting into an EMPTY circular list -- the very first node must point to ITSELF, not remain null.",
+        "Losing track of which node is 'first' after several insertions -- tracking last (whose .next is always first) avoids needing a separate head reference.",
+        "Forgetting to update the LAST node's next pointer when appending, leaving the loop broken (pointing to null again) instead of staying circular."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the defining structural difference between a circular and a singly linked list?",
+          "answer": "In a circular linked list, the last node's next reference points back to the first node instead of being null, forming a continuous loop with no natural end."
+        },
+        {
+          "question": "Why does while (current != null) fail for traversing a circular linked list?",
+          "answer": "No node in a circular linked list ever has a null next reference -- the last node points back to the first -- so that condition is never false, causing an infinite loop. Traversal must instead stop when the current node returns to the starting node."
+        },
+        {
+          "question": "What special case must be handled when inserting into an empty circular linked list?",
+          "answer": "The very first node inserted must point its next reference to ITSELF, since there's no other node yet to complete the loop with."
+        }
+      ],
+      "thirtySecondAnswer": "A circular linked list's last node points back to the first node instead of to null, forming a continuous loop. This means traversal can't use while (current != null) like a singly linked list -- it must instead stop once current returns to the starting node, typically with a do-while loop. Inserting into an empty circular list requires a special case: the first node must point to itself. Circular linked lists naturally model round-robin scenarios, like cycling through players' turns, where 'the next one after the last' is simply the first again, with no special-case logic needed in the application itself."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Circular linked list = a roundabout, not a dead-end street -- the last node feeds right back into the first. Never check for null to stop; check for 'have I returned to where I started?' instead."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What makes a linked list 'circular'?",
+        "Why does checking for null fail when traversing a circular linked list?",
+        "What special case applies when inserting into an empty circular linked list?",
+        "Give a real-world scenario a circular linked list models naturally."
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-cll-basic-loop", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.next = third;\n        third.next = first; // loops back to the start -- no null anywhere\n\n        System.out.println(third.next.data); // 10 -- following the loop back around\n        System.out.println(third.next.next.data); // 20\n    }\n}", "output": "10\n20" },
+    { "id": "java-cll-safe-traverse", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.next = third;\n        third.next = first;\n\n        Node current = first;\n        do {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        } while (current != first);\n    }\n}", "output": "10 20 30 " },
+    { "id": "java-cll-insert-end", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node last; // keep a reference to the LAST node for convenience\n\n    static void insertAtEnd(int data) {\n        Node newNode = new Node(data);\n        if (last == null) {\n            last = newNode;\n            newNode.next = newNode; // points to itself -- a circle of one\n            return;\n        }\n        newNode.next = last.next; // new node points to the current first node\n        last.next = newNode;      // old last points to the new node\n        last = newNode;           // new node becomes the last node\n    }\n\n    static void printList() {\n        if (last == null) return;\n        Node first = last.next;\n        Node current = first;\n        do {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        } while (current != first);\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtEnd(10);\n        insertAtEnd(20);\n        insertAtEnd(30);\n        printList();\n    }\n}", "output": "10 20 30 " }
+  ],
+  "retypePractice": [
+    { "id": "java-cll-basic-loop", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.next = third;\n        third.next = first; // loops back to the start -- no null anywhere\n\n        System.out.println(third.next.data); // 10 -- following the loop back around\n        System.out.println(third.next.next.data); // 20\n    }\n}" },
+    { "id": "java-cll-safe-traverse", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.next = third;\n        third.next = first;\n\n        Node current = first;\n        do {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        } while (current != first);\n    }\n}" },
+    { "id": "java-cll-insert-end", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node last; // keep a reference to the LAST node for convenience\n\n    static void insertAtEnd(int data) {\n        Node newNode = new Node(data);\n        if (last == null) {\n            last = newNode;\n            newNode.next = newNode; // points to itself -- a circle of one\n            return;\n        }\n        newNode.next = last.next; // new node points to the current first node\n        last.next = newNode;      // old last points to the new node\n        last = newNode;           // new node becomes the last node\n    }\n\n    static void printList() {\n        if (last == null) return;\n        Node first = last.next;\n        Node current = first;\n        do {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        } while (current != first);\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtEnd(10);\n        insertAtEnd(20);\n        insertAtEnd(30);\n        printList();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-cll-basic-loop", "java-cll-safe-traverse", "java-cll-insert-end"]
+  }
+}

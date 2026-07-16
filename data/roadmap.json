@@ -115,7 +115,8 @@
       "title": "Linked List",
       "topics": [
         { "id": "java-singly-linked-list", "title": "Singly Linked List", "lesson": "java-singly-linked-list" },
-        { "id": "java-doubly-linked-list", "title": "Doubly Linked List", "lesson": "java-doubly-linked-list" }
+        { "id": "java-doubly-linked-list", "title": "Doubly Linked List", "lesson": "java-doubly-linked-list" },
+        { "id": "java-circular-linked-list", "title": "Circular Linked List", "lesson": "java-circular-linked-list" }
       ]
     },
     { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },
