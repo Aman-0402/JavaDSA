@@ -140,6 +140,175 @@
         "Give a coin system where greedy coin change fails.",
         "What property must a problem have for greedy to guarantee a correct answer?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-455",
+      "number": 455,
+      "title": "Assign Cookies",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/assign-cookies/",
+      "problemStatement": "Each child i has a greed factor g[i] (minimum cookie size to be content). Each cookie j has size s[j]. Assign at most one cookie per child to maximize the number of content children.",
+      "examples": [
+        { "input": "g = [1,2,3], s = [1,1]", "output": "1", "explanation": "Only cookie size 1 can satisfy child with greed 1; no cookie is big enough for greed 2 or 3." }
+      ],
+      "constraints": ["1 <= g.length, s.length <= 3 * 10^4"],
+      "hints": ["Sort both arrays.", "Greedily give the smallest sufficient cookie to the least-greedy unsatisfied child -- using a bigger cookie than necessary wastes it."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Sort greed factors and cookie sizes. Two pointers: advance the cookie pointer until it can satisfy the current child, then move both pointers forward (child satisfied); otherwise just advance the cookie pointer.",
+          "code": "class Solution {\n    public int findContentChildren(int[] g, int[] s) {\n        Arrays.sort(g);\n        Arrays.sort(s);\n        int child = 0, cookie = 0;\n        while (child < g.length && cookie < s.length) {\n            if (s[cookie] >= g[child]) {\n                child++;\n            }\n            cookie++;\n        }\n        return child;\n    }\n}",
+          "output": "1",
+          "timeComplexity": "O(n log n + m log m)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-121-greedy",
+      "number": 121,
+      "title": "Best Time to Buy and Sell Stock",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+      "problemStatement": "Given daily stock prices, find the maximum profit from one buy followed by one later sell.",
+      "examples": [
+        { "input": "prices = [7,1,5,3,6,4]", "output": "5", "explanation": "Buy at 1 (day 2), sell at 6 (day 5): profit 5." }
+      ],
+      "constraints": ["1 <= prices.length <= 10^5"],
+      "hints": ["Greedily track the minimum price seen so far, and at each day compute profit = price - minSoFar, keeping the best."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Single pass, tracking the minimum price seen so far and the best profit achievable by selling at the current day.",
+          "code": "class Solution {\n    public int maxProfit(int[] prices) {\n        int minPrice = Integer.MAX_VALUE;\n        int best = 0;\n        for (int price : prices) {\n            minPrice = Math.min(minPrice, price);\n            best = Math.max(best, price - minPrice);\n        }\n        return best;\n    }\n}",
+          "output": "5",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-55",
+      "number": 55,
+      "title": "Jump Game",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/jump-game/",
+      "problemStatement": "Given an array where nums[i] is the max jump length from index i, return whether you can reach the last index starting from index 0.",
+      "examples": [
+        { "input": "nums = [2,3,1,1,4]", "output": "true" },
+        { "input": "nums = [3,2,1,0,4]", "output": "false", "explanation": "Index 3 has value 0, trapping you there -- index 4 is unreachable regardless of earlier choices." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4"],
+      "hints": ["Greedily track the farthest reachable index so far.", "If the current index ever exceeds the farthest reachable index, you're stuck."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Track farthest reachable index while scanning left to right; if the current index i is beyond what's reachable, return false early. Update farthest = max(farthest, i + nums[i]).",
+          "code": "class Solution {\n    public boolean canJump(int[] nums) {\n        int farthest = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (i > farthest) return false;\n            farthest = Math.max(farthest, i + nums[i]);\n        }\n        return true;\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-45",
+      "number": 45,
+      "title": "Jump Game II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/jump-game-ii/",
+      "problemStatement": "Same setup as Jump Game, but return the MINIMUM number of jumps needed to reach the last index (guaranteed reachable).",
+      "examples": [
+        { "input": "nums = [2,3,1,1,4]", "output": "2", "explanation": "Jump from index 0 to index 1 (value 3), then from index 1 to index 4." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4"],
+      "hints": ["Greedy BFS-like layering: track the farthest reachable index using the CURRENT jump's range, and the boundary of that range.", "When you reach the boundary of the current jump's range, you must take another jump -- increment the counter and extend the boundary to the farthest seen."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Track currentEnd (farthest reachable using jumps taken so far) and farthest (best reachable including the node being examined). When i reaches currentEnd, a new jump is forced: increment jumps and advance currentEnd to farthest.",
+          "code": "class Solution {\n    public int jump(int[] nums) {\n        int jumps = 0, currentEnd = 0, farthest = 0;\n        for (int i = 0; i < nums.length - 1; i++) {\n            farthest = Math.max(farthest, i + nums[i]);\n            if (i == currentEnd) {\n                jumps++;\n                currentEnd = farthest;\n            }\n        }\n        return jumps;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-134",
+      "number": 134,
+      "title": "Gas Station",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/gas-station/",
+      "problemStatement": "n gas stations in a circle, gas[i] fuel available at station i, cost[i] fuel needed to travel to the next station. Return the starting station index from which you can complete the full circuit, or -1 if impossible (the answer is guaranteed unique if it exists).",
+      "examples": [
+        { "input": "gas = [1,2,3,4,5], cost = [3,4,5,1,2]", "output": "3", "explanation": "Starting at stations 0, 1, or 2, the running tank goes negative (each has gas - cost = -2). Starting at station 3: tank = 4 - 1 = 3, then + 5 - 2 = 6 at station 4 -- never goes negative, completing the circuit." }
+      ],
+      "constraints": ["n == gas.length == cost.length", "1 <= n <= 10^5"],
+      "hints": ["If total gas < total cost, it's impossible overall -- return -1.", "Otherwise, a solution always exists. Greedily track a running tank total; whenever it drops below 0, none of the stations from the previous start through the current one can be a valid start -- reset the candidate start to the next station."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Track total surplus (gas - cost summed over all stations) and a running local tank. Whenever the local tank goes negative at station i, no start in [candidateStart, i] can work, so reset candidateStart to i+1 and zero the tank. If total surplus is negative, return -1; otherwise candidateStart is the answer.",
+          "code": "class Solution {\n    public int canCompleteCircuit(int[] gas, int[] cost) {\n        int totalSurplus = 0, tank = 0, start = 0;\n        for (int i = 0; i < gas.length; i++) {\n            int diff = gas[i] - cost[i];\n            totalSurplus += diff;\n            tank += diff;\n            if (tank < 0) {\n                start = i + 1;\n                tank = 0;\n            }\n        }\n        return totalSurplus >= 0 ? start : -1;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-763",
+      "number": 763,
+      "title": "Partition Labels",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/partition-labels/",
+      "problemStatement": "Given a string, partition it into as many parts as possible such that each letter appears in at most one part. Return the sizes of these parts.",
+      "examples": [
+        { "input": "s = \"ababcbacadefegdehijhklij\"", "output": "[9,7,8]", "explanation": "First part 'ababcbaca' (9 chars) contains all occurrences of a, b, c. Next 'defegde' (7 chars) contains all of d, e, f, g. Last 'hijhklij' (8 chars) contains all of h, i, j, k, l." }
+      ],
+      "constraints": ["1 <= s.length <= 500", "lowercase English letters only"],
+      "hints": ["Precompute the LAST index of each character.", "Scan left to right, extending the current partition's end to the max(current end, last-index of each new character seen). Close the partition when the scan index reaches that end."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "First pass: record the last occurrence index of each character. Second pass: track the end of the current partition as the max last-index seen so far; when the scan index reaches that end, the partition is complete -- record its size and start a new one.",
+          "code": "class Solution {\n    public List<Integer> partitionLabels(String s) {\n        int[] lastIndex = new int[26];\n        for (int i = 0; i < s.length(); i++) {\n            lastIndex[s.charAt(i) - 'a'] = i;\n        }\n\n        List<Integer> result = new ArrayList<>();\n        int start = 0, end = 0;\n        for (int i = 0; i < s.length(); i++) {\n            end = Math.max(end, lastIndex[s.charAt(i) - 'a']);\n            if (i == end) {\n                result.add(end - start + 1);\n                start = i + 1;\n            }\n        }\n        return result;\n    }\n}",
+          "output": "[9,7,8]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) (fixed 26-size array)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-435",
+      "number": 435,
+      "title": "Non-overlapping Intervals",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/non-overlapping-intervals/",
+      "problemStatement": "Given a collection of intervals, return the minimum number of intervals to remove so that the rest are non-overlapping.",
+      "examples": [
+        { "input": "intervals = [[1,2],[2,3],[3,4],[1,3]]", "output": "1", "explanation": "[1,3] overlaps both [2,3] and would need removal; removing just [1,3] leaves [1,2],[2,3],[3,4] non-overlapping." }
+      ],
+      "constraints": ["1 <= intervals.length <= 10^5"],
+      "hints": ["This is exactly Activity Selection in reverse: sort by END time, greedily keep an interval if it starts >= the last kept interval's end; count removals as intervals that must be dropped."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Sort intervals by end time. Greedily keep the first interval; for each subsequent interval, if it starts before the last kept interval's end (overlap), it must be removed (increment removal count); otherwise keep it and update the last-kept end.",
+          "code": "class Solution {\n    public int eraseOverlapIntervals(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> a[1] - b[1]);\n        int removals = 0;\n        int lastEnd = Integer.MIN_VALUE;\n        for (int[] interval : intervals) {\n            if (interval[0] >= lastEnd) {\n                lastEnd = interval[1];\n            } else {\n                removals++;\n            }\n        }\n        return removals;\n    }\n}",
+          "output": "1",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
     }
   ],
   "codeExamples": [
