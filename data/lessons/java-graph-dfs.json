@@ -1,0 +1,157 @@
+{
+  "id": "java-graph-dfs",
+  "moduleId": "graphs",
+  "title": "Graph DFS",
+  "description": "The other half of graph traversal -- diving deep down one path before backtracking, both recursively and iteratively, plus counting connected components.",
+  "objectives": [
+    "Implement graph DFS recursively and iteratively",
+    "Use DFS to count connected components in a graph",
+    "Compare when DFS is preferred over BFS"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. DFS on a Graph: Same Idea, New Setting"
+    },
+    {
+      "type": "paragraph",
+      "text": "DFS: Iterative Traversal with a Stack showed that tree DFS dives deep down one branch before backtracking. Graph DFS does exactly the same thing, but -- just like Graph BFS needed a visited set to handle cycles -- graph DFS needs one too."
+    },
+    {
+      "type": "heading",
+      "text": "2. Recursive Graph DFS"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int current, boolean[] visited) {\n        visited[current] = true;\n        System.out.print(current + \" \");\n\n        for (int neighbor : adjList.get(current)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited);\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        boolean[] visited = new boolean[n];\n        dfs(adjList, 0, visited);\n    }\n}",
+      "output": "0 1 3 2 4 ",
+      "retypePractice": true,
+      "retypeId": "java-graph-dfs-recursive"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing dfs starting at 0, edges 0-1,0-2,1-3,2-4",
+      "steps": [
+        "dfs(0): mark visited, print 0. Neighbors: 1 (unvisited) -- recurse into dfs(1)",
+        "dfs(1): mark visited, print 1. Neighbors: 0 (visited, skip), 3 (unvisited) -- recurse into dfs(3)",
+        "dfs(3): mark visited, print 3. Neighbors: 1 (visited). No unvisited neighbors -- return",
+        "Back in dfs(1): no more neighbors -- return",
+        "Back in dfs(0): next neighbor 2 (unvisited) -- recurse into dfs(2)",
+        "dfs(2): mark visited, print 2. Neighbors: 0 (visited), 4 (unvisited) -- recurse into dfs(4)",
+        "dfs(4): mark visited, print 4. Neighbors: 2 (visited). Return -- all calls unwind",
+        "Final order: 0 1 3 2 4"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Compare this order (0 1 3 2 4) to graph BFS's order on a similar graph (0 1 2 3 4, from Graph BFS) -- DFS commits fully to node 1's branch (reaching 3) BEFORE ever looking at node 2, while BFS visits all of 0's direct neighbors first. Same graph, genuinely different exploration strategy."
+    },
+    {
+      "type": "heading",
+      "text": "3. Iterative Graph DFS With an Explicit Stack"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.*;\n\npublic class Main {\n    static void dfsIterative(List<List<Integer>> adjList, int start) {\n        boolean[] visited = new boolean[adjList.size()];\n        Deque<Integer> stack = new ArrayDeque<>();\n\n        stack.push(start);\n\n        while (!stack.isEmpty()) {\n            int current = stack.pop();\n            if (visited[current]) {\n                continue; // already handled via another path\n            }\n            visited[current] = true;\n            System.out.print(current + \" \");\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    stack.push(neighbor);\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        dfsIterative(adjList, 0);\n    }\n}",
+      "output": "0 2 4 1 3 ",
+      "retypePractice": true,
+      "retypeId": "java-graph-dfs-iterative"
+    },
+    {
+      "type": "warning",
+      "text": "Notice the iterative version's output order (0 2 4 1 3) differs from the recursive version's (0 1 3 2 4) -- both are valid DFS traversals, but a Stack's LIFO order naturally processes neighbors in the REVERSE order they were pushed, unlike recursion which processes them in the order encountered. Either is a correct DFS; the exact visiting order among SIBLINGS isn't fixed, only the depth-first STRATEGY is."
+    },
+    {
+      "type": "note",
+      "text": "The if (visited[current]) continue; check here matters because, unlike graph BFS which marks visited at enqueue time, this pushes neighbors without checking visited status first sometimes leading to duplicate entries on the stack -- the check at pop-time cleans this up safely."
+    },
+    {
+      "type": "heading",
+      "text": "4. Counting Connected Components"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int current, boolean[] visited) {\n        visited[current] = true;\n        for (int neighbor : adjList.get(current)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited);\n            }\n        }\n    }\n\n    static int countComponents(List<List<Integer>> adjList) {\n        boolean[] visited = new boolean[adjList.size()];\n        int components = 0;\n\n        for (int i = 0; i < adjList.size(); i++) {\n            if (!visited[i]) {\n                dfs(adjList, i, visited);\n                components++;\n            }\n        }\n        return components;\n    }\n\n    public static void main(String[] args) {\n        int n = 6; // nodes 0-5\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {1,2}, {3,4}}; // node 5 is isolated\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        System.out.println(countComponents(adjList));\n    }\n}",
+      "output": "3",
+      "retypePractice": true,
+      "retypeId": "java-graph-dfs-components"
+    },
+    {
+      "type": "keyPoints",
+      "title": "How this counts components",
+      "points": [
+        "Component 1: {0, 1, 2}, connected via edges 0-1 and 1-2",
+        "Component 2: {3, 4}, connected via edge 3-4",
+        "Component 3: {5}, an isolated node with no edges at all -- still its OWN component",
+        "Each time the outer loop finds an unvisited node, it means a NEW component was discovered -- DFS from there marks the entire component as visited in one call"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting to loop over ALL nodes (not just from one starting point) when the graph might be disconnected -- a single DFS/BFS call only reaches one component.",
+        "Assuming recursive and iterative DFS always visit siblings in the exact same order -- the depth-first STRATEGY is the same, but sibling order can differ based on stack vs recursion mechanics.",
+        "Marking visited only at push time for iterative DFS without a pop-time re-check -- this can lead to processing (printing) the same node more than once if it was pushed multiple times before being visited.",
+        "Confusing DFS with BFS's use cases -- DFS suits path-existence and component-counting problems well; BFS suits shortest-path problems on unweighted graphs."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "How does graph DFS relate to tree DFS, and what extra step does it need?",
+          "answer": "It's the same depth-first strategy -- dive deep down one path before backtracking -- but graphs can have cycles, so DFS needs a visited array/set to avoid revisiting nodes indefinitely, which trees never required."
+        },
+        {
+          "question": "How do you count the number of connected components in a graph using DFS?",
+          "answer": "Loop over every node; whenever an unvisited node is found, it belongs to a new component -- run DFS from it to mark its entire component as visited, and increment a component counter. The final counter value is the total number of components."
+        },
+        {
+          "question": "Why might recursive and iterative DFS on the same graph produce different visiting orders?",
+          "answer": "Recursion processes a node's neighbors in the order encountered, while an explicit Stack's LIFO behavior naturally processes them in reverse push order -- both are valid depth-first traversals, but the exact order among sibling nodes isn't fixed by the DFS strategy alone."
+        }
+      ],
+      "thirtySecondAnswer": "Graph DFS extends tree DFS's dive-deep-then-backtrack strategy to graphs, requiring a visited array to handle cycles, exactly as graph BFS required one. It can be written recursively (natural, using the call stack) or iteratively (using an explicit Stack, with a pop-time visited check to avoid reprocessing duplicates). A key application is counting connected components: looping over every node and running DFS from each still-unvisited one, incrementing a counter each time -- since one DFS call fully marks an entire connected component. DFS suits component-counting and path-existence problems, while BFS suits shortest-path problems on unweighted graphs."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Graph DFS = tree DFS with a memory (visited) so cycles don't trap it in a loop. Counting components = walking every unexplored island (DFS from it) and counting islands, one per DFS call from an unvisited start."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What extra step does graph DFS need that tree DFS didn't?",
+        "How do you count connected components using DFS?",
+        "Why might recursive and iterative DFS visit siblings in different orders?",
+        "When would you choose DFS over BFS for a graph problem?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-graph-dfs-recursive", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int current, boolean[] visited) {\n        visited[current] = true;\n        System.out.print(current + \" \");\n\n        for (int neighbor : adjList.get(current)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited);\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        boolean[] visited = new boolean[n];\n        dfs(adjList, 0, visited);\n    }\n}", "output": "0 1 3 2 4 " },
+    { "id": "java-graph-dfs-iterative", "lang": "java", "filename": "Main.java", "code": "import java.util.*;\n\npublic class Main {\n    static void dfsIterative(List<List<Integer>> adjList, int start) {\n        boolean[] visited = new boolean[adjList.size()];\n        Deque<Integer> stack = new ArrayDeque<>();\n\n        stack.push(start);\n\n        while (!stack.isEmpty()) {\n            int current = stack.pop();\n            if (visited[current]) {\n                continue; // already handled via another path\n            }\n            visited[current] = true;\n            System.out.print(current + \" \");\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    stack.push(neighbor);\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        dfsIterative(adjList, 0);\n    }\n}", "output": "0 2 4 1 3 " },
+    { "id": "java-graph-dfs-components", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int current, boolean[] visited) {\n        visited[current] = true;\n        for (int neighbor : adjList.get(current)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited);\n            }\n        }\n    }\n\n    static int countComponents(List<List<Integer>> adjList) {\n        boolean[] visited = new boolean[adjList.size()];\n        int components = 0;\n\n        for (int i = 0; i < adjList.size(); i++) {\n            if (!visited[i]) {\n                dfs(adjList, i, visited);\n                components++;\n            }\n        }\n        return components;\n    }\n\n    public static void main(String[] args) {\n        int n = 6; // nodes 0-5\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {1,2}, {3,4}}; // node 5 is isolated\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        System.out.println(countComponents(adjList));\n    }\n}", "output": "3" }
+  ],
+  "retypePractice": [
+    { "id": "java-graph-dfs-recursive", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int current, boolean[] visited) {\n        visited[current] = true;\n        System.out.print(current + \" \");\n\n        for (int neighbor : adjList.get(current)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited);\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        boolean[] visited = new boolean[n];\n        dfs(adjList, 0, visited);\n    }\n}" },
+    { "id": "java-graph-dfs-iterative", "reference": "import java.util.*;\n\npublic class Main {\n    static void dfsIterative(List<List<Integer>> adjList, int start) {\n        boolean[] visited = new boolean[adjList.size()];\n        Deque<Integer> stack = new ArrayDeque<>();\n\n        stack.push(start);\n\n        while (!stack.isEmpty()) {\n            int current = stack.pop();\n            if (visited[current]) {\n                continue; // already handled via another path\n            }\n            visited[current] = true;\n            System.out.print(current + \" \");\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    stack.push(neighbor);\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        dfsIterative(adjList, 0);\n    }\n}" },
+    { "id": "java-graph-dfs-components", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int current, boolean[] visited) {\n        visited[current] = true;\n        for (int neighbor : adjList.get(current)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited);\n            }\n        }\n    }\n\n    static int countComponents(List<List<Integer>> adjList) {\n        boolean[] visited = new boolean[adjList.size()];\n        int components = 0;\n\n        for (int i = 0; i < adjList.size(); i++) {\n            if (!visited[i]) {\n                dfs(adjList, i, visited);\n                components++;\n            }\n        }\n        return components;\n    }\n\n    public static void main(String[] args) {\n        int n = 6; // nodes 0-5\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {1,2}, {3,4}}; // node 5 is isolated\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        System.out.println(countComponents(adjList));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-graph-dfs-recursive", "java-graph-dfs-iterative", "java-graph-dfs-components"]
+  }
+}
