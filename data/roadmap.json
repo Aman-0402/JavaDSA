@@ -124,7 +124,8 @@
       "id": "heap",
       "title": "Heap",
       "topics": [
-        { "id": "java-priority-queue-heap", "title": "PriorityQueue (Java's Built-In Heap)", "lesson": "java-priority-queue-heap" }
+        { "id": "java-priority-queue-heap", "title": "PriorityQueue (Java's Built-In Heap)", "lesson": "java-priority-queue-heap" },
+        { "id": "java-manual-heap-implementation", "title": "Manual Heap Implementation", "lesson": "java-manual-heap-implementation" }
       ]
     },
     { "id": "trees", "title": "Trees", "topics": [] },

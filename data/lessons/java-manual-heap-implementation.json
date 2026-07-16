@@ -1,0 +1,170 @@
+{
+  "id": "java-manual-heap-implementation",
+  "moduleId": "heap",
+  "title": "Manual Heap Implementation",
+  "description": "Building a min-heap from scratch with an array, showing exactly what PriorityQueue does internally to make peek O(1) and poll O(log n).",
+  "objectives": [
+    "Represent a binary heap using a plain array and index arithmetic",
+    "Implement insert (sift up) and extractMin (sift down)",
+    "Understand why these operations are O(log n)"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. A Heap as an Array"
+    },
+    {
+      "type": "paragraph",
+      "text": "A binary heap doesn't need Node objects with left/right references like a tree (covered fully in the Trees module) -- it can be stored compactly in a plain array, using index arithmetic to find a node's parent and children."
+    },
+    {
+      "type": "table",
+      "title": "Index arithmetic for a 0-indexed array heap",
+      "headers": ["Relationship", "Formula (for index i)"],
+      "rows": [
+        ["Parent", "(i - 1) / 2"],
+        ["Left child", "2 * i + 1"],
+        ["Right child", "2 * i + 2"]
+      ]
+    },
+    {
+      "type": "definition",
+      "term": "Min-heap property",
+      "text": "Every parent node's value is less than or equal to both its children's values -- this is what guarantees the smallest element is always at index 0."
+    },
+    {
+      "type": "heading",
+      "text": "2. Insert: Add at the End, Then Sift Up"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static List<Integer> heap = new ArrayList<>();\n\n    static void insert(int value) {\n        heap.add(value); // add at the end\n        siftUp(heap.size() - 1);\n    }\n\n    static void siftUp(int index) {\n        while (index > 0) {\n            int parent = (index - 1) / 2;\n            if (heap.get(index) < heap.get(parent)) {\n                int temp = heap.get(index);\n                heap.set(index, heap.get(parent));\n                heap.set(parent, temp);\n                index = parent;\n            } else {\n                break;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        insert(10);\n        insert(5);\n        insert(15);\n        insert(2);\n\n        System.out.println(heap);\n    }\n}",
+      "output": "[2, 5, 15, 10]",
+      "retypePractice": true,
+      "retypeId": "java-heap-manual-insert"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing insert(2) on heap [2? no -- starting from [5, 10, 15] before this insert]",
+      "steps": [
+        "Before this insert: heap = [5, 10, 15] (already valid: 5 <= 10, 5 <= 15)",
+        "insert(2): add 2 at the end -> [5, 10, 15, 2], index=3",
+        "siftUp(3): parent = (3-1)/2 = 1 (value 10). 2 < 10 -- swap -> [5, 2, 15, 10], index becomes 1",
+        "siftUp continues at index=1: parent = (1-1)/2 = 0 (value 5). 2 < 5 -- swap -> [2, 5, 15, 10], index becomes 0",
+        "index is now 0 -- loop stops. Final heap: [2, 5, 15, 10]"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Sifting up means: compare the new element to its PARENT, swap if it's smaller (violating the min-heap property), and repeat with the new position -- moving upward until either the root is reached or a valid parent is found. This is exactly the O(log n) work PriorityQueue's offer() does internally."
+    },
+    {
+      "type": "heading",
+      "text": "3. Extract Min: Swap Root With Last, Remove Last, Sift Down"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static List<Integer> heap = new ArrayList<>();\n\n    static void insert(int value) {\n        heap.add(value);\n        siftUp(heap.size() - 1);\n    }\n\n    static void siftUp(int index) {\n        while (index > 0) {\n            int parent = (index - 1) / 2;\n            if (heap.get(index) < heap.get(parent)) {\n                swap(index, parent);\n                index = parent;\n            } else {\n                break;\n            }\n        }\n    }\n\n    static int extractMin() {\n        int min = heap.get(0);\n        int last = heap.remove(heap.size() - 1);\n\n        if (!heap.isEmpty()) {\n            heap.set(0, last);\n            siftDown(0);\n        }\n        return min;\n    }\n\n    static void siftDown(int index) {\n        int size = heap.size();\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int smallest = index;\n\n            if (left < size && heap.get(left) < heap.get(smallest)) {\n                smallest = left;\n            }\n            if (right < size && heap.get(right) < heap.get(smallest)) {\n                smallest = right;\n            }\n            if (smallest == index) {\n                break;\n            }\n            swap(index, smallest);\n            index = smallest;\n        }\n    }\n\n    static void swap(int i, int j) {\n        int temp = heap.get(i);\n        heap.set(i, heap.get(j));\n        heap.set(j, temp);\n    }\n\n    public static void main(String[] args) {\n        insert(5);\n        insert(10);\n        insert(15);\n        insert(2);\n\n        System.out.println(extractMin());\n        System.out.println(heap);\n    }\n}",
+      "output": "2\n[5, 10, 15]",
+      "retypePractice": true,
+      "retypeId": "java-heap-manual-extract-min"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing extractMin() on heap [2, 5, 15, 10]",
+      "steps": [
+        "min = heap.get(0) = 2 (this is what we'll return)",
+        "last = heap.remove(last index) = 10, removed from the end -> heap is now [2, 5, 15]",
+        "heap is not empty, so: heap.set(0, 10) -> [10, 5, 15]",
+        "siftDown(0): left=1 (value 5), right=2 (value 15). smallest starts at index (10), but 5 < 10 -- smallest becomes 1",
+        "swap(0, 1) -> [5, 10, 15]. index becomes 1",
+        "siftDown continues at index=1: left=2*1+1=3 (out of bounds, size is 3), right=2*1+2=4 (out of bounds) -- no children, loop ends",
+        "Final heap: [5, 10, 15]. Returned value: 2"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "extractMin always removes index 0 (the minimum), but CANNOT simply delete it and shift everything -- that would be O(n). Instead, we move the LAST element to the root and sift it DOWN into its correct position -- O(log n), since it only travels the height of the tree, not the whole array."
+    },
+    {
+      "type": "heading",
+      "text": "4. Why insert and extractMin Are Both O(log n)"
+    },
+    {
+      "type": "keyPoints",
+      "title": "The height argument",
+      "points": [
+        "A binary heap with n elements has a height of about log2(n) -- it's a COMPLETE binary tree, always as compact as possible",
+        "siftUp and siftDown each move at most one step per LEVEL of the tree, never revisiting a level",
+        "Total work is therefore proportional to the tree's height: O(log n) -- exactly matching PriorityQueue's documented complexity from the previous lesson"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using (i + 1) / 2 or other incorrect index arithmetic for parent/child relationships -- for a 0-indexed array, parent is (i-1)/2, children are 2i+1 and 2i+2.",
+        "Forgetting to move the LAST element to the root before sifting down during extraction -- simply removing index 0 directly breaks the array's compactness.",
+        "Sifting down and only checking ONE child instead of BOTH -- you must find the SMALLER of the two children to maintain the min-heap property correctly.",
+        "Forgetting the empty-heap check in extractMin() -- calling heap.get(0) on an empty list throws an exception."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "How is a binary heap represented using a plain array?",
+          "answer": "Using index arithmetic: for index i, the parent is at (i-1)/2, the left child is at 2i+1, and the right child is at 2i+2 -- no explicit Node references are needed."
+        },
+        {
+          "question": "What does 'sifting up' do during insertion?",
+          "answer": "The newly added element (placed at the end of the array) is repeatedly compared to its parent and swapped upward whenever it's smaller, until it reaches a valid position or the root -- restoring the min-heap property."
+        },
+        {
+          "question": "Why does extracting the minimum move the LAST element to the root instead of just deleting index 0?",
+          "answer": "Deleting index 0 directly and shifting every other element would be O(n). Moving the last element to the root and sifting it DOWN instead only costs O(log n), proportional to the heap's height."
+        },
+        {
+          "question": "Why are heap insert and extract operations O(log n)?",
+          "answer": "A binary heap is a complete binary tree, so its height is about log2(n) for n elements. Both siftUp and siftDown move at most one step per level, so their total work is proportional to the tree's height."
+        }
+      ],
+      "thirtySecondAnswer": "A binary heap can be stored as a plain array using index arithmetic: parent = (i-1)/2, children = 2i+1 and 2i+2. Inserting adds the new value at the end and sifts it UP, swapping with its parent whenever it's smaller, until the min-heap property holds. Extracting the minimum swaps the root with the last element, removes the last position, then sifts the new root DOWN, swapping with its smaller child whenever the property is violated. Both operations are O(log n) because a heap's height is log2(n), and sifting only moves one level at a time. This is exactly what PriorityQueue does internally to achieve its documented complexities."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "siftUp = the new kid at the back of the line keeps trading places with whoever's ahead, as long as they're smaller. siftDown = the new front-of-line person keeps trading places with their smaller CHILD, sinking to where they belong."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "For index i in a 0-indexed heap array, what are the parent and children indices?",
+        "What does sifting up do, and when is it used?",
+        "Why does extracting the minimum move the last element to the root instead of just removing index 0?",
+        "Why are heap insert and extract both O(log n)?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-heap-manual-insert", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static List<Integer> heap = new ArrayList<>();\n\n    static void insert(int value) {\n        heap.add(value); // add at the end\n        siftUp(heap.size() - 1);\n    }\n\n    static void siftUp(int index) {\n        while (index > 0) {\n            int parent = (index - 1) / 2;\n            if (heap.get(index) < heap.get(parent)) {\n                int temp = heap.get(index);\n                heap.set(index, heap.get(parent));\n                heap.set(parent, temp);\n                index = parent;\n            } else {\n                break;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        insert(10);\n        insert(5);\n        insert(15);\n        insert(2);\n\n        System.out.println(heap);\n    }\n}", "output": "[2, 5, 15, 10]" },
+    { "id": "java-heap-manual-extract-min", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static List<Integer> heap = new ArrayList<>();\n\n    static void insert(int value) {\n        heap.add(value);\n        siftUp(heap.size() - 1);\n    }\n\n    static void siftUp(int index) {\n        while (index > 0) {\n            int parent = (index - 1) / 2;\n            if (heap.get(index) < heap.get(parent)) {\n                swap(index, parent);\n                index = parent;\n            } else {\n                break;\n            }\n        }\n    }\n\n    static int extractMin() {\n        int min = heap.get(0);\n        int last = heap.remove(heap.size() - 1);\n\n        if (!heap.isEmpty()) {\n            heap.set(0, last);\n            siftDown(0);\n        }\n        return min;\n    }\n\n    static void siftDown(int index) {\n        int size = heap.size();\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int smallest = index;\n\n            if (left < size && heap.get(left) < heap.get(smallest)) {\n                smallest = left;\n            }\n            if (right < size && heap.get(right) < heap.get(smallest)) {\n                smallest = right;\n            }\n            if (smallest == index) {\n                break;\n            }\n            swap(index, smallest);\n            index = smallest;\n        }\n    }\n\n    static void swap(int i, int j) {\n        int temp = heap.get(i);\n        heap.set(i, heap.get(j));\n        heap.set(j, temp);\n    }\n\n    public static void main(String[] args) {\n        insert(5);\n        insert(10);\n        insert(15);\n        insert(2);\n\n        System.out.println(extractMin());\n        System.out.println(heap);\n    }\n}", "output": "2\n[5, 10, 15]" }
+  ],
+  "retypePractice": [
+    { "id": "java-heap-manual-insert", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static List<Integer> heap = new ArrayList<>();\n\n    static void insert(int value) {\n        heap.add(value); // add at the end\n        siftUp(heap.size() - 1);\n    }\n\n    static void siftUp(int index) {\n        while (index > 0) {\n            int parent = (index - 1) / 2;\n            if (heap.get(index) < heap.get(parent)) {\n                int temp = heap.get(index);\n                heap.set(index, heap.get(parent));\n                heap.set(parent, temp);\n                index = parent;\n            } else {\n                break;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        insert(10);\n        insert(5);\n        insert(15);\n        insert(2);\n\n        System.out.println(heap);\n    }\n}" },
+    { "id": "java-heap-manual-extract-min", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static List<Integer> heap = new ArrayList<>();\n\n    static void insert(int value) {\n        heap.add(value);\n        siftUp(heap.size() - 1);\n    }\n\n    static void siftUp(int index) {\n        while (index > 0) {\n            int parent = (index - 1) / 2;\n            if (heap.get(index) < heap.get(parent)) {\n                swap(index, parent);\n                index = parent;\n            } else {\n                break;\n            }\n        }\n    }\n\n    static int extractMin() {\n        int min = heap.get(0);\n        int last = heap.remove(heap.size() - 1);\n\n        if (!heap.isEmpty()) {\n            heap.set(0, last);\n            siftDown(0);\n        }\n        return min;\n    }\n\n    static void siftDown(int index) {\n        int size = heap.size();\n        while (true) {\n            int left = 2 * index + 1;\n            int right = 2 * index + 2;\n            int smallest = index;\n\n            if (left < size && heap.get(left) < heap.get(smallest)) {\n                smallest = left;\n            }\n            if (right < size && heap.get(right) < heap.get(smallest)) {\n                smallest = right;\n            }\n            if (smallest == index) {\n                break;\n            }\n            swap(index, smallest);\n            index = smallest;\n        }\n    }\n\n    static void swap(int i, int j) {\n        int temp = heap.get(i);\n        heap.set(i, heap.get(j));\n        heap.set(j, temp);\n    }\n\n    public static void main(String[] args) {\n        insert(5);\n        insert(10);\n        insert(15);\n        insert(2);\n\n        System.out.println(extractMin());\n        System.out.println(heap);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-heap-manual-insert", "java-heap-manual-extract-min"]
+  }
+}
