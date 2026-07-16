@@ -103,7 +103,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 8 | DSA Foundations | ✅ done | Big-O Notation, Two Pointers, Sliding Window, Prefix Sum, Difference Array, Hashing, Binary Search, Sorting, Recursion in DSA, Backtracking |
 | 9 | Linked List | ✅ done | Singly Linked List, Doubly Linked List, Circular Linked List |
 | 10 | Stacks & Queues | ⬜ | — |
-| 11 | Heap | ⬜ | — |
+| 11 | Heap | ✅ done | PriorityQueue (Java's Built-In Heap), Manual Heap Implementation, Heap Sort |
 | 12 | Trees | ⬜ | — |
 | 13 | Graphs | ⬜ | — |
 | 14 | Greedy & Dynamic Programming | ⬜ | — |
