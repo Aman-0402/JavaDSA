@@ -1,0 +1,145 @@
+{
+  "id": "java-deque-deep-dive",
+  "moduleId": "stacks-queues",
+  "title": "Deque Deep Dive: Sliding Window Maximum",
+  "description": "Combining Deque (Queue and Deque) with Sliding Window to find the maximum of every window in O(n), instead of the naive O(n*k).",
+  "objectives": [
+    "Recognize when a monotonic deque applies -- sliding window maximum/minimum",
+    "Implement sliding window maximum using ArrayDeque storing indices",
+    "Understand why this achieves O(n) instead of O(n*k)"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Combining Two Earlier Ideas"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Sliding Window, we found the maximum SUM of every window of size k in O(n). Finding the maximum VALUE of every window is trickier -- unlike a sum, you can't just subtract the outgoing element to update a running maximum, since the max might have been some OTHER element entirely."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int[] maxSlidingWindowBruteForce(int[] nums, int k) {\n    int[] result = new int[nums.length - k + 1];\n    for (int i = 0; i <= nums.length - k; i++) {\n        int max = nums[i];\n        for (int j = i; j < i + k; j++) {\n            max = Math.max(max, nums[j]);\n        }\n        result[i] = max;\n    }\n    return result;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "This brute force is O(n*k) -- for every window, we rescan all k elements to find the max, similar to the O(n*k) approach we improved upon in Sliding Window's fixed-size max-SUM example. A monotonic deque gets this down to O(n)."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Monotonic Deque Idea"
+    },
+    {
+      "type": "paragraph",
+      "text": "Keep a Deque of INDICES, maintained so the values they point to are always DECREASING from front to back. The front of the deque is always the index of the current window's maximum."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        Deque<Integer> deque = new ArrayDeque<>(); // stores INDICES, decreasing values\n\n        for (int i = 0; i < nums.length; i++) {\n            // Remove indices that have fallen out of the current window\n            if (!deque.isEmpty() && deque.peekFirst() <= i - k) {\n                deque.pollFirst();\n            }\n\n            // Remove indices whose values are smaller than the current one -- they can never be the max again\n            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {\n                deque.pollLast();\n            }\n\n            deque.offerLast(i);\n\n            if (i >= k - 1) {\n                result[i - k + 1] = nums[deque.peekFirst()];\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 3, -1, -3, 5, 3, 6, 7};\n        System.out.println(java.util.Arrays.toString(maxSlidingWindow(nums, 3)));\n    }\n}",
+      "output": "[3, 3, 5, 5, 6, 7]",
+      "retypePractice": true,
+      "retypeId": "java-deque-sliding-max"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing key steps for nums={1,3,-1,-3,5,3,6,7}, k=3",
+      "steps": [
+        "i=0 (1): deque empty, push 0. deque=[0]",
+        "i=1 (3): nums[0]=1 < 3 -- pop 0. deque empty, push 1. deque=[1]",
+        "i=2 (-1): nums[1]=3 not < -1 -- keep. push 2. deque=[1,2]. i>=k-1(2): window [0,2] max = nums[deque.peekFirst()=1] = 3",
+        "i=3 (-3): front index 1 is NOT out of window (1 > 3-3=0) -- keep. nums[2]=-1 not < -3 -- keep. push 3. deque=[1,2,3]. Window [1,3] max = nums[1] = 3",
+        "i=4 (5): front index1 is now out of window (1 <= 4-3=1) -- pop front. deque=[2,3]. nums[3]=-3<5 pop. nums[2]=-1<5 pop. deque empty, push 4. deque=[4]. Window [2,4] max = nums[4] = 5",
+        "i=5 (3): front index4 in window (4>5-3=2) -- keep. nums[4]=5 not <3 -- keep. push5. deque=[4,5]. Window [3,5] max=nums[4]=5",
+        "i=6 (6): front4 in window(4>6-3=3)-keep. nums[5]=3<6 pop. nums[4]=5<6 pop. deque empty push6. deque=[6]. Window[4,6] max=nums[6]=6",
+        "i=7 (7): front6 in window(6>7-3=4)-keep. nums[6]=6<7 pop. deque empty push7. deque=[7]. Window[5,7] max=nums[7]=7",
+        "Final results collected: [3, 3, 5, 5, 6, 7]"
+      ]
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why the front is always the current max",
+      "points": [
+        "The deque only ever holds indices whose values are in DECREASING order from front to back",
+        "Any index whose value is smaller than a later one is immediately discarded (popLast) -- it could never be the max again while that later, bigger element is still in the window",
+        "The front is therefore always the largest value still within the current window's bounds"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "deque.peekFirst() <= i - k checks whether the FRONT index has fallen OUT of the window (the window is [i-k+1, i]) -- this must be checked BEFORE looking at values, since an outdated index at the front must be discarded regardless of its value."
+    },
+    {
+      "type": "heading",
+      "text": "3. Why This Is O(n)"
+    },
+    {
+      "type": "keyPoints",
+      "title": "The amortized argument",
+      "points": [
+        "Each index is pushed onto the deque exactly once",
+        "Each index is popped (from either end) at most once, across the ENTIRE run",
+        "Total operations across all n iterations: bounded by O(n) -- the same amortized argument used for the monotonic stack in Stack and Monotonic Stack"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Storing VALUES on the deque instead of INDICES -- you need indices to know when an element has aged out of the window (deque.peekFirst() <= i - k).",
+        "Forgetting to check and remove an out-of-window front BEFORE popping smaller values from the back -- both checks are needed every iteration.",
+        "Assuming this problem can be solved the same way as Sliding Window's max-SUM (just subtract the outgoing element) -- max doesn't work that way, since the outgoing element might not have been the maximum at all.",
+        "Confusing peekFirst/pollFirst (front of the deque, the window's current max) with peekLast/pollLast (back of the deque, where new smaller elements get discarded)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why can't sliding window maximum be solved the same way as sliding window's max SUM, by just adjusting for the outgoing element?",
+          "answer": "A sum can be adjusted incrementally because you know exactly how much the outgoing element contributed. A maximum can't -- the outgoing element might never have been the maximum in the first place, so there's no simple incremental adjustment; you need the monotonic deque to track candidates efficiently."
+        },
+        {
+          "question": "What invariant does the monotonic deque maintain in the sliding window maximum algorithm?",
+          "answer": "The deque holds indices whose corresponding values are in decreasing order from front to back -- any index with a value smaller than a later element is discarded, since it can never be the maximum again while that later element remains in the window."
+        },
+        {
+          "question": "Why is the sliding window maximum algorithm O(n) despite the nested while loop?",
+          "answer": "Each index is pushed onto the deque exactly once and popped from either end at most once across the entire run, so total operations are bounded by O(n), not O(n) per outer iteration -- the same amortized reasoning as a monotonic stack."
+        }
+      ],
+      "thirtySecondAnswer": "Sliding window maximum finds the max of every fixed-size window in O(n) using a monotonic deque of indices, kept in decreasing value order from front to back. Before processing each new element, the front index is discarded if it's fallen out of the window, and any back indices with smaller values are discarded since they can never be the max again with a bigger element now present. The front then always holds the current window's maximum. Despite the nested while loop, each index is pushed once and popped at most once total, giving O(n) overall -- the same amortized argument as monotonic stacks."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Monotonic deque = a lineup where anyone shorter than the new arrival gets sent home immediately (they'll never be tallest again), and anyone too OLD (out of window) leaves from the front. Whoever's left at the front is always the tallest currently in the room."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why doesn't the sliding-window-sum trick (subtract outgoing, add incoming) work for sliding window maximum?",
+        "What order does the monotonic deque maintain its stored indices' values in?",
+        "What two checks happen at the start of each iteration before pushing the new index?",
+        "Why is this algorithm O(n) despite its nested loop?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-deque-sliding-max", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        Deque<Integer> deque = new ArrayDeque<>(); // stores INDICES, decreasing values\n\n        for (int i = 0; i < nums.length; i++) {\n            // Remove indices that have fallen out of the current window\n            if (!deque.isEmpty() && deque.peekFirst() <= i - k) {\n                deque.pollFirst();\n            }\n\n            // Remove indices whose values are smaller than the current one -- they can never be the max again\n            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {\n                deque.pollLast();\n            }\n\n            deque.offerLast(i);\n\n            if (i >= k - 1) {\n                result[i - k + 1] = nums[deque.peekFirst()];\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 3, -1, -3, 5, 3, 6, 7};\n        System.out.println(java.util.Arrays.toString(maxSlidingWindow(nums, 3)));\n    }\n}", "output": "[3, 3, 5, 5, 6, 7]" }
+  ],
+  "retypePractice": [
+    { "id": "java-deque-sliding-max", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        Deque<Integer> deque = new ArrayDeque<>(); // stores INDICES, decreasing values\n\n        for (int i = 0; i < nums.length; i++) {\n            // Remove indices that have fallen out of the current window\n            if (!deque.isEmpty() && deque.peekFirst() <= i - k) {\n                deque.pollFirst();\n            }\n\n            // Remove indices whose values are smaller than the current one -- they can never be the max again\n            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {\n                deque.pollLast();\n            }\n\n            deque.offerLast(i);\n\n            if (i >= k - 1) {\n                result[i - k + 1] = nums[deque.peekFirst()];\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 3, -1, -3, 5, 3, 6, 7};\n        System.out.println(java.util.Arrays.toString(maxSlidingWindow(nums, 3)));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-deque-sliding-max"]
+  }
+}

@@ -124,7 +124,8 @@
       "title": "Stacks & Queues",
       "topics": [
         { "id": "java-stack-monotonic-stack", "title": "Stack and Monotonic Stack", "lesson": "java-stack-monotonic-stack" },
-        { "id": "java-circular-queue", "title": "Circular Queue", "lesson": "java-circular-queue" }
+        { "id": "java-circular-queue", "title": "Circular Queue", "lesson": "java-circular-queue" },
+        { "id": "java-deque-deep-dive", "title": "Deque Deep Dive: Sliding Window Maximum", "lesson": "java-deque-deep-dive" }
       ]
     },
     {
