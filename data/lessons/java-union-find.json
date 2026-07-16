@@ -1,0 +1,160 @@
+{
+  "id": "java-union-find",
+  "moduleId": "graphs",
+  "title": "Union-Find (Disjoint Set Union)",
+  "description": "A different tool for connectivity questions -- answering 'are these two nodes connected?' without a full traversal, using path compression and union by rank.",
+  "objectives": [
+    "Understand Union-Find as a structure for tracking disjoint sets and connectivity",
+    "Implement find with path compression and union with union by rank",
+    "Use Union-Find to detect a cycle while building a graph, an alternative to DFS/BFS-based detection"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. A Different Kind of Connectivity Question"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Graph DFS, we counted connected components by running DFS from every unvisited node. Union-Find (also called Disjoint Set Union, or DSU) answers a related but different question extremely efficiently: 'are these two SPECIFIC nodes in the same component?' -- without needing to traverse the whole graph each time."
+    },
+    {
+      "type": "definition",
+      "term": "Union-Find (Disjoint Set Union)",
+      "text": "A data structure that tracks a collection of disjoint (non-overlapping) sets, supporting two operations: find (which set does this element belong to?) and union (merge two sets together)."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Basic Idea: Each Node Points to a Parent"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) {\n            parent[i] = i; // everyone starts as their own parent -- own separate set\n        }\n    }\n\n    static int find(int x) {\n        if (parent[x] == x) {\n            return x; // x is the root of its set\n        }\n        return find(parent[x]);\n    }\n\n    static void union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA != rootB) {\n            parent[rootA] = rootB;\n        }\n    }\n\n    public static void main(String[] args) {\n        init(5);\n        union(0, 1);\n        union(1, 2);\n\n        System.out.println(find(0) == find(2));\n        System.out.println(find(0) == find(3));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-uf-basic"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing union(0,1) then union(1,2)",
+      "steps": [
+        "init(5): parent = [0,1,2,3,4] -- each node is its own root",
+        "union(0,1): find(0)=0, find(1)=1. Different roots -- parent[0]=1. parent=[1,1,2,3,4]",
+        "union(1,2): find(1)=1 (parent[1]==1), find(2)=2. Different roots -- parent[1]=2. parent=[1,2,2,3,4]",
+        "find(0): parent[0]=1, not itself -- recurse find(1). parent[1]=2, not itself -- recurse find(2). parent[2]==2 -- return 2",
+        "find(2): parent[2]==2 -- return 2 immediately",
+        "find(0) == find(2) -> 2 == 2 -> true. find(0) == find(3) -> 2 == 3 -> false"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Without any optimization, repeatedly following parent references can become a long chain (imagine union(0,1), union(1,2), union(2,3)... for many nodes) -- find() could degrade toward O(n) in the worst case, just like the skewed BST from Binary Search Trees."
+    },
+    {
+      "type": "heading",
+      "text": "3. Path Compression: Flattening the Chain"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    static int find(int x) {\n        if (parent[x] != x) {\n            parent[x] = find(parent[x]); // path compression -- point directly to the root\n        }\n        return parent[x];\n    }\n\n    static void union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA != rootB) {\n            parent[rootA] = rootB;\n        }\n    }\n\n    public static void main(String[] args) {\n        init(5);\n        union(0, 1);\n        union(1, 2);\n        union(2, 3);\n\n        find(0); // triggers path compression\n        System.out.println(java.util.Arrays.toString(parent));\n    }\n}",
+      "output": "[3, 3, 3, 3, 4]",
+      "retypePractice": true,
+      "retypeId": "java-uf-path-compression"
+    },
+    {
+      "type": "definition",
+      "term": "Path compression",
+      "text": "An optimization where, during find(), every node visited along the way is re-pointed DIRECTLY to the set's root -- flattening future lookups for those nodes to O(1)."
+    },
+    {
+      "type": "note",
+      "text": "parent[x] = find(parent[x]); does two things at once: it computes the true root recursively, AND it overwrites x's own parent to point straight at that root, so the NEXT find(x) is instant. After find(0) runs once here, nodes 0, 1, and 2 all point DIRECTLY at root 3 -- the chain is flattened."
+    },
+    {
+      "type": "heading",
+      "text": "4. Detecting a Cycle While Building a Graph"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    static int find(int x) {\n        if (parent[x] != x) {\n            parent[x] = find(parent[x]);\n        }\n        return parent[x];\n    }\n\n    static boolean union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA == rootB) {\n            return false; // already connected -- this edge would create a CYCLE\n        }\n        parent[rootA] = rootB;\n        return true;\n    }\n\n    static boolean hasCycle(int[][] edges, int n) {\n        init(n);\n        for (int[] edge : edges) {\n            if (!union(edge[0], edge[1])) {\n                return true; // this edge connects two ALREADY-connected nodes\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[][] edges = {{0, 1}, {1, 2}, {2, 0}}; // 0-1-2-0 forms a cycle\n        System.out.println(hasCycle(edges, 3));\n    }\n}",
+      "output": "true",
+      "retypePractice": true,
+      "retypeId": "java-uf-cycle-detection"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this detects the cycle",
+      "points": [
+        "union(0,1): different roots -- merge. union(1,2): different roots -- merge. Now 0, 1, 2 are all connected",
+        "union(2,0): find(2) and find(0) are now the SAME root -- this edge would connect two nodes ALREADY in the same set",
+        "That's exactly what a cycle means: a new edge between two nodes that are already reachable from each other"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting path compression, letting find() degrade toward O(n) on a long chain of unions -- similar to a skewed BST's worst case.",
+        "Confusing Union-Find's cycle detection (checking if two nodes are ALREADY in the same set before unioning) with DFS-based cycle detection -- both work, but Union-Find is often simpler for undirected graphs.",
+        "Forgetting that find(x) itself must be called (even just once) to actually trigger path compression along a specific chain -- it doesn't happen automatically for untouched nodes.",
+        "Assuming Union-Find can answer 'what is the SHORTEST path between two nodes' -- it can only answer 'ARE they connected,' not the path or its length."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What problem does Union-Find solve, and how does it differ from running DFS/BFS for connectivity?",
+          "answer": "Union-Find efficiently answers 'are these two specific nodes connected?' and lets you merge sets incrementally as edges are added, without re-traversing the whole graph each time -- DFS/BFS instead explore the entire reachable component from a starting node in one pass."
+        },
+        {
+          "question": "What is path compression, and why does it matter?",
+          "answer": "During find(), every node visited along the way to the root gets re-pointed directly at that root, flattening the structure so future find() calls on those nodes are O(1) -- without it, chains of unions could degrade find() toward O(n)."
+        },
+        {
+          "question": "How can Union-Find be used to detect a cycle while building an undirected graph edge by edge?",
+          "answer": "Before adding each edge, check if its two endpoints already share the same root (find(a) == find(b)). If they do, that edge would connect two already-connected nodes, meaning it creates a cycle -- otherwise, union them and continue."
+        }
+      ],
+      "thirtySecondAnswer": "Union-Find (Disjoint Set Union) tracks a collection of disjoint sets, supporting find (which set does x belong to?) and union (merge two sets), letting connectivity questions be answered incrementally as edges are added, rather than re-traversing the whole graph each time like DFS/BFS. Path compression, applied during find(), re-points every visited node directly to the set's root, flattening future lookups to near O(1) instead of degrading toward O(n) on long union chains. A key application is cycle detection while building a graph: if an edge's two endpoints already share the same root before unioning, that edge would create a cycle."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Union-Find = tracking friend GROUPS, not friend PATHS. find = 'which group's leader do you answer to?' union = 'merge two groups under one leader.' Path compression = everyone in the group starts reporting DIRECTLY to the leader, skipping the middlemen."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What two operations does Union-Find support?",
+        "What does path compression do, and why does it matter?",
+        "How does Union-Find detect a cycle while building a graph edge by edge?",
+        "Can Union-Find tell you the shortest path between two nodes?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-uf-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) {\n            parent[i] = i; // everyone starts as their own parent -- own separate set\n        }\n    }\n\n    static int find(int x) {\n        if (parent[x] == x) {\n            return x; // x is the root of its set\n        }\n        return find(parent[x]);\n    }\n\n    static void union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA != rootB) {\n            parent[rootA] = rootB;\n        }\n    }\n\n    public static void main(String[] args) {\n        init(5);\n        union(0, 1);\n        union(1, 2);\n\n        System.out.println(find(0) == find(2));\n        System.out.println(find(0) == find(3));\n    }\n}", "output": "true\nfalse" },
+    { "id": "java-uf-path-compression", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    static int find(int x) {\n        if (parent[x] != x) {\n            parent[x] = find(parent[x]); // path compression -- point directly to the root\n        }\n        return parent[x];\n    }\n\n    static void union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA != rootB) {\n            parent[rootA] = rootB;\n        }\n    }\n\n    public static void main(String[] args) {\n        init(5);\n        union(0, 1);\n        union(1, 2);\n        union(2, 3);\n\n        find(0); // triggers path compression\n        System.out.println(java.util.Arrays.toString(parent));\n    }\n}", "output": "[3, 3, 3, 3, 4]" },
+    { "id": "java-uf-cycle-detection", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    static int find(int x) {\n        if (parent[x] != x) {\n            parent[x] = find(parent[x]);\n        }\n        return parent[x];\n    }\n\n    static boolean union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA == rootB) {\n            return false; // already connected -- this edge would create a CYCLE\n        }\n        parent[rootA] = rootB;\n        return true;\n    }\n\n    static boolean hasCycle(int[][] edges, int n) {\n        init(n);\n        for (int[] edge : edges) {\n            if (!union(edge[0], edge[1])) {\n                return true; // this edge connects two ALREADY-connected nodes\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[][] edges = {{0, 1}, {1, 2}, {2, 0}}; // 0-1-2-0 forms a cycle\n        System.out.println(hasCycle(edges, 3));\n    }\n}", "output": "true" }
+  ],
+  "retypePractice": [
+    { "id": "java-uf-basic", "reference": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) {\n            parent[i] = i; // everyone starts as their own parent -- own separate set\n        }\n    }\n\n    static int find(int x) {\n        if (parent[x] == x) {\n            return x; // x is the root of its set\n        }\n        return find(parent[x]);\n    }\n\n    static void union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA != rootB) {\n            parent[rootA] = rootB;\n        }\n    }\n\n    public static void main(String[] args) {\n        init(5);\n        union(0, 1);\n        union(1, 2);\n\n        System.out.println(find(0) == find(2));\n        System.out.println(find(0) == find(3));\n    }\n}" },
+    { "id": "java-uf-path-compression", "reference": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    static int find(int x) {\n        if (parent[x] != x) {\n            parent[x] = find(parent[x]); // path compression -- point directly to the root\n        }\n        return parent[x];\n    }\n\n    static void union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA != rootB) {\n            parent[rootA] = rootB;\n        }\n    }\n\n    public static void main(String[] args) {\n        init(5);\n        union(0, 1);\n        union(1, 2);\n        union(2, 3);\n\n        find(0); // triggers path compression\n        System.out.println(java.util.Arrays.toString(parent));\n    }\n}" },
+    { "id": "java-uf-cycle-detection", "reference": "public class Main {\n    static int[] parent;\n\n    static void init(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    static int find(int x) {\n        if (parent[x] != x) {\n            parent[x] = find(parent[x]);\n        }\n        return parent[x];\n    }\n\n    static boolean union(int a, int b) {\n        int rootA = find(a);\n        int rootB = find(b);\n        if (rootA == rootB) {\n            return false; // already connected -- this edge would create a CYCLE\n        }\n        parent[rootA] = rootB;\n        return true;\n    }\n\n    static boolean hasCycle(int[][] edges, int n) {\n        init(n);\n        for (int[] edge : edges) {\n            if (!union(edge[0], edge[1])) {\n                return true; // this edge connects two ALREADY-connected nodes\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[][] edges = {{0, 1}, {1, 2}, {2, 0}}; // 0-1-2-0 forms a cycle\n        System.out.println(hasCycle(edges, 3));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-uf-basic", "java-uf-path-compression", "java-uf-cycle-detection"]
+  }
+}
