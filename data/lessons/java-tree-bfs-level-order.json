@@ -1,0 +1,135 @@
+{
+  "id": "java-tree-bfs-level-order",
+  "moduleId": "trees",
+  "title": "BFS: Level Order Traversal",
+  "description": "Visiting a tree level by level using a Queue, instead of diving deep like the three Tree Traversals -- Breadth-First Search applied to trees.",
+  "objectives": [
+    "Understand level order traversal as Breadth-First Search on a tree",
+    "Implement it using a Queue",
+    "Group results by level, a common variant of the base pattern"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. A Different Direction Entirely"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pre-order, in-order, and post-order (Tree Traversals) all dive DEEP down one branch before backtracking -- Depth-First. Level order traversal instead visits every node on one LEVEL before moving to the next -- Breadth-First Search (BFS), the tree version of the same idea from graphs (covered fully in the Graphs module)."
+    },
+    {
+      "type": "definition",
+      "term": "Level order traversal (BFS)",
+      "text": "Visiting a tree's nodes level by level, from top to bottom and left to right within each level, typically implemented using a Queue."
+    },
+    {
+      "type": "heading",
+      "text": "2. Why a Queue, Not Recursion"
+    },
+    {
+      "type": "note",
+      "text": "Recall from Queue and Deque: a Queue is FIFO (first-in-first-out). Level order traversal needs exactly this -- process nodes in the order they were DISCOVERED, level by level, which a Queue naturally provides. This is why level order is usually written iteratively with a Queue, unlike the three recursive depth-first traversals."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.LinkedList;\nimport java.util.Queue;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void levelOrder(Node root) {\n        if (root == null) return;\n\n        Queue<Node> queue = new LinkedList<>();\n        queue.offer(root);\n\n        while (!queue.isEmpty()) {\n            Node current = queue.poll();\n            System.out.print(current.data + \" \");\n\n            if (current.left != null) queue.offer(current.left);\n            if (current.right != null) queue.offer(current.right);\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        levelOrder(root);\n    }\n}",
+      "output": "1 2 3 4 5 ",
+      "retypePractice": true,
+      "retypeId": "java-tree-bfs-basic"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing levelOrder on the tree 1(2(4,5),3)",
+      "steps": [
+        "queue=[1]. Poll 1, print 1. Offer children 2,3. queue=[2,3]",
+        "Poll 2, print 2. Offer children 4,5. queue=[3,4,5]",
+        "Poll 3, print 3. No children. queue=[4,5]",
+        "Poll 4, print 4. No children. queue=[5]",
+        "Poll 5, print 5. No children. queue=[]",
+        "Queue empty -- traversal complete. Result: 1 2 3 4 5"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Note the OUTPUT ORDER differs from all three depth-first traversals from Tree Traversals -- 1 2 3 4 5 here, versus 1 2 4 5 3 (pre-order), 4 2 5 1 3 (in-order), or 4 5 2 3 1 (post-order) for this exact same tree. Level order visits by DEPTH first, then left-to-right; depth-first traversals dive down one branch entirely before backtracking."
+    },
+    {
+      "type": "heading",
+      "text": "3. Grouping Results by Level"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.LinkedList;\nimport java.util.List;\nimport java.util.Queue;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static List<List<Integer>> levelOrderGrouped(Node root) {\n        List<List<Integer>> result = new ArrayList<>();\n        if (root == null) return result;\n\n        Queue<Node> queue = new LinkedList<>();\n        queue.offer(root);\n\n        while (!queue.isEmpty()) {\n            int levelSize = queue.size(); // snapshot BEFORE this level's nodes are polled\n            List<Integer> currentLevel = new ArrayList<>();\n\n            for (int i = 0; i < levelSize; i++) {\n                Node current = queue.poll();\n                currentLevel.add(current.data);\n\n                if (current.left != null) queue.offer(current.left);\n                if (current.right != null) queue.offer(current.right);\n            }\n            result.add(currentLevel);\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        System.out.println(levelOrderGrouped(root));\n    }\n}",
+      "output": "[[1], [2, 3], [4, 5]]",
+      "retypePractice": true,
+      "retypeId": "java-tree-bfs-grouped"
+    },
+    {
+      "type": "warning",
+      "text": "int levelSize = queue.size(); MUST be captured BEFORE the for loop starts polling -- children get offered into the SAME queue during that loop, growing its size. Without snapshotting levelSize first, the loop would incorrectly also consume the next level's nodes in the same iteration."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using recursion for level order traversal by habit -- it's naturally iterative, built around a Queue's FIFO behavior, unlike the three depth-first traversals.",
+        "Forgetting to snapshot queue.size() before the inner loop when grouping by level, causing later levels to bleed into the current one.",
+        "Confusing level order's output with any of the three depth-first traversal orders -- they are genuinely different traversal STRATEGIES, not just different code for the same result.",
+        "Forgetting the root == null check, which would otherwise attempt queue.offer(null) and process a null node."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is level order traversal, and how does it differ from pre/in/post-order?",
+          "answer": "Level order visits nodes level by level, top to bottom and left to right, using Breadth-First Search. Pre/in/post-order are all Depth-First, diving fully down one branch before backtracking -- they produce a different visiting order entirely, not just a different implementation of the same order."
+        },
+        {
+          "question": "Why is a Queue used for level order traversal instead of recursion?",
+          "answer": "A Queue's FIFO behavior naturally processes nodes in the order they were discovered, which is exactly what visiting level by level requires -- recursion's call stack instead naturally supports depth-first, LIFO-like exploration."
+        },
+        {
+          "question": "When grouping level order results by level, why must queue.size() be captured before the inner loop begins?",
+          "answer": "Because children get added to the same queue during the inner loop, growing its size -- capturing levelSize beforehand ensures the loop processes exactly the current level's nodes, not any of the next level's nodes that get added partway through."
+        }
+      ],
+      "thirtySecondAnswer": "Level order traversal (BFS on a tree) visits nodes level by level, top to bottom and left to right, contrasting with pre/in/post-order's depth-first diving down one branch at a time. It's implemented using a Queue: offer the root, then repeatedly poll a node, print it, and offer its non-null children, until the queue is empty. Grouping results by level requires snapshotting queue.size() before each level's inner loop begins, since children get added to the same queue during that loop and would otherwise bleed into the current level's processing."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Level order = reading a family tree generation by generation, left to right, never skipping ahead to grandchildren before finishing the children. Queue in, queue out -- FIFO is the whole trick."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "How does level order traversal differ from the three depth-first traversals?",
+        "Why is a Queue used instead of recursion for level order?",
+        "Why must queue.size() be captured before the inner loop when grouping by level?",
+        "What data structure category does level order traversal belong to -- BFS or DFS?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-tree-bfs-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.LinkedList;\nimport java.util.Queue;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void levelOrder(Node root) {\n        if (root == null) return;\n\n        Queue<Node> queue = new LinkedList<>();\n        queue.offer(root);\n\n        while (!queue.isEmpty()) {\n            Node current = queue.poll();\n            System.out.print(current.data + \" \");\n\n            if (current.left != null) queue.offer(current.left);\n            if (current.right != null) queue.offer(current.right);\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        levelOrder(root);\n    }\n}", "output": "1 2 3 4 5 " },
+    { "id": "java-tree-bfs-grouped", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.LinkedList;\nimport java.util.List;\nimport java.util.Queue;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static List<List<Integer>> levelOrderGrouped(Node root) {\n        List<List<Integer>> result = new ArrayList<>();\n        if (root == null) return result;\n\n        Queue<Node> queue = new LinkedList<>();\n        queue.offer(root);\n\n        while (!queue.isEmpty()) {\n            int levelSize = queue.size(); // snapshot BEFORE this level's nodes are polled\n            List<Integer> currentLevel = new ArrayList<>();\n\n            for (int i = 0; i < levelSize; i++) {\n                Node current = queue.poll();\n                currentLevel.add(current.data);\n\n                if (current.left != null) queue.offer(current.left);\n                if (current.right != null) queue.offer(current.right);\n            }\n            result.add(currentLevel);\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        System.out.println(levelOrderGrouped(root));\n    }\n}", "output": "[[1], [2, 3], [4, 5]]" }
+  ],
+  "retypePractice": [
+    { "id": "java-tree-bfs-basic", "reference": "import java.util.LinkedList;\nimport java.util.Queue;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void levelOrder(Node root) {\n        if (root == null) return;\n\n        Queue<Node> queue = new LinkedList<>();\n        queue.offer(root);\n\n        while (!queue.isEmpty()) {\n            Node current = queue.poll();\n            System.out.print(current.data + \" \");\n\n            if (current.left != null) queue.offer(current.left);\n            if (current.right != null) queue.offer(current.right);\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        levelOrder(root);\n    }\n}" },
+    { "id": "java-tree-bfs-grouped", "reference": "import java.util.ArrayList;\nimport java.util.LinkedList;\nimport java.util.List;\nimport java.util.Queue;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static List<List<Integer>> levelOrderGrouped(Node root) {\n        List<List<Integer>> result = new ArrayList<>();\n        if (root == null) return result;\n\n        Queue<Node> queue = new LinkedList<>();\n        queue.offer(root);\n\n        while (!queue.isEmpty()) {\n            int levelSize = queue.size(); // snapshot BEFORE this level's nodes are polled\n            List<Integer> currentLevel = new ArrayList<>();\n\n            for (int i = 0; i < levelSize; i++) {\n                Node current = queue.poll();\n                currentLevel.add(current.data);\n\n                if (current.left != null) queue.offer(current.left);\n                if (current.right != null) queue.offer(current.right);\n            }\n            result.add(currentLevel);\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        System.out.println(levelOrderGrouped(root));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-tree-bfs-basic", "java-tree-bfs-grouped"]
+  }
+}
