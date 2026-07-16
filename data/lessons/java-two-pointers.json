@@ -1,0 +1,160 @@
+{
+  "id": "java-two-pointers",
+  "moduleId": "dsa-foundations",
+  "title": "Two Pointers",
+  "description": "Using two index variables moving through an array to solve problems in O(n) instead of the O(n^2) brute force from Big-O Notation.",
+  "objectives": [
+    "Recognize when a two-pointer approach applies",
+    "Use opposite-direction pointers to solve a pair-sum problem",
+    "Compare the two-pointer O(n) solution against a brute-force O(n^2) one"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: Brute Force is O(n^2)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we have a SORTED array and want to find two numbers that add up to a target. The obvious approach: check every pair."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static boolean hasPairBruteForce(int[] arr, int target) {\n    for (int i = 0; i < arr.length; i++) {\n        for (int j = i + 1; j < arr.length; j++) {\n            if (arr[i] + arr[j] == target) {\n                return true;\n            }\n        }\n    }\n    return false;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "This is O(n^2), exactly like the hasDuplicate example from Big-O Notation -- nested loops checking every pair. For a sorted array, we can do dramatically better."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Two-Pointer Idea"
+    },
+    {
+      "type": "definition",
+      "term": "Two pointers",
+      "text": "A technique using two index variables moving through a data structure -- often from opposite ends inward, or both forward at different speeds -- to solve a problem in a single pass instead of nested loops."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static boolean hasPairTwoPointers(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n\n        while (left < right) {\n            int sum = arr[left] + arr[right];\n            if (sum == target) {\n                return true;\n            } else if (sum < target) {\n                left++;\n            } else {\n                right--;\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 3, 5, 7, 9, 11};\n        System.out.println(hasPairTwoPointers(arr, 12));\n        System.out.println(hasPairTwoPointers(arr, 25));\n    }\n}",
+      "output": "true\nfalse",
+      "retypePractice": true,
+      "retypeId": "java-two-pointers-pair-sum"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing hasPairTwoPointers({1,3,5,7,9,11}, 12)",
+      "steps": [
+        "left=0 (value 1), right=5 (value 11): sum=12 -- MATCH, return true immediately"
+      ]
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing hasPairTwoPointers({1,3,5,7,9,11}, 25) -- no pair sums this high",
+      "steps": [
+        "left=0 (1), right=5 (11): sum=12 < 25 -- too small, move left forward: left=1",
+        "left=1 (3), right=5 (11): sum=14 < 25 -- move left forward: left=2",
+        "left=2 (5), right=5 (11): sum=16 < 25 -- move left forward: left=3",
+        "left=3 (7), right=5 (11): sum=18 < 25 -- move left forward: left=4",
+        "left=4 (9), right=5 (11): sum=20 < 25 -- move left forward: left=5",
+        "left=5, right=5: left < right is now false -- loop ends, return false"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "This algorithm ONLY works because the array is SORTED. If sum is too small, moving left forward can only increase it (since values increase left to right); if sum is too large, moving right backward can only decrease it. This directional guarantee is exactly what an unsorted array would break."
+    },
+    {
+      "type": "heading",
+      "text": "3. Why This Is O(n)"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why two pointers beats brute force here",
+      "points": [
+        "left only ever moves forward, right only ever moves backward",
+        "Combined, they can move AT MOST n times total before crossing (left >= right)",
+        "One single pass through the array, O(n), instead of checking every pair, O(n^2)"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Removing Duplicates from a Sorted Array (Same-Direction Pointers)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int removeDuplicates(int[] arr) {\n        if (arr.length == 0) return 0;\n\n        int slow = 0;\n        for (int fast = 1; fast < arr.length; fast++) {\n            if (arr[fast] != arr[slow]) {\n                slow++;\n                arr[slow] = arr[fast];\n            }\n        }\n        return slow + 1;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 1, 2, 2, 3, 4, 4};\n        int newLength = removeDuplicates(arr);\n        System.out.println(\"New length: \" + newLength);\n    }\n}",
+      "output": "New length: 4",
+      "retypePractice": true,
+      "retypeId": "java-two-pointers-remove-dup"
+    },
+    {
+      "type": "note",
+      "text": "This is a DIFFERENT two-pointer pattern: slow and fast both move forward, but at different rates. fast scans every element; slow only advances (and overwrites arr[slow]) when a genuinely new value is found. This modifies the array in place, achieving O(n) with no extra array needed."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Using the opposite-direction two-pointer pattern on an UNSORTED array -- the technique relies entirely on sorted order to know which pointer to move.",
+        "Forgetting the loop condition should be left < right (not <=) for opposite-direction pointers, to avoid comparing an element with itself or crossing incorrectly.",
+        "Confusing the two different two-pointer patterns -- opposite-direction (converging inward) vs same-direction at different speeds (slow/fast) -- they solve different kinds of problems.",
+        "Reaching for nested loops out of habit when a sorted array and a two-pointer approach would solve the same problem in O(n) instead of O(n^2)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the two-pointer technique?",
+          "answer": "An approach using two index variables moving through a data structure -- either converging from opposite ends, or moving in the same direction at different speeds -- to solve a problem in a single O(n) pass instead of nested O(n^2) loops."
+        },
+        {
+          "question": "Why does the opposite-direction two-pointer pair-sum approach require a sorted array?",
+          "answer": "Because moving left forward only increases the sum (since values increase left to right in sorted order), and moving right backward only decreases it -- this directional guarantee is what lets the algorithm safely decide which pointer to move at each step."
+        },
+        {
+          "question": "What is the time complexity of the opposite-direction two-pointer approach, and why?",
+          "answer": "O(n). left only ever moves forward and right only ever moves backward, so together they can move at most n times total before the pointers cross, giving a single overall pass through the array."
+        }
+      ],
+      "thirtySecondAnswer": "Two pointers uses two index variables moving through an array to avoid nested loops. One common pattern converges two pointers from opposite ends inward -- for pair-sum on a SORTED array, moving the left pointer forward increases the sum and moving the right pointer backward decreases it, letting the algorithm solve the problem in O(n) instead of the brute-force O(n^2). Another pattern moves two pointers in the same direction at different speeds (slow/fast), useful for tasks like removing duplicates from a sorted array in place. Both patterns replace nested-loop brute force with a single efficient pass."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Two pointers = two hands reaching into a sorted line from both ends, walking toward each other, OR one hand scouting ahead (fast) while the other marks progress (slow). Either way: one honest pass, O(n), no nested loops needed."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why does the opposite-direction pair-sum technique require a sorted array?",
+        "What is the time complexity of the two-pointer pair-sum approach?",
+        "What's the difference between the opposite-direction and same-direction (slow/fast) two-pointer patterns?",
+        "What would happen if you used the pair-sum two-pointer technique on an unsorted array?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-two-pointers-pair-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static boolean hasPairTwoPointers(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n\n        while (left < right) {\n            int sum = arr[left] + arr[right];\n            if (sum == target) {\n                return true;\n            } else if (sum < target) {\n                left++;\n            } else {\n                right--;\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 3, 5, 7, 9, 11};\n        System.out.println(hasPairTwoPointers(arr, 12));\n        System.out.println(hasPairTwoPointers(arr, 25));\n    }\n}", "output": "true\nfalse" },
+    { "id": "java-two-pointers-remove-dup", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int removeDuplicates(int[] arr) {\n        if (arr.length == 0) return 0;\n\n        int slow = 0;\n        for (int fast = 1; fast < arr.length; fast++) {\n            if (arr[fast] != arr[slow]) {\n                slow++;\n                arr[slow] = arr[fast];\n            }\n        }\n        return slow + 1;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 1, 2, 2, 3, 4, 4};\n        int newLength = removeDuplicates(arr);\n        System.out.println(\"New length: \" + newLength);\n    }\n}", "output": "New length: 4" }
+  ],
+  "retypePractice": [
+    { "id": "java-two-pointers-pair-sum", "reference": "public class Main {\n    static boolean hasPairTwoPointers(int[] arr, int target) {\n        int left = 0;\n        int right = arr.length - 1;\n\n        while (left < right) {\n            int sum = arr[left] + arr[right];\n            if (sum == target) {\n                return true;\n            } else if (sum < target) {\n                left++;\n            } else {\n                right--;\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 3, 5, 7, 9, 11};\n        System.out.println(hasPairTwoPointers(arr, 12));\n        System.out.println(hasPairTwoPointers(arr, 25));\n    }\n}" },
+    { "id": "java-two-pointers-remove-dup", "reference": "public class Main {\n    static int removeDuplicates(int[] arr) {\n        if (arr.length == 0) return 0;\n\n        int slow = 0;\n        for (int fast = 1; fast < arr.length; fast++) {\n            if (arr[fast] != arr[slow]) {\n                slow++;\n                arr[slow] = arr[fast];\n            }\n        }\n        return slow + 1;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 1, 2, 2, 3, 4, 4};\n        int newLength = removeDuplicates(arr);\n        System.out.println(\"New length: \" + newLength);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-two-pointers-pair-sum", "java-two-pointers-remove-dup"]
+  }
+}

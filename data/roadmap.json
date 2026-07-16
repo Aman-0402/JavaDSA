@@ -98,7 +98,8 @@
       "id": "dsa-foundations",
       "title": "DSA Foundations",
       "topics": [
-        { "id": "java-big-o-notation", "title": "Big-O Notation and Complexity Analysis", "lesson": "java-big-o-notation" }
+        { "id": "java-big-o-notation", "title": "Big-O Notation and Complexity Analysis", "lesson": "java-big-o-notation" },
+        { "id": "java-two-pointers", "title": "Two Pointers", "lesson": "java-two-pointers" }
       ]
     },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
