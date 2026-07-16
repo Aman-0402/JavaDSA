@@ -1,0 +1,154 @@
+{
+  "id": "java-lcs",
+  "moduleId": "greedy-dp",
+  "title": "Longest Common Subsequence (LCS)",
+  "description": "Comparing TWO strings position by position with a 2D table -- the textbook example of a 2D DP state built from two independent sequences, not a grid.",
+  "objectives": [
+    "Understand a subsequence (not necessarily contiguous) vs a substring",
+    "Define dp[i][j] for two strings and derive the match/mismatch recurrence",
+    "Trace the LCS table to see how it builds toward the final length"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Subsequence, Not Substring"
+    },
+    {
+      "type": "definition",
+      "term": "Subsequence",
+      "text": "A sequence derived from another by deleting some elements without changing the order of the remaining ones -- unlike a substring, the remaining elements don't need to be contiguous."
+    },
+    {
+      "type": "note",
+      "text": "For \"ace\", both \"ace\" and \"ae\" are subsequences (skip letters, keep order), but \"ca\" is NOT (wrong order) and \"aec\" is NOT (wrong order either). This distinction matters -- LCS is about subsequences, which is more flexible than requiring one unbroken chunk."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Problem: Two Strings, Not a Grid"
+    },
+    {
+      "type": "paragraph",
+      "text": "2D DP previously used dp[i][j] for a position in a SINGLE grid. LCS uses dp[i][j] differently -- i indexes into one string, j indexes into a DIFFERENT string entirely. This is the other major reason 2D DP appears: comparing two independent sequences."
+    },
+    {
+      "type": "definition",
+      "term": "dp[i][j] for LCS",
+      "text": "The length of the longest common subsequence between the first i characters of string A and the first j characters of string B."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int lcs(String a, String b) {\n        int m = a.length();\n        int n = b.length();\n        int[][] dp = new int[m + 1][n + 1];\n\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(lcs(\"abcde\", \"ace\"));\n    }\n}",
+      "output": "3",
+      "retypePractice": true,
+      "retypeId": "java-lcs-basic"
+    },
+    {
+      "type": "note",
+      "text": "When characters MATCH (a.charAt(i-1) == b.charAt(j-1)), that character genuinely extends a common subsequence -- dp[i][j] = dp[i-1][j-1] + 1, building on the LCS of the strings WITHOUT this matched character. When they DON'T match, we can't extend using both characters at once, so we take the BEST of ignoring one character from either string: Math.max(dp[i-1][j], dp[i][j-1])."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing lcs(\"abcde\", \"ace\") -- key matching cells",
+      "steps": [
+        "'a'=='a' (i=1,j=1): dp[1][1] = dp[0][0]+1 = 1",
+        "'b' vs 'c' (i=2,j=2): no match -- dp[2][2] = max(dp[1][2], dp[2][1])",
+        "'c'=='c' (i=3,j=2): dp[3][2] = dp[2][1]+1 -- extends the previous common subsequence 'a' to 'ac'",
+        "'d' vs 'e': no match, propagate max of neighbors",
+        "'e'=='e' (i=5,j=3): dp[5][3] = dp[4][2]+1 -- extends 'ac' to 'ace'",
+        "Final dp[5][3] = 3 -- the LCS is \"ace\", length 3"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Reconstructing the Actual Subsequence (Not Just Its Length)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static String lcsString(String a, String b) {\n        int m = a.length();\n        int n = b.length();\n        int[][] dp = new int[m + 1][n + 1];\n\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n\n        StringBuilder sb = new StringBuilder();\n        int i = m, j = n;\n        while (i > 0 && j > 0) {\n            if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                sb.append(a.charAt(i - 1));\n                i--;\n                j--;\n            } else if (dp[i - 1][j] >= dp[i][j - 1]) {\n                i--;\n            } else {\n                j--;\n            }\n        }\n        return sb.reverse().toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(lcsString(\"abcde\", \"ace\"));\n    }\n}",
+      "output": "ace",
+      "retypePractice": true,
+      "retypeId": "java-lcs-reconstruct"
+    },
+    {
+      "type": "warning",
+      "text": "Reconstruction walks BACKWARD through the finished dp table, starting from dp[m][n] -- whenever characters match, that character is part of the LCS (append it, move diagonally). Otherwise, follow whichever neighbor (dp[i-1][j] or dp[i][j-1]) had the larger value, since that's the direction the optimal answer actually came from. sb.reverse() is needed because we built the answer backward, from the END of both strings toward the start."
+    },
+    {
+      "type": "heading",
+      "text": "4. LCS's Place Among 2D DP Problems"
+    },
+    {
+      "type": "table",
+      "title": "Comparing 2D DP flavors",
+      "headers": ["", "2D DP (grid)", "LCS (two sequences)"],
+      "rows": [
+        ["What i, j mean", "A single position (row, col) in ONE grid", "A position in string A, and a DIFFERENT position in string B"],
+        ["Recurrence shape", "Combine dp[i-1][j] and dp[i][j-1]", "Same shape, PLUS a diagonal dp[i-1][j-1] case for matches"],
+        ["Common use", "Grid traversal, path counting/optimizing", "Sequence comparison -- diffing, DNA analysis, edit distance (a related but different problem)"]
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing subsequence (order preserved, gaps allowed) with substring (must be contiguous) -- LCS specifically means subsequence.",
+        "Forgetting the diagonal dp[i-1][j-1] case that only applies when characters MATCH -- mismatches use dp[i-1][j] and dp[i][j-1] instead.",
+        "Off-by-one errors between the 0-indexed strings (a.charAt(i-1)) and the 1-indexed dp table (dp[i][j]) -- this pattern repeats from 0/1 Knapsack.",
+        "Forgetting to reverse the StringBuilder when reconstructing the actual subsequence, since it's built by walking backward from the end."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between a subsequence and a substring?",
+          "answer": "A subsequence preserves relative order but can skip elements, so its remaining elements don't need to be contiguous. A substring must be an unbroken, contiguous chunk of the original sequence."
+        },
+        {
+          "question": "What is the recurrence for Longest Common Subsequence?",
+          "answer": "If a.charAt(i-1) == b.charAt(j-1), dp[i][j] = dp[i-1][j-1] + 1 (extend the LCS found without this matched character). Otherwise, dp[i][j] = max(dp[i-1][j], dp[i][j-1]) (take the better of ignoring a character from either string)."
+        },
+        {
+          "question": "How do you reconstruct the actual LCS string, not just its length, from the finished dp table?",
+          "answer": "Walk backward from dp[m][n]: whenever the characters at the current positions match, that character is part of the LCS (move diagonally); otherwise, move toward whichever neighbor (dp[i-1][j] or dp[i][j-1]) has the larger value. Reverse the result at the end, since it was built from the end of both strings backward."
+        }
+      ],
+      "thirtySecondAnswer": "LCS finds the longest subsequence common to two strings, using dp[i][j] as the LCS length between the first i characters of one string and the first j of another. When characters match, dp[i][j] = dp[i-1][j-1] + 1, extending a prior common subsequence; otherwise, dp[i][j] = max(dp[i-1][j], dp[i][j-1]), taking the better result from skipping one character from either string. This is 2D DP's other major shape, beyond grid problems -- comparing two independent sequences, with a diagonal transition added for matches. Reconstructing the actual subsequence (not just its length) walks backward through the finished table, following matches diagonally and larger neighbors otherwise."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "LCS: characters MATCH -> extend diagonally (+1 from the corner). Characters DON'T match -> borrow the better of 'skip one letter from string A' or 'skip one letter from string B'. Reconstruction walks the table backward, in reverse."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between a subsequence and a substring?",
+        "What does dp[i][j] represent in LCS, given two strings A and B?",
+        "What is the recurrence when characters match? When they don't?",
+        "How do you reconstruct the actual LCS string from the finished dp table?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-lcs-basic", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int lcs(String a, String b) {\n        int m = a.length();\n        int n = b.length();\n        int[][] dp = new int[m + 1][n + 1];\n\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(lcs(\"abcde\", \"ace\"));\n    }\n}", "output": "3" },
+    { "id": "java-lcs-reconstruct", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static String lcsString(String a, String b) {\n        int m = a.length();\n        int n = b.length();\n        int[][] dp = new int[m + 1][n + 1];\n\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n\n        StringBuilder sb = new StringBuilder();\n        int i = m, j = n;\n        while (i > 0 && j > 0) {\n            if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                sb.append(a.charAt(i - 1));\n                i--;\n                j--;\n            } else if (dp[i - 1][j] >= dp[i][j - 1]) {\n                i--;\n            } else {\n                j--;\n            }\n        }\n        return sb.reverse().toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(lcsString(\"abcde\", \"ace\"));\n    }\n}", "output": "ace" }
+  ],
+  "retypePractice": [
+    { "id": "java-lcs-basic", "reference": "public class Main {\n    static int lcs(String a, String b) {\n        int m = a.length();\n        int n = b.length();\n        int[][] dp = new int[m + 1][n + 1];\n\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(lcs(\"abcde\", \"ace\"));\n    }\n}" },
+    { "id": "java-lcs-reconstruct", "reference": "public class Main {\n    static String lcsString(String a, String b) {\n        int m = a.length();\n        int n = b.length();\n        int[][] dp = new int[m + 1][n + 1];\n\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n\n        StringBuilder sb = new StringBuilder();\n        int i = m, j = n;\n        while (i > 0 && j > 0) {\n            if (a.charAt(i - 1) == b.charAt(j - 1)) {\n                sb.append(a.charAt(i - 1));\n                i--;\n                j--;\n            } else if (dp[i - 1][j] >= dp[i][j - 1]) {\n                i--;\n            } else {\n                j--;\n            }\n        }\n        return sb.reverse().toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(lcsString(\"abcde\", \"ace\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-lcs-basic", "java-lcs-reconstruct"]
+  }
+}

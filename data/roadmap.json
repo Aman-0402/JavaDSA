@@ -168,7 +168,8 @@
         { "id": "java-dp-intro", "title": "Dynamic Programming: Memoization vs Tabulation", "lesson": "java-dp-intro" },
         { "id": "java-1d-dp", "title": "1D DP", "lesson": "java-1d-dp" },
         { "id": "java-2d-dp", "title": "2D DP", "lesson": "java-2d-dp" },
-        { "id": "java-knapsack", "title": "0/1 Knapsack", "lesson": "java-knapsack" }
+        { "id": "java-knapsack", "title": "0/1 Knapsack", "lesson": "java-knapsack" },
+        { "id": "java-lcs", "title": "Longest Common Subsequence (LCS)", "lesson": "java-lcs" }
       ]
     }
   ]
