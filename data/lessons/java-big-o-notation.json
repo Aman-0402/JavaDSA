@@ -1,0 +1,195 @@
+{
+  "id": "java-big-o-notation",
+  "moduleId": "dsa-foundations",
+  "title": "Big-O Notation and Complexity Analysis",
+  "description": "Measuring how an algorithm's running time and memory usage grow as input size grows -- the language used for the rest of this DSA journey.",
+  "objectives": [
+    "Understand Big-O as a way to describe growth rate, not exact runtime",
+    "Recognize the common complexity classes and rank them",
+    "Analyze a simple piece of Java code and state its Big-O"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why We Need a Way to Compare Algorithms"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose two different pieces of code both find the maximum value in an array (like the 1D Arrays lesson's max-finding loop). Both give the correct answer -- but which one is BETTER as the array grows to a million elements? Big-O gives us a precise language to answer this."
+    },
+    {
+      "type": "definition",
+      "term": "Big-O notation",
+      "text": "A way of describing how an algorithm's running time (or memory usage) grows as its input size grows, focusing on the dominant trend rather than exact timing."
+    },
+    {
+      "type": "warning",
+      "text": "Big-O does NOT measure exact seconds or milliseconds -- a specific computer's speed, or one particular input, don't matter. It measures how the work SCALES as input size (usually called n) increases."
+    },
+    {
+      "type": "heading",
+      "text": "2. O(1) -- Constant Time"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "int first = numbers[0]; // always exactly one step, no matter how big numbers is"
+    },
+    {
+      "type": "note",
+      "text": "Whether numbers has 5 elements or 5 million, accessing numbers[0] takes the same, fixed amount of work. This is O(1) -- constant time, the fastest complexity class."
+    },
+    {
+      "type": "heading",
+      "text": "3. O(n) -- Linear Time"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 0; i < numbers.length; i++) {\n    System.out.println(numbers[i]);\n}"
+    },
+    {
+      "type": "note",
+      "text": "This loop runs exactly numbers.length times -- double the array size, and the work roughly doubles too. This is O(n), where n represents the input size (here, the array length)."
+    },
+    {
+      "type": "heading",
+      "text": "4. O(n^2) -- Quadratic Time"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 0; i < numbers.length; i++) {\n    for (int j = 0; j < numbers.length; j++) {\n        System.out.println(numbers[i] + \", \" + numbers[j]);\n    }\n}"
+    },
+    {
+      "type": "warning",
+      "text": "A nested loop, each running n times, does n * n = n^2 total work. Double the array size, and the work roughly QUADRUPLES, not doubles. This is O(n^2) -- quadratic time, and it gets painfully slow for large inputs very quickly."
+    },
+    {
+      "type": "heading",
+      "text": "5. O(log n) -- Logarithmic Time"
+    },
+    {
+      "type": "paragraph",
+      "text": "Some algorithms cut the problem roughly in HALF with each step, instead of looking at every element. Binary search (its own dedicated lesson, coming soon in this module) is the classic example: each comparison eliminates half the remaining possibilities."
+    },
+    {
+      "type": "note",
+      "text": "log n grows extremely slowly -- doubling n only adds ONE more step, unlike O(n) where doubling n doubles the steps. For 1,000,000 elements, O(log n) needs roughly 20 steps; O(n) needs a million."
+    },
+    {
+      "type": "heading",
+      "text": "6. Ranking the Common Complexity Classes"
+    },
+    {
+      "type": "table",
+      "title": "From fastest-growing work to slowest-growing (best to worst)",
+      "headers": ["Notation", "Name", "Example"],
+      "rows": [
+        ["O(1)", "Constant", "Accessing an array by index"],
+        ["O(log n)", "Logarithmic", "Binary search"],
+        ["O(n)", "Linear", "A single loop over the input"],
+        ["O(n log n)", "Linearithmic", "Efficient sorting algorithms (covered in Sorting)"],
+        ["O(n^2)", "Quadratic", "Nested loops over the same input"],
+        ["O(2^n)", "Exponential", "Certain brute-force recursive approaches"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "7. Dropping Constants and Lower-Order Terms"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "for (int i = 0; i < numbers.length; i++) {\n    System.out.println(numbers[i]); // step A\n}\nfor (int i = 0; i < numbers.length; i++) {\n    System.out.println(numbers[i] * 2); // step B\n}"
+    },
+    {
+      "type": "note",
+      "text": "This is TWO separate loops, each O(n), so technically 2n total steps. In Big-O, we drop constant multipliers like the 2 -- this is still just O(n), since what matters is the GROWTH TREND, not the exact multiplier. Similarly, O(n^2 + n) simplifies to just O(n^2), since n^2 dominates n as n grows large."
+    },
+    {
+      "type": "heading",
+      "text": "8. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static boolean hasDuplicate(int[] numbers) {\n        for (int i = 0; i < numbers.length; i++) {\n            for (int j = i + 1; j < numbers.length; j++) {\n                if (numbers[i] == numbers[j]) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 2};\n        System.out.println(hasDuplicate(nums));\n    }\n}",
+      "output": "true",
+      "retypePractice": true,
+      "retypeId": "java-bigo-has-duplicate"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Analyzing hasDuplicate's complexity",
+      "points": [
+        "The outer loop runs roughly n times",
+        "For each outer iteration, the inner loop runs roughly n times too (slightly less, due to j = i + 1, but this doesn't change the overall growth trend)",
+        "Total work grows like n * n -- this is O(n^2)",
+        "We'll see a faster O(n) version of this exact problem in the Hashing lesson, using a HashSet (Set lesson) instead of nested loops"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing Big-O with exact runtime in seconds -- it describes growth trend, not a stopwatch measurement.",
+        "Forgetting to drop constants and lower-order terms -- O(2n) and O(n + 5) are both still just O(n).",
+        "Assuming nested loops are always O(n^2) -- it depends on what each loop actually iterates over; two SEPARATE (not nested) loops over the same input are still O(n), not O(n^2).",
+        "Ignoring complexity entirely for 'small' inputs -- an O(n^2) solution that works fine for 10 elements can completely fail for 100,000."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What does Big-O notation actually measure?",
+          "answer": "How an algorithm's running time or memory usage grows as its input size grows -- the overall trend, not an exact measurement in seconds for one specific run."
+        },
+        {
+          "question": "What is the Big-O of a single loop over an array of size n? What about two nested loops over the same array?",
+          "answer": "A single loop is O(n) -- linear. Two nested loops, each running roughly n times, multiply to O(n^2) -- quadratic."
+        },
+        {
+          "question": "Why do we drop constants like the 2 in O(2n)?",
+          "answer": "Because Big-O describes the growth TREND as input size increases, not the exact operation count -- O(2n) and O(n) both grow linearly, so they're considered the same complexity class."
+        },
+        {
+          "question": "Why is O(log n) considered much better than O(n) for large inputs?",
+          "answer": "O(log n) grows extremely slowly -- doubling the input size only adds one more step, while O(n) doubles its work. For very large inputs, this difference becomes enormous (e.g. ~20 steps vs. ~1,000,000 steps for a million elements)."
+        }
+      ],
+      "thirtySecondAnswer": "Big-O notation describes how an algorithm's running time or memory grows as input size (n) grows, focusing on trend rather than exact timing. Common classes, from best to worst: O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n), O(n^2) quadratic, O(2^n) exponential. A single loop over n elements is O(n); nested loops each running n times multiply to O(n^2). Constants and lower-order terms are dropped, since only the dominant growth trend matters -- O(2n) is still O(n), and O(n^2 + n) is still O(n^2). This vocabulary is used throughout the rest of the DSA modules to reason about and compare solutions."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "O(1) = instant, no matter the size. O(log n) = cuts the problem in half each step. O(n) = one full pass. O(n^2) = a full pass, for every item, of a full pass. Bigger n makes O(n^2) hurt FAST."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does Big-O actually measure?",
+        "What is the Big-O of a single loop over n elements? Two nested loops?",
+        "Why do we drop constants like the 2 in O(2n)?",
+        "Why is O(log n) so much better than O(n) for very large inputs?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-bigo-has-duplicate", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static boolean hasDuplicate(int[] numbers) {\n        for (int i = 0; i < numbers.length; i++) {\n            for (int j = i + 1; j < numbers.length; j++) {\n                if (numbers[i] == numbers[j]) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 2};\n        System.out.println(hasDuplicate(nums));\n    }\n}", "output": "true" }
+  ],
+  "retypePractice": [
+    { "id": "java-bigo-has-duplicate", "reference": "public class Main {\n    static boolean hasDuplicate(int[] numbers) {\n        for (int i = 0; i < numbers.length; i++) {\n            for (int j = i + 1; j < numbers.length; j++) {\n                if (numbers[i] == numbers[j]) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 2};\n        System.out.println(hasDuplicate(nums));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-bigo-has-duplicate"]
+  }
+}

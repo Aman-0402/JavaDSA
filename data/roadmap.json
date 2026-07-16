@@ -94,7 +94,13 @@
         { "id": "java-collections-utility-class", "title": "Collections Utility Class", "lesson": "java-collections-utility-class" }
       ]
     },
-    { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
+    {
+      "id": "dsa-foundations",
+      "title": "DSA Foundations",
+      "topics": [
+        { "id": "java-big-o-notation", "title": "Big-O Notation and Complexity Analysis", "lesson": "java-big-o-notation" }
+      ]
+    },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
     { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },
     { "id": "heap", "title": "Heap", "topics": [] },
