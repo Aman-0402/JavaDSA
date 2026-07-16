@@ -141,6 +141,183 @@
         "What two properties of XOR make the single-number trick work?",
         "Does the XOR single-number trick work if more than one number appears an odd number of times?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-136",
+      "number": 136,
+      "title": "Single Number",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/single-number/",
+      "problemStatement": "Given a non-empty array where every element appears twice except one, return the element that appears only once.",
+      "examples": [
+        { "input": "nums = [4,1,2,1,2]", "output": "4", "explanation": "XOR-ing all: 4^1^2^1^2 = 4^(1^1)^(2^2) = 4^0^0 = 4." }
+      ],
+      "constraints": ["1 <= nums.length <= 3 * 10^4"],
+      "hints": ["a XOR a = 0, and XOR is commutative/associative -- so XOR-ing everything cancels all paired values, leaving the unpaired one."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "XOR every element together; duplicates cancel to 0, leaving only the single number.",
+          "code": "class Solution {\n    public int singleNumber(int[] nums) {\n        int result = 0;\n        for (int num : nums) {\n            result ^= num;\n        }\n        return result;\n    }\n}",
+          "output": "4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-191",
+      "number": 191,
+      "title": "Number of 1 Bits",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/number-of-1-bits/",
+      "problemStatement": "Given an unsigned integer, return the number of '1' bits it has (Hamming weight).",
+      "examples": [
+        { "input": "n = 11 (binary ...1011)", "output": "3" }
+      ],
+      "constraints": ["input is a 32-bit unsigned integer"],
+      "hints": ["Brian Kernighan's trick: n & (n-1) clears the lowest set bit -- repeat and count until n becomes 0."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check all 32 bit positions individually with (n >> i) & 1, summing the set ones.",
+          "code": "public class Solution {\n    public int hammingWeight(int n) {\n        int count = 0;\n        for (int i = 0; i < 32; i++) {\n            if (((n >> i) & 1) == 1) count++;\n        }\n        return count;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(32) = O(1)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Brian Kernighan's trick: n & (n-1) removes the lowest set bit each time. The loop runs exactly once per set bit, so it's faster when few bits are set.",
+          "code": "public class Solution {\n    public int hammingWeight(int n) {\n        int count = 0;\n        while (n != 0) {\n            n &= (n - 1);\n            count++;\n        }\n        return count;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(number of set bits)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-338",
+      "number": 338,
+      "title": "Counting Bits",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/counting-bits/",
+      "problemStatement": "Given n, return an array ans where ans[i] is the number of 1 bits in the binary representation of i, for every i from 0 to n.",
+      "examples": [
+        { "input": "n = 5", "output": "[0,1,1,2,1,2]", "explanation": "0=0b0(0), 1=0b1(1), 2=0b10(1), 3=0b11(2), 4=0b100(1), 5=0b101(2)." }
+      ],
+      "constraints": ["0 <= n <= 10^5"],
+      "hints": ["dp[i] = dp[i >> 1] + (i & 1) -- the bit count of i equals the bit count of i with its last bit dropped, plus that last bit itself."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Build the answer bottom-up using the relation dp[i] = dp[i/2] + (i's last bit), reusing previously computed smaller values instead of recomputing from scratch.",
+          "code": "class Solution {\n    public int[] countBits(int n) {\n        int[] dp = new int[n + 1];\n        for (int i = 1; i <= n; i++) {\n            dp[i] = dp[i >> 1] + (i & 1);\n        }\n        return dp;\n    }\n}",
+          "output": "[0,1,1,2,1,2]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the output"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-190",
+      "number": 190,
+      "title": "Reverse Bits",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/reverse-bits/",
+      "problemStatement": "Reverse the bits of a given 32-bit unsigned integer.",
+      "examples": [
+        { "input": "n = 00000010100101000001111010011100", "output": "964176192 (00111001011110000010100101000000)" }
+      ],
+      "constraints": ["input is a 32-bit unsigned integer"],
+      "hints": ["Build the result bit by bit: shift result left, OR in the lowest bit of n, then shift n right, 32 times."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Loop 32 times: shift the accumulating result left by 1, OR in n's current lowest bit, then shift n right by 1 to expose the next bit.",
+          "code": "public class Solution {\n    public int reverseBits(int n) {\n        int result = 0;\n        for (int i = 0; i < 32; i++) {\n            result <<= 1;\n            result |= (n & 1);\n            n >>>= 1;\n        }\n        return result;\n    }\n}",
+          "output": "964176192",
+          "timeComplexity": "O(32) = O(1)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-231",
+      "number": 231,
+      "title": "Power of Two",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/power-of-two/",
+      "problemStatement": "Given an integer n, return true if it is a power of two (1, 2, 4, 8, ...).",
+      "examples": [
+        { "input": "n = 16", "output": "true" },
+        { "input": "n = 3", "output": "false" }
+      ],
+      "constraints": ["-2^31 <= n <= 2^31 - 1"],
+      "hints": ["A power of two has EXACTLY one set bit.", "n & (n-1) clears the lowest set bit -- if n was a power of two, the result is 0."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "n must be positive, and n & (n-1) must be 0 (meaning n had exactly one bit set, which becomes 0 once that single bit is cleared).",
+          "code": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return n > 0 && (n & (n - 1)) == 0;\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(1)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-268",
+      "number": 268,
+      "title": "Missing Number",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/missing-number/",
+      "problemStatement": "Given an array containing n distinct numbers from the range [0, n], return the one number missing from the range.",
+      "examples": [
+        { "input": "nums = [3,0,1]", "output": "2", "explanation": "Range [0,3] minus the array's 3 elements leaves 2 missing." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4"],
+      "hints": ["XOR every index 0..n and every array value together -- every number that appears in both cancels out, leaving only the missing one."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "XOR all indices 0..n with all array values; the missing number is the only one left unpaired after everything else cancels.",
+          "code": "class Solution {\n    public int missingNumber(int[] nums) {\n        int result = nums.length;\n        for (int i = 0; i < nums.length; i++) {\n            result ^= i ^ nums[i];\n        }\n        return result;\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-371",
+      "number": 371,
+      "title": "Sum of Two Integers",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/sum-of-two-integers/",
+      "problemStatement": "Given two integers, calculate their sum WITHOUT using the + or - operators.",
+      "examples": [
+        { "input": "a = 1, b = 2", "output": "3" }
+      ],
+      "constraints": ["-1000 <= a, b <= 1000"],
+      "hints": ["XOR gives the sum ignoring carries (like binary addition without carry propagation).", "AND, then shifted left by 1, gives the carry bits. Repeat: sum = a^b, carry = (a&b)<<1, until carry becomes 0."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Simulate binary addition: XOR gives digit-wise sum ignoring carry, AND-then-shift gives the carry to add in next. Repeat until there's no carry left.",
+          "code": "class Solution {\n    public int getSum(int a, int b) {\n        while (b != 0) {\n            int carry = (a & b) << 1;\n            a = a ^ b;\n            b = carry;\n        }\n        return a;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(1) (bounded by 32 bit positions)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
     }
   ],
   "codeExamples": [
