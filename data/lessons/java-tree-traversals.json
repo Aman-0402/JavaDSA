@@ -138,6 +138,174 @@
         "Why is post-order suited to safely deleting a tree?",
         "What broader category of traversal do all three belong to?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-144",
+      "number": 144,
+      "title": "Binary Tree Preorder Traversal",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/binary-tree-preorder-traversal/",
+      "problemStatement": "Given the root of a binary tree, return the preorder traversal (node, left, right) of its node values.",
+      "examples": [
+        { "input": "root = [1,null,2,3]", "output": "[1,2,3]" }
+      ],
+      "constraints": ["0 <= number of nodes <= 100"],
+      "hints": ["Recursive version is trivial.", "For iterative, use a stack: push root, then repeatedly pop, visit, push right THEN left (so left is processed first)."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Iterative using an explicit stack -- avoids recursion stack overhead/depth limits on very deep trees. Push right child before left so left is popped (visited) first.",
+          "code": "class Solution {\n    public List<Integer> preorderTraversal(TreeNode root) {\n        List<Integer> result = new ArrayList<>();\n        if (root == null) return result;\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        stack.push(root);\n        while (!stack.isEmpty()) {\n            TreeNode node = stack.pop();\n            result.add(node.val);\n            if (node.right != null) stack.push(node.right);\n            if (node.left != null) stack.push(node.left);\n        }\n        return result;\n    }\n}",
+          "output": "[1,2,3]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-94",
+      "number": 94,
+      "title": "Binary Tree Inorder Traversal",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/binary-tree-inorder-traversal/",
+      "problemStatement": "Given the root of a binary tree, return the inorder traversal (left, node, right) of its node values.",
+      "examples": [
+        { "input": "root = [1,null,2,3]", "output": "[1,3,2]" }
+      ],
+      "constraints": ["0 <= number of nodes <= 100"],
+      "hints": ["Iterative version: push left children onto a stack until null, then pop, visit, move to popped node's right child, repeat."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Iterative inorder using a stack: dive left as far as possible pushing each node, then pop, visit, and switch to that node's right subtree.",
+          "code": "class Solution {\n    public List<Integer> inorderTraversal(TreeNode root) {\n        List<Integer> result = new ArrayList<>();\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        TreeNode node = root;\n        while (node != null || !stack.isEmpty()) {\n            while (node != null) {\n                stack.push(node);\n                node = node.left;\n            }\n            node = stack.pop();\n            result.add(node.val);\n            node = node.right;\n        }\n        return result;\n    }\n}",
+          "output": "[1,3,2]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-145",
+      "number": 145,
+      "title": "Binary Tree Postorder Traversal",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/binary-tree-postorder-traversal/",
+      "problemStatement": "Given the root of a binary tree, return the postorder traversal (left, right, node) of its node values.",
+      "examples": [
+        { "input": "root = [1,null,2,3]", "output": "[3,2,1]" }
+      ],
+      "constraints": ["0 <= number of nodes <= 100"],
+      "hints": ["Trick: do a 'root, right, left' traversal iteratively (like preorder but swapped), then reverse the result -- gives left, right, root."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Push root, then pop-visit-push-left-then-right (mirror of preorder's push order), building result in 'root, right, left' order, then reverse it at the end to get true postorder.",
+          "code": "class Solution {\n    public List<Integer> postorderTraversal(TreeNode root) {\n        LinkedList<Integer> result = new LinkedList<>();\n        if (root == null) return result;\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        stack.push(root);\n        while (!stack.isEmpty()) {\n            TreeNode node = stack.pop();\n            result.addFirst(node.val);\n            if (node.left != null) stack.push(node.left);\n            if (node.right != null) stack.push(node.right);\n        }\n        return result;\n    }\n}",
+          "output": "[3,2,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-112",
+      "number": 112,
+      "title": "Path Sum",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/path-sum/",
+      "problemStatement": "Given the root of a binary tree and an integer targetSum, return true if there is a root-to-leaf path whose values sum to targetSum.",
+      "examples": [
+        { "input": "root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22", "output": "true", "explanation": "Path 5 -> 4 -> 11 -> 2 sums to 22." }
+      ],
+      "constraints": ["0 <= number of nodes <= 5000", "-1000 <= Node.val <= 1000"],
+      "hints": ["Subtract the current node's value from the remaining target as you descend.", "At a leaf, check if the remaining target equals the leaf's value."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Recurse, passing down remaining = targetSum - node.val. At a leaf (no children), check remaining == 0.",
+          "code": "class Solution {\n    public boolean hasPathSum(TreeNode root, int targetSum) {\n        if (root == null) return false;\n        if (root.left == null && root.right == null) {\n            return targetSum == root.val;\n        }\n        int remaining = targetSum - root.val;\n        return hasPathSum(root.left, remaining) || hasPathSum(root.right, remaining);\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-113",
+      "number": 113,
+      "title": "Path Sum II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/path-sum-ii/",
+      "problemStatement": "Given the root of a binary tree and targetSum, return all root-to-leaf paths whose values sum to targetSum.",
+      "examples": [
+        { "input": "root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22", "output": "[[5,4,11,2],[5,8,4,5]]" }
+      ],
+      "constraints": ["0 <= number of nodes <= 5000", "-1000 <= Node.val <= 1000"],
+      "hints": ["Backtracking: add node to the current path, recurse, and remove it (backtrack) after exploring both children.", "At a leaf with remaining sum 0, record a COPY of the current path (the list will keep mutating afterward)."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "DFS with a shared path list and backtracking: add current node's value, recurse into children with reduced target, and remove the value before returning to the parent call. Copy the path into results only at a matching leaf.",
+          "code": "class Solution {\n    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {\n        List<List<Integer>> result = new ArrayList<>();\n        dfs(root, targetSum, new ArrayList<>(), result);\n        return result;\n    }\n\n    private void dfs(TreeNode node, int remaining, List<Integer> path, List<List<Integer>> result) {\n        if (node == null) return;\n        path.add(node.val);\n        remaining -= node.val;\n        if (node.left == null && node.right == null && remaining == 0) {\n            result.add(new ArrayList<>(path));\n        } else {\n            dfs(node.left, remaining, path, result);\n            dfs(node.right, remaining, path, result);\n        }\n        path.remove(path.size() - 1);\n    }\n}",
+          "output": "[[5,4,11,2],[5,8,4,5]]",
+          "timeComplexity": "O(n^2) worst case (copying paths)",
+          "spaceComplexity": "O(h)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-257",
+      "number": 257,
+      "title": "Binary Tree Paths",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/binary-tree-paths/",
+      "problemStatement": "Given the root of a binary tree, return all root-to-leaf paths as strings in the form \"1->2->5\".",
+      "examples": [
+        { "input": "root = [1,2,3,null,5]", "output": "[\"1->2->5\",\"1->3\"]" }
+      ],
+      "constraints": ["1 <= number of nodes <= 100"],
+      "hints": ["Build the path string as you descend (e.g. via StringBuilder or string concatenation).", "At a leaf, add the accumulated path string to the results."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "DFS building a path string incrementally; at a leaf, append it to the results list.",
+          "code": "class Solution {\n    public List<String> binaryTreePaths(TreeNode root) {\n        List<String> result = new ArrayList<>();\n        if (root != null) dfs(root, String.valueOf(root.val), result);\n        return result;\n    }\n\n    private void dfs(TreeNode node, String path, List<String> result) {\n        if (node.left == null && node.right == null) {\n            result.add(path);\n            return;\n        }\n        if (node.left != null) dfs(node.left, path + \"->\" + node.left.val, result);\n        if (node.right != null) dfs(node.right, path + \"->\" + node.right.val, result);\n    }\n}",
+          "output": "[\"1->2->5\",\"1->3\"]",
+          "timeComplexity": "O(n^2) worst case (string concatenation)",
+          "spaceComplexity": "O(h)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-124",
+      "number": 124,
+      "title": "Binary Tree Maximum Path Sum",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+      "problemStatement": "Given the root of a binary tree, return the maximum path sum of any non-empty path (a path connects any two nodes via parent-child edges, and need not pass through the root or end at a leaf).",
+      "examples": [
+        { "input": "root = [-10,9,20,null,null,15,7]", "output": "42", "explanation": "Best path is 15 -> 20 -> 7 = 15 + 20 + 7 = 42. It ignores the root (-10) entirely since including it would only lower the sum." }
+      ],
+      "constraints": ["1 <= number of nodes <= 3 * 10^4", "-1000 <= Node.val <= 1000"],
+      "hints": ["A path 'through' a node contributes at most node.val + max(0, leftGain) + max(0, rightGain) -- clip negative subtree contributions to 0.", "But the value RETURNED to the parent (for chaining) can only include ONE side, since a path can't branch."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Post-order recursion: gain(node) returns the best single-branch sum extending upward from node (node.val + max(0, best of one child)). While computing this, also update a running global max using BOTH children (the 'bend through this node' case), since a full path can use both branches but the value handed to the parent cannot.",
+          "code": "class Solution {\n    int best = Integer.MIN_VALUE;\n\n    public int maxPathSum(TreeNode root) {\n        gain(root);\n        return best;\n    }\n\n    private int gain(TreeNode node) {\n        if (node == null) return 0;\n        int leftGain = Math.max(gain(node.left), 0);\n        int rightGain = Math.max(gain(node.right), 0);\n        best = Math.max(best, node.val + leftGain + rightGain);\n        return node.val + Math.max(leftGain, rightGain);\n    }\n}",
+          "output": "42",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h)"
+        }
+      ]
     }
   ],
   "codeExamples": [
