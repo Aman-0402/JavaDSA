@@ -123,6 +123,112 @@
         "Why might you prefer an iterative DFS over a recursive one for a very deep tree?",
         "What makes iterative in-order trickier than iterative pre-order?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-589",
+      "number": 589,
+      "title": "N-ary Tree Preorder Traversal",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/n-ary-tree-preorder-traversal/",
+      "problemStatement": "Given the root of an n-ary tree (each node holds a list of children instead of just left/right), return its preorder traversal.",
+      "examples": [
+        { "input": "root = [1,null,3,2,4,null,5,6]", "output": "[1,3,5,6,2,4]" }
+      ],
+      "constraints": ["0 <= number of nodes <= 10^4"],
+      "hints": ["Iterative: push root, then pop-visit-push all children in REVERSE order so the first child is popped first."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Same stack idea as binary preorder, but push all children in reverse order (so leftmost child ends up on top of the stack and gets visited first).",
+          "code": "class Solution {\n    public List<Integer> preorder(Node root) {\n        List<Integer> result = new ArrayList<>();\n        if (root == null) return result;\n        Deque<Node> stack = new ArrayDeque<>();\n        stack.push(root);\n        while (!stack.isEmpty()) {\n            Node node = stack.pop();\n            result.add(node.val);\n            for (int i = node.children.size() - 1; i >= 0; i--) {\n                stack.push(node.children.get(i));\n            }\n        }\n        return result;\n    }\n}",
+          "output": "[1,3,5,6,2,4]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-590",
+      "number": 590,
+      "title": "N-ary Tree Postorder Traversal",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/n-ary-tree-postorder-traversal/",
+      "problemStatement": "Given the root of an n-ary tree, return its postorder traversal (all children visited before the node itself).",
+      "examples": [
+        { "input": "root = [1,null,3,2,4,null,5,6]", "output": "[5,6,3,2,4,1]" }
+      ],
+      "constraints": ["0 <= number of nodes <= 10^4"],
+      "hints": ["Same reverse trick as binary postorder: do a 'root then children left-to-right' traversal, then reverse the whole result."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Push root, then pop-visit-addFirst-push children in normal left-to-right order (so they get reversed relative to visitation), building the result backwards via addFirst.",
+          "code": "class Solution {\n    public List<Integer> postorder(Node root) {\n        LinkedList<Integer> result = new LinkedList<>();\n        if (root == null) return result;\n        Deque<Node> stack = new ArrayDeque<>();\n        stack.push(root);\n        while (!stack.isEmpty()) {\n            Node node = stack.pop();\n            result.addFirst(node.val);\n            for (Node child : node.children) {\n                stack.push(child);\n            }\n        }\n        return result;\n    }\n}",
+          "output": "[5,6,3,2,4,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-110",
+      "number": 110,
+      "title": "Balanced Binary Tree",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/balanced-binary-tree/",
+      "problemStatement": "Given the root of a binary tree, determine if it is height-balanced: for every node, the height difference between its left and right subtree is at most 1.",
+      "examples": [
+        { "input": "root = [3,9,20,null,null,15,7]", "output": "true" },
+        { "input": "root = [1,2,2,3,3,null,null,4,4]", "output": "false", "explanation": "Node 2 (left child of root)'s subtree has height 2 on its left branch vs 0 on its right -- difference of 2, exceeding 1." }
+      ],
+      "constraints": ["0 <= number of nodes <= 5000"],
+      "hints": ["Naively computing height(left) and height(right) separately at every node is O(n^2).", "Better: compute height bottom-up, returning -1 as a sentinel the moment imbalance is detected anywhere below, short-circuiting further work."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "At every node, independently compute height(left) and height(right) via a separate height() function and check |diff| <= 1, then recurse into children. Recomputing height repeatedly makes this O(n^2) in the worst case.",
+          "code": "class Solution {\n    public boolean isBalanced(TreeNode root) {\n        if (root == null) return true;\n        int leftHeight = height(root.left);\n        int rightHeight = height(root.right);\n        if (Math.abs(leftHeight - rightHeight) > 1) return false;\n        return isBalanced(root.left) && isBalanced(root.right);\n    }\n\n    private int height(TreeNode node) {\n        if (node == null) return 0;\n        return 1 + Math.max(height(node.left), height(node.right));\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(n^2) worst case",
+          "spaceComplexity": "O(h)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Post-order recursion that returns height AND propagates imbalance in one pass: use -1 as a sentinel meaning 'already unbalanced below', short-circuiting the rest of that branch immediately.",
+          "code": "class Solution {\n    public boolean isBalanced(TreeNode root) {\n        return height(root) != -1;\n    }\n\n    private int height(TreeNode node) {\n        if (node == null) return 0;\n        int leftHeight = height(node.left);\n        if (leftHeight == -1) return -1;\n        int rightHeight = height(node.right);\n        if (rightHeight == -1) return -1;\n        if (Math.abs(leftHeight - rightHeight) > 1) return -1;\n        return 1 + Math.max(leftHeight, rightHeight);\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-236",
+      "number": 236,
+      "title": "Lowest Common Ancestor of a Binary Tree",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+      "problemStatement": "Given a general (not necessarily BST) binary tree and two nodes p and q, find their lowest common ancestor.",
+      "examples": [
+        { "input": "root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1", "output": "3", "explanation": "5 is in the left subtree, 1 is in the right subtree of 3, so 3 is the split point." },
+        { "input": "root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4", "output": "5", "explanation": "4 is inside 5's own subtree (5 -> 2 -> 4), so 5 itself is the LCA." }
+      ],
+      "constraints": ["2 <= number of nodes <= 10^5", "all values unique", "p and q both exist in the tree"],
+      "hints": ["Unlike a BST, there's no ordering to exploit -- must search both subtrees.", "If p and q are found in different subtrees of a node, that node is the LCA.", "If a subtree returns p or q itself, propagate that up (it might be an ancestor of the other)."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Recursively search left and right. If current node equals p or q, return it. If both subtree searches return non-null, current node is the split point (LCA). Otherwise propagate whichever side found something.",
+          "code": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        if (root == null || root == p || root == q) return root;\n        TreeNode left = lowestCommonAncestor(root.left, p, q);\n        TreeNode right = lowestCommonAncestor(root.right, p, q);\n        if (left != null && right != null) return root;\n        return left != null ? left : right;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h)"
+        }
+      ]
     }
   ],
   "codeExamples": [
