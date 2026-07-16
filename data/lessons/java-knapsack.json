@@ -123,6 +123,102 @@
         "Why does a greedy highest-value-first strategy fail on this problem?",
         "Why does 0/1 Knapsack need a 2D state instead of 1D?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-416",
+      "number": 416,
+      "title": "Partition Equal Subset Sum",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/partition-equal-subset-sum/",
+      "problemStatement": "Given an array of positive integers, determine if it can be split into two subsets with equal sums.",
+      "examples": [
+        { "input": "nums = [1,5,11,5]", "output": "true", "explanation": "Split into [11] and [1,5,5], both summing to 11." }
+      ],
+      "constraints": ["1 <= nums.length <= 200"],
+      "hints": ["If total sum is odd, immediately return false (can't split evenly).", "Otherwise, this reduces to: is there a subset summing to exactly total/2? That's a 0/1 Knapsack existence question with capacity = total/2."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Compute total sum; if odd, return false. Otherwise run a 1D 0/1 knapsack boolean DP for target = total/2, iterating amounts DOWNWARD per item to avoid reusing the same element twice.",
+          "code": "class Solution {\n    public boolean canPartition(int[] nums) {\n        int total = 0;\n        for (int num : nums) total += num;\n        if (total % 2 != 0) return false;\n        int target = total / 2;\n\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int num : nums) {\n            for (int sum = target; sum >= num; sum--) {\n                dp[sum] = dp[sum] || dp[sum - num];\n            }\n        }\n        return dp[target];\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(n * total)",
+          "spaceComplexity": "O(total)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-494",
+      "number": 494,
+      "title": "Target Sum",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/target-sum/",
+      "problemStatement": "Given an array of non-negative integers and a target, assign a + or - sign to each number so the resulting expression evaluates to target. Return the number of ways to do this.",
+      "examples": [
+        { "input": "nums = [1,1,1,1,1], target = 3", "output": "5" }
+      ],
+      "constraints": ["1 <= nums.length <= 20"],
+      "hints": ["Let P = sum of numbers assigned '+', N = sum assigned '-'. P - N = target and P + N = total, so P = (total + target) / 2.", "This reduces to: count subsets summing to exactly P -- a 0/1 knapsack COUNTING variant."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Derive P = (total + target) / 2 (must be a non-negative integer, else 0 ways). Then count subsets summing to P using a 1D DP where dp[sum] accumulates the number of ways, iterating amounts downward per item.",
+          "code": "class Solution {\n    public int findTargetSumWays(int[] nums, int target) {\n        int total = 0;\n        for (int num : nums) total += num;\n        if (Math.abs(target) > total || (total + target) % 2 != 0) return 0;\n        int p = (total + target) / 2;\n\n        int[] dp = new int[p + 1];\n        dp[0] = 1;\n        for (int num : nums) {\n            for (int sum = p; sum >= num; sum--) {\n                dp[sum] += dp[sum - num];\n            }\n        }\n        return dp[p];\n    }\n}",
+          "output": "5",
+          "timeComplexity": "O(n * total)",
+          "spaceComplexity": "O(total)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-474",
+      "number": 474,
+      "title": "Ones and Zeroes",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/ones-and-zeroes/",
+      "problemStatement": "Given a list of binary strings and limits m (max 0's) and n (max 1's), return the size of the largest subset where the total 0's used across chosen strings is <= m and total 1's is <= n.",
+      "examples": [
+        { "input": "strs = [\"10\",\"0001\",\"111001\",\"1\",\"0\"], m = 5, n = 3", "output": "4", "explanation": "Pick {\"10\",\"0001\",\"1\",\"0\"}: uses 0's = 1+3+0+1 = 5, 1's = 1+1+1+0 = 3, both within limits, subset size 4." }
+      ],
+      "constraints": ["1 <= strs.length <= 600"],
+      "hints": ["This is 0/1 Knapsack with TWO capacity dimensions (m zeros, n ones) instead of one.", "dp[z][o] = max subset size using at most z zeros and o ones; iterate both dimensions downward per string to avoid reuse."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "2D 0/1 knapsack: for each string, count its zeros and ones, then update dp[z][o] = max(dp[z][o], dp[z-zeros][o-ones] + 1) for all z >= zeros, o >= ones, iterating downward.",
+          "code": "class Solution {\n    public int findMaxForm(String[] strs, int m, int n) {\n        int[][] dp = new int[m + 1][n + 1];\n        for (String s : strs) {\n            int zeros = 0, ones = 0;\n            for (char c : s.toCharArray()) {\n                if (c == '0') zeros++; else ones++;\n            }\n            for (int z = m; z >= zeros; z--) {\n                for (int o = n; o >= ones; o--) {\n                    dp[z][o] = Math.max(dp[z][o], dp[z - zeros][o - ones] + 1);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+          "output": "4",
+          "timeComplexity": "O(strs.length * m * n)",
+          "spaceComplexity": "O(m * n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1049",
+      "number": 1049,
+      "title": "Last Stone Weight II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/last-stone-weight-ii/",
+      "problemStatement": "Given stone weights, repeatedly smash two stones together (heavier - lighter survives, or both vanish if equal) until at most one stone remains. Return the minimum possible weight of that remaining stone.",
+      "examples": [
+        { "input": "stones = [2,7,4,1,8,1]", "output": "1", "explanation": "Total = 23. The subset {7,4} sums to exactly 11, the closest reachable sum to total/2 = 11.5. Splitting into piles of 11 and 12 gives a final weight of 12 - 11 = 1." }
+      ],
+      "constraints": ["1 <= stones.length <= 30"],
+      "hints": ["This is equivalent to splitting stones into two groups as evenly as possible -- the answer is total - 2*bestSubsetSum, where bestSubsetSum is the largest achievable sum <= total/2.", "Same 0/1 knapsack subset-sum DP as Partition Equal Subset Sum, but here we want the LARGEST reachable sum up to total/2, not just a boolean."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Run a 0/1 knapsack boolean DP for reachable sums up to total/2. Find the largest reachable sum s <= total/2; the answer is total - 2*s (one pile is s, the other is total-s, and their difference is the final stone weight).",
+          "code": "class Solution {\n    public int lastStoneWeightII(int[] stones) {\n        int total = 0;\n        for (int stone : stones) total += stone;\n        int target = total / 2;\n\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int stone : stones) {\n            for (int sum = target; sum >= stone; sum--) {\n                dp[sum] = dp[sum] || dp[sum - stone];\n            }\n        }\n\n        for (int sum = target; sum >= 0; sum--) {\n            if (dp[sum]) return total - 2 * sum;\n        }\n        return total;\n    }\n}",
+          "output": "1",
+          "timeComplexity": "O(n * total)",
+          "spaceComplexity": "O(total)"
+        }
+      ]
     }
   ],
   "codeExamples": [
