@@ -1,0 +1,170 @@
+{
+  "id": "java-comparable-vs-comparator",
+  "moduleId": "collections-framework",
+  "title": "Comparable vs Comparator",
+  "description": "Defining custom sort order for objects -- finally explaining how TreeSet/TreeMap actually decide 'sorted order' for something more complex than a String or int.",
+  "objectives": [
+    "Understand Comparable as a class's own, single natural ordering",
+    "Understand Comparator as an external, swappable ordering",
+    "Use Collections.sort() with both approaches"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Set and Map lessons, TreeSet and TreeMap sorted Strings alphabetically and numbers numerically, without explanation of HOW Java knew that order. For your own classes, like Student, Java has no idea what 'sorted' should even mean -- by name? By age? Comparable and Comparator let you define this."
+    },
+    {
+      "type": "heading",
+      "text": "2. Comparable: A Class's Own Natural Order"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    static class Student implements Comparable<Student> {\n        String name;\n        int age;\n\n        Student(String name, int age) {\n            this.name = name;\n            this.age = age;\n        }\n\n        @Override\n        public int compareTo(Student other) {\n            return this.age - other.age;\n        }\n\n        @Override\n        public String toString() {\n            return name + \"(\" + age + \")\";\n        }\n    }\n\n    public static void main(String[] args) {\n        List<Student> students = new ArrayList<>();\n        students.add(new Student(\"Aman\", 21));\n        students.add(new Student(\"Priya\", 19));\n        students.add(new Student(\"Rahul\", 25));\n\n        Collections.sort(students);\n        System.out.println(students);\n    }\n}",
+      "output": "[Priya(19), Aman(21), Rahul(25)]",
+      "retypePractice": true,
+      "retypeId": "java-comparable-student"
+    },
+    {
+      "type": "definition",
+      "term": "Comparable",
+      "text": "An interface implemented by a class itself to define its single, default (natural) ordering, via a compareTo(other) method."
+    },
+    {
+      "type": "table",
+      "title": "Reading compareTo's return value",
+      "headers": ["Result", "Meaning"],
+      "rows": [
+        ["Negative (< 0)", "this comes BEFORE other"],
+        ["Zero (0)", "this and other are considered equal for sorting purposes"],
+        ["Positive (> 0)", "this comes AFTER other"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "this.age - other.age is a common shorthand: if this.age is smaller, the result is negative (comes first); if larger, positive (comes after); if equal, zero. Collections.sort() (from java.util.Collections) uses this compareTo() automatically for any Comparable class."
+    },
+    {
+      "type": "heading",
+      "text": "3. The Limitation: Only ONE Natural Order"
+    },
+    {
+      "type": "warning",
+      "text": "Comparable is written INSIDE the class itself, so a class can only have ONE compareTo() -- one fixed 'natural' order. But what if you sometimes want Students sorted by age, and other times by name? Comparable alone can't do both. That's exactly what Comparator solves."
+    },
+    {
+      "type": "heading",
+      "text": "4. Comparator: An External, Swappable Order"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.Comparator;\nimport java.util.List;\n\npublic class Main {\n    static class Student {\n        String name;\n        int age;\n\n        Student(String name, int age) {\n            this.name = name;\n            this.age = age;\n        }\n\n        @Override\n        public String toString() {\n            return name + \"(\" + age + \")\";\n        }\n    }\n\n    public static void main(String[] args) {\n        List<Student> students = new ArrayList<>();\n        students.add(new Student(\"Aman\", 21));\n        students.add(new Student(\"Priya\", 19));\n        students.add(new Student(\"Rahul\", 25));\n\n        Comparator<Student> byName = new Comparator<Student>() {\n            @Override\n            public int compare(Student a, Student b) {\n                return a.name.compareTo(b.name);\n            }\n        };\n\n        Collections.sort(students, byName);\n        System.out.println(students);\n    }\n}",
+      "output": "[Aman(21), Priya(19), Rahul(25)]",
+      "retypePractice": true,
+      "retypeId": "java-comparator-by-name"
+    },
+    {
+      "type": "definition",
+      "term": "Comparator",
+      "text": "A separate object defining a specific ordering for a class, passed into a sort call, allowing multiple different sort orders for the same class without modifying it."
+    },
+    {
+      "type": "note",
+      "text": "a.name.compareTo(b.name) uses String's OWN compareTo (String implements Comparable<String> itself, sorting alphabetically). Notice Student here doesn't implement anything at all -- the sorting logic lives entirely in the separate byName object instead."
+    },
+    {
+      "type": "heading",
+      "text": "5. Comparator with a Lambda (Shorter Syntax)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "Comparator<Student> byAge = (a, b) -> a.age - b.age;\nCollections.sort(students, byAge);"
+    },
+    {
+      "type": "note",
+      "text": "(a, b) -> a.age - b.age is a lambda expression -- a shorter way to write the exact same Comparator without the verbose new Comparator<Student>() { ... } syntax from the previous example. We only preview this shorthand here; the full lambda syntax is beyond this course's current scope, but recognizing it in code you read is valuable."
+    },
+    {
+      "type": "heading",
+      "text": "6. Comparable vs Comparator, Side by Side"
+    },
+    {
+      "type": "table",
+      "title": "Comparable vs Comparator",
+      "headers": ["", "Comparable", "Comparator"],
+      "rows": [
+        ["Defined", "Inside the class itself", "As a separate object"],
+        ["Method", "compareTo(other)", "compare(a, b)"],
+        ["How many orderings?", "Exactly one (the natural order)", "As many as you want to define"],
+        ["Used via", "Collections.sort(list)", "Collections.sort(list, comparator)"]
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to give a class multiple natural orderings via Comparable -- it only supports one; use separate Comparator objects for alternate orderings.",
+        "Forgetting compareTo/compare must return negative/zero/positive consistently -- returning only true/false-like values (like 1 and -1 exclusively, ignoring 0) can break sorting for equal elements.",
+        "Confusing Comparable's compareTo(other) (one argument, called on an instance) with Comparator's compare(a, b) (two arguments, called on a separate object).",
+        "Forgetting Collections.sort(list) alone requires the elements to implement Comparable -- calling it on a plain class with no Comparable and no Comparator argument fails to compile."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between Comparable and Comparator?",
+          "answer": "Comparable is implemented by the class itself to define its single natural ordering via compareTo(other). Comparator is a separate object defining a specific ordering via compare(a, b), letting the same class be sorted in multiple different ways without modifying the class."
+        },
+        {
+          "question": "What does a negative, zero, or positive return value from compareTo mean?",
+          "answer": "Negative means the current object comes before the other; zero means they're equal for sorting purposes; positive means the current object comes after the other."
+        },
+        {
+          "question": "If you want to sort a List of Student objects by age in one place and by name in another, which should you use?",
+          "answer": "Comparator -- since Comparable only supports one natural ordering per class, having multiple different sort criteria requires separate Comparator objects, one per ordering needed."
+        }
+      ],
+      "thirtySecondAnswer": "Comparable is implemented by a class itself to define its one natural ordering, via compareTo(other) -- negative means before, zero means equal, positive means after. Comparator is a separate object with a compare(a, b) method, letting the same class be sorted in multiple different ways (like byName or byAge) without modifying the class or being limited to one ordering. Collections.sort(list) uses a class's Comparable ordering directly; Collections.sort(list, comparator) uses a specific Comparator instead. This is exactly what powers TreeSet and TreeMap's automatic sorting for custom objects, once those objects implement Comparable or a Comparator is supplied."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Comparable = the class's OWN built-in ruler, one ordering only. Comparator = a SEPARATE, swappable ruler you bring from outside -- as many rulers as you need, for as many orderings as you want."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the key difference between Comparable and Comparator?",
+        "What does a negative return value from compareTo mean?",
+        "If you need two different sort orders for the same class, which should you use?",
+        "What method does Comparable require? What method does Comparator require?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-comparable-student", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    static class Student implements Comparable<Student> {\n        String name;\n        int age;\n\n        Student(String name, int age) {\n            this.name = name;\n            this.age = age;\n        }\n\n        @Override\n        public int compareTo(Student other) {\n            return this.age - other.age;\n        }\n\n        @Override\n        public String toString() {\n            return name + \"(\" + age + \")\";\n        }\n    }\n\n    public static void main(String[] args) {\n        List<Student> students = new ArrayList<>();\n        students.add(new Student(\"Aman\", 21));\n        students.add(new Student(\"Priya\", 19));\n        students.add(new Student(\"Rahul\", 25));\n\n        Collections.sort(students);\n        System.out.println(students);\n    }\n}", "output": "[Priya(19), Aman(21), Rahul(25)]" },
+    { "id": "java-comparator-by-name", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.Comparator;\nimport java.util.List;\n\npublic class Main {\n    static class Student {\n        String name;\n        int age;\n\n        Student(String name, int age) {\n            this.name = name;\n            this.age = age;\n        }\n\n        @Override\n        public String toString() {\n            return name + \"(\" + age + \")\";\n        }\n    }\n\n    public static void main(String[] args) {\n        List<Student> students = new ArrayList<>();\n        students.add(new Student(\"Aman\", 21));\n        students.add(new Student(\"Priya\", 19));\n        students.add(new Student(\"Rahul\", 25));\n\n        Comparator<Student> byName = new Comparator<Student>() {\n            @Override\n            public int compare(Student a, Student b) {\n                return a.name.compareTo(b.name);\n            }\n        };\n\n        Collections.sort(students, byName);\n        System.out.println(students);\n    }\n}", "output": "[Aman(21), Priya(19), Rahul(25)]" }
+  ],
+  "retypePractice": [
+    { "id": "java-comparable-student", "reference": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    static class Student implements Comparable<Student> {\n        String name;\n        int age;\n\n        Student(String name, int age) {\n            this.name = name;\n            this.age = age;\n        }\n\n        @Override\n        public int compareTo(Student other) {\n            return this.age - other.age;\n        }\n\n        @Override\n        public String toString() {\n            return name + \"(\" + age + \")\";\n        }\n    }\n\n    public static void main(String[] args) {\n        List<Student> students = new ArrayList<>();\n        students.add(new Student(\"Aman\", 21));\n        students.add(new Student(\"Priya\", 19));\n        students.add(new Student(\"Rahul\", 25));\n\n        Collections.sort(students);\n        System.out.println(students);\n    }\n}" },
+    { "id": "java-comparator-by-name", "reference": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.Comparator;\nimport java.util.List;\n\npublic class Main {\n    static class Student {\n        String name;\n        int age;\n\n        Student(String name, int age) {\n            this.name = name;\n            this.age = age;\n        }\n\n        @Override\n        public String toString() {\n            return name + \"(\" + age + \")\";\n        }\n    }\n\n    public static void main(String[] args) {\n        List<Student> students = new ArrayList<>();\n        students.add(new Student(\"Aman\", 21));\n        students.add(new Student(\"Priya\", 19));\n        students.add(new Student(\"Rahul\", 25));\n\n        Comparator<Student> byName = new Comparator<Student>() {\n            @Override\n            public int compare(Student a, Student b) {\n                return a.name.compareTo(b.name);\n            }\n        };\n\n        Collections.sort(students, byName);\n        System.out.println(students);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-comparable-student", "java-comparator-by-name"]
+  }
+}
