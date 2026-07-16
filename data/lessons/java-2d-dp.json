@@ -1,0 +1,165 @@
+{
+  "id": "java-2d-dp",
+  "moduleId": "greedy-dp",
+  "title": "2D DP",
+  "description": "When the state needs TWO indices instead of one -- a 2D array (2D Arrays) of sub-answers, using Unique Paths and Minimum Path Sum on a grid.",
+  "objectives": [
+    "Define a 2D DP table's meaning (dp[i][j]) before writing the recurrence",
+    "Solve Unique Paths (counting) and Minimum Path Sum (optimizing) on a grid",
+    "Recognize when a problem's state genuinely needs two dimensions"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. When One Index Isn't Enough"
+    },
+    {
+      "type": "paragraph",
+      "text": "1D DP's state was a single position, dp[i]. Some problems -- especially grid-based ones -- need TWO coordinates to describe a state: a row AND a column. That's 2D DP, using a 2D array exactly like the grids from 2D Arrays."
+    },
+    {
+      "type": "heading",
+      "text": "2. Unique Paths: Counting Routes Through a Grid"
+    },
+    {
+      "type": "paragraph",
+      "text": "Starting at the top-left of an m x n grid, moving only RIGHT or DOWN, how many distinct paths reach the bottom-right corner?"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int uniquePaths(int m, int n) {\n        int[][] dp = new int[m][n];\n\n        for (int i = 0; i < m; i++) dp[i][0] = 1; // only one way along the top row\n        for (int j = 0; j < n; j++) dp[0][j] = 1; // only one way along the left column\n\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(uniquePaths(3, 3));\n    }\n}",
+      "output": "6",
+      "retypePractice": true,
+      "retypeId": "java-2ddp-unique-paths"
+    },
+    {
+      "type": "definition",
+      "term": "dp[i][j] for Unique Paths",
+      "text": "The number of distinct paths from the top-left corner to cell (i, j), moving only right or down."
+    },
+    {
+      "type": "note",
+      "text": "Any path arriving at (i, j) came from EITHER directly above (i-1, j) or directly to the left (i, j-1) -- there's no other way to reach it, since only right/down moves are allowed. So dp[i][j] = dp[i-1][j] + dp[i][j-1]. The entire top row and left column are base cases of exactly 1, since there's only one way to travel in a straight line."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing uniquePaths(3, 3) -- a 3x3 grid",
+      "steps": [
+        "Base cases: dp[0][*]=1, dp[*][0]=1 -> dp = [[1,1,1],[1,?,?],[1,?,?]]",
+        "dp[1][1] = dp[0][1] + dp[1][0] = 1 + 1 = 2",
+        "dp[1][2] = dp[0][2] + dp[1][1] = 1 + 2 = 3",
+        "dp[2][1] = dp[1][1] + dp[2][0] = 2 + 1 = 3",
+        "dp[2][2] = dp[1][2] + dp[2][1] = 3 + 3 = 6",
+        "Return dp[2][2] = 6"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Minimum Path Sum: Optimizing, Not Just Counting"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int minPathSum(int[][] grid) {\n        int m = grid.length;\n        int n = grid[0].length;\n        int[][] dp = new int[m][n];\n\n        dp[0][0] = grid[0][0];\n        for (int i = 1; i < m; i++) dp[i][0] = dp[i - 1][0] + grid[i][0];\n        for (int j = 1; j < n; j++) dp[0][j] = dp[0][j - 1] + grid[0][j];\n\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n\n    public static void main(String[] args) {\n        int[][] grid = {\n            {1, 3, 1},\n            {1, 5, 1},\n            {4, 2, 1}\n        };\n        System.out.println(minPathSum(grid));\n    }\n}",
+      "output": "7",
+      "retypePractice": true,
+      "retypeId": "java-2ddp-min-path-sum"
+    },
+    {
+      "type": "definition",
+      "term": "dp[i][j] for Minimum Path Sum",
+      "text": "The minimum total sum of a path from the top-left corner to cell (i, j), moving only right or down, adding up every grid value visited along the way."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing minPathSum on grid {{1,3,1},{1,5,1},{4,2,1}}",
+      "steps": [
+        "dp[0][0]=1. Top row: dp[0][1]=1+3=4, dp[0][2]=4+1=5. Left column: dp[1][0]=1+1=2, dp[2][0]=2+4=6",
+        "dp[1][1] = grid[1][1] + min(dp[0][1]=4, dp[1][0]=2) = 5 + 2 = 7",
+        "dp[1][2] = grid[1][2] + min(dp[0][2]=5, dp[1][1]=7) = 1 + 5 = 6",
+        "dp[2][1] = grid[2][1] + min(dp[1][1]=7, dp[2][0]=6) = 2 + 6 = 8",
+        "dp[2][2] = grid[2][2] + min(dp[1][2]=6, dp[2][1]=8) = 1 + 6 = 7",
+        "Return dp[2][2] = 7 -- the path 1->3->1->1->1 (right,right,down,down) sums to 1+3+1+1+1=7"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Unlike Unique Paths (which just ADDS both directions), Minimum Path Sum takes the MIN of the two incoming directions, then ADDS the current cell's own value -- because we want the cheapest way to arrive, not the count of all ways."
+    },
+    {
+      "type": "heading",
+      "text": "4. Recognizing When You Need 2D DP"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Signs a problem needs a 2D state",
+      "points": [
+        "The problem genuinely involves a GRID, or two independent sequences being compared position by position (foreshadowing LCS, coming up soon)",
+        "A single index can't capture 'where you are' -- you need a ROW and a COLUMN (or two separate sequence positions) simultaneously",
+        "The recurrence naturally references dp[i-1][j], dp[i][j-1], or dp[i-1][j-1] -- neighboring cells in a 2D sense, not just 'one or two positions back' in a line"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting to initialize the ENTIRE top row and left column as base cases before the main double loop -- both are needed since the recurrence relies on both directions.",
+        "Confusing counting problems (sum both directions, like Unique Paths) with optimization problems (take min/max of both directions, like Minimum Path Sum) -- they use the same 2D SHAPE but different combining logic.",
+        "Iterating i and j in the wrong order, computing dp[i][j] before dp[i-1][j] or dp[i][j-1] are actually ready.",
+        "Assuming every grid problem needs 2D DP -- some can be simplified; always check whether the state genuinely needs two independent dimensions."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the recurrence for Unique Paths, and why?",
+          "answer": "dp[i][j] = dp[i-1][j] + dp[i][j-1], because any path arriving at (i,j) with only right/down moves allowed must have come from directly above or directly to the left -- summing both counts every distinct path."
+        },
+        {
+          "question": "How does Minimum Path Sum's recurrence differ from Unique Paths', despite both being grid-based DP?",
+          "answer": "Minimum Path Sum takes dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]) -- using MIN to find the cheapest incoming path and adding the current cell's cost, whereas Unique Paths uses SUM to count all possible paths rather than optimize a cost."
+        },
+        {
+          "question": "What signals that a DP problem needs a 2D state instead of 1D?",
+          "answer": "When a single index can't fully describe 'where you are' -- typically a grid problem needing a row and column, or a problem comparing two independent sequences position by position, where the recurrence naturally references neighboring cells like dp[i-1][j], dp[i][j-1], or dp[i-1][j-1]."
+        }
+      ],
+      "thirtySecondAnswer": "2D DP uses a table dp[i][j] when a problem's state needs two coordinates, common in grid problems. Unique Paths counts routes to (i,j) with dp[i][j] = dp[i-1][j] + dp[i][j-1], since any path arriving there came from directly above or directly left. Minimum Path Sum instead optimizes cost with dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]) -- same 2D shape, but min instead of sum since it's minimizing rather than counting. Both need their entire top row and left column initialized as base cases before the main double loop runs. Recognizing whether a problem needs 1D or 2D state is the key first step, just as with 1D DP."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "2D DP = a grid where each cell's answer depends on its NEIGHBOR ABOVE and NEIGHBOR TO THE LEFT. Counting problems ADD those neighbors. Optimizing problems take the BEST (min/max) of those neighbors, then add the current cell's own cost."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is Unique Paths' recurrence, and why does it sum two directions?",
+        "How does Minimum Path Sum's recurrence differ from Unique Paths'?",
+        "What base cases must be set before the main double loop in these grid DP problems?",
+        "What signals a problem needs a 2D DP state rather than 1D?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-2ddp-unique-paths", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int uniquePaths(int m, int n) {\n        int[][] dp = new int[m][n];\n\n        for (int i = 0; i < m; i++) dp[i][0] = 1; // only one way along the top row\n        for (int j = 0; j < n; j++) dp[0][j] = 1; // only one way along the left column\n\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(uniquePaths(3, 3));\n    }\n}", "output": "6" },
+    { "id": "java-2ddp-min-path-sum", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int minPathSum(int[][] grid) {\n        int m = grid.length;\n        int n = grid[0].length;\n        int[][] dp = new int[m][n];\n\n        dp[0][0] = grid[0][0];\n        for (int i = 1; i < m; i++) dp[i][0] = dp[i - 1][0] + grid[i][0];\n        for (int j = 1; j < n; j++) dp[0][j] = dp[0][j - 1] + grid[0][j];\n\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n\n    public static void main(String[] args) {\n        int[][] grid = {\n            {1, 3, 1},\n            {1, 5, 1},\n            {4, 2, 1}\n        };\n        System.out.println(minPathSum(grid));\n    }\n}", "output": "7" }
+  ],
+  "retypePractice": [
+    { "id": "java-2ddp-unique-paths", "reference": "public class Main {\n    static int uniquePaths(int m, int n) {\n        int[][] dp = new int[m][n];\n\n        for (int i = 0; i < m; i++) dp[i][0] = 1; // only one way along the top row\n        for (int j = 0; j < n; j++) dp[0][j] = 1; // only one way along the left column\n\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(uniquePaths(3, 3));\n    }\n}" },
+    { "id": "java-2ddp-min-path-sum", "reference": "public class Main {\n    static int minPathSum(int[][] grid) {\n        int m = grid.length;\n        int n = grid[0].length;\n        int[][] dp = new int[m][n];\n\n        dp[0][0] = grid[0][0];\n        for (int i = 1; i < m; i++) dp[i][0] = dp[i - 1][0] + grid[i][0];\n        for (int j = 1; j < n; j++) dp[0][j] = dp[0][j - 1] + grid[0][j];\n\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n\n    public static void main(String[] args) {\n        int[][] grid = {\n            {1, 3, 1},\n            {1, 5, 1},\n            {4, 2, 1}\n        };\n        System.out.println(minPathSum(grid));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-2ddp-unique-paths", "java-2ddp-min-path-sum"]
+  }
+}
