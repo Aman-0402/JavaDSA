@@ -141,6 +141,105 @@
         "What's the memory trade-off of adding prev to every node?",
         "Which real Java class is internally implemented as a doubly linked list?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-707",
+      "number": 707,
+      "title": "Design Linked List",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/design-linked-list/",
+      "problemStatement": "Design your own implementation of a linked list, supporting get(index), addAtHead(val), addAtTail(val), addAtIndex(index, val), and deleteAtIndex(index).",
+      "examples": [
+        { "input": "addAtHead(1); addAtTail(3); addAtIndex(1, 2); get(1); deleteAtIndex(1); get(1)", "output": "null, 2, null, 3", "explanation": "After addAtHead(1) and addAtTail(3): [1,3]. addAtIndex(1,2) inserts 2 at index 1: [1,2,3]. get(1) returns 2. deleteAtIndex(1) removes it: [1,3]. get(1) now returns 3." }
+      ],
+      "constraints": ["0 <= index, val <= 1000", "At most 2000 calls will be made"],
+      "hints": ["Using a doubly linked list with both head and tail sentinel-style tracking makes addAtTail O(1) as well as addAtHead, unlike a plain singly linked list (recall Singly Linked List's O(n) insertAtTail)."],
+      "approaches": [
+        {
+          "label": "Brute Force (Singly Linked List backing)",
+          "explanation": "Back the design with a singly linked list -- simpler per-node structure, but addAtTail requires walking to the end every time.",
+          "code": "class MyLinkedList {\n    class Node {\n        int val;\n        Node next;\n        Node(int val) { this.val = val; }\n    }\n\n    private Node head;\n    private int size;\n\n    public int get(int index) {\n        if (index < 0 || index >= size) return -1;\n        Node cur = head;\n        for (int i = 0; i < index; i++) cur = cur.next;\n        return cur.val;\n    }\n\n    public void addAtHead(int val) {\n        addAtIndex(0, val);\n    }\n\n    public void addAtTail(int val) {\n        addAtIndex(size, val);\n    }\n\n    public void addAtIndex(int index, int val) {\n        if (index > size) return;\n        if (index < 0) index = 0;\n\n        Node newNode = new Node(val);\n        if (index == 0) {\n            newNode.next = head;\n            head = newNode;\n        } else {\n            Node prev = head;\n            for (int i = 0; i < index - 1; i++) prev = prev.next;\n            newNode.next = prev.next;\n            prev.next = newNode;\n        }\n        size++;\n    }\n\n    public void deleteAtIndex(int index) {\n        if (index < 0 || index >= size) return;\n        if (index == 0) {\n            head = head.next;\n        } else {\n            Node prev = head;\n            for (int i = 0; i < index - 1; i++) prev = prev.next;\n            prev.next = prev.next.next;\n        }\n        size--;\n    }\n}",
+          "output": "Matches expected sequence: null, 2, null, 3",
+          "timeComplexity": "O(index) per operation -- addAtTail is O(n)",
+          "spaceComplexity": "O(n) for the list's nodes"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Back the design with a doubly linked list, tracking both head and tail directly -- addAtHead and addAtTail both become O(1), and deletion given a position is efficient in both directions.",
+          "code": "class MyLinkedList {\n    class Node {\n        int val;\n        Node prev, next;\n        Node(int val) { this.val = val; }\n    }\n\n    private Node head, tail;\n    private int size;\n\n    public int get(int index) {\n        if (index < 0 || index >= size) return -1;\n        Node cur = head;\n        for (int i = 0; i < index; i++) cur = cur.next;\n        return cur.val;\n    }\n\n    public void addAtHead(int val) {\n        Node newNode = new Node(val);\n        if (head == null) {\n            head = tail = newNode;\n        } else {\n            newNode.next = head;\n            head.prev = newNode;\n            head = newNode;\n        }\n        size++;\n    }\n\n    public void addAtTail(int val) {\n        Node newNode = new Node(val);\n        if (tail == null) {\n            head = tail = newNode;\n        } else {\n            newNode.prev = tail;\n            tail.next = newNode;\n            tail = newNode;\n        }\n        size++;\n    }\n\n    public void addAtIndex(int index, int val) {\n        if (index > size) return;\n        if (index <= 0) { addAtHead(val); return; }\n        if (index == size) { addAtTail(val); return; }\n\n        Node cur = head;\n        for (int i = 0; i < index; i++) cur = cur.next;\n        Node newNode = new Node(val);\n        newNode.prev = cur.prev;\n        newNode.next = cur;\n        cur.prev.next = newNode;\n        cur.prev = newNode;\n        size++;\n    }\n\n    public void deleteAtIndex(int index) {\n        if (index < 0 || index >= size) return;\n        Node cur = head;\n        for (int i = 0; i < index; i++) cur = cur.next;\n\n        if (cur.prev != null) cur.prev.next = cur.next; else head = cur.next;\n        if (cur.next != null) cur.next.prev = cur.prev; else tail = cur.prev;\n        size--;\n    }\n}",
+          "output": "Matches expected sequence: null, 2, null, 3",
+          "timeComplexity": "O(1) for addAtHead/addAtTail, O(index) for get/addAtIndex/deleteAtIndex",
+          "spaceComplexity": "O(n) for the list's nodes"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-146",
+      "number": 146,
+      "title": "LRU Cache",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/lru-cache/",
+      "problemStatement": "Design a Least Recently Used (LRU) cache with a fixed capacity. It should support get(key) and put(key, value), both in O(1) average time. When the cache exceeds capacity, evict the LEAST recently used item.",
+      "examples": [
+        { "input": "LRUCache(2); put(1,1); put(2,2); get(1); put(3,3); get(2); put(4,4); get(1); get(3); get(4)", "output": "1, -1, -1, 3, 4", "explanation": "Capacity 2. Inserting a 3rd item evicts the least recently used one; accessing an item makes it most recently used." }
+      ],
+      "constraints": ["1 <= capacity <= 3000", "At most 2*10^5 calls to get and put"],
+      "hints": [
+        "Combine a HashMap (for O(1) key lookup, from the Hashing lesson) with a doubly linked list (for O(1) reordering and eviction, from THIS lesson) -- the classic LRU cache design.",
+        "The doubly linked list's ORDER represents recency: move a node to the front on every access, and evict from the back when over capacity."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use Java's own LinkedHashMap with access-order enabled -- it already implements LRU eviction internally, but hides the doubly-linked-list mechanics this lesson is teaching.",
+          "code": "class LRUCache extends java.util.LinkedHashMap<Integer, Integer> {\n    private int capacity;\n\n    public LRUCache(int capacity) {\n        super(capacity, 0.75f, true); // true = access-order\n        this.capacity = capacity;\n    }\n\n    public int get(int key) {\n        return super.getOrDefault(key, -1);\n    }\n\n    public void put(int key, int value) {\n        super.put(key, value);\n    }\n\n    @Override\n    protected boolean removeEldestEntry(java.util.Map.Entry<Integer, Integer> eldest) {\n        return size() > capacity;\n    }\n}",
+          "output": "Matches expected sequence: 1, -1, -1, 3, 4",
+          "timeComplexity": "O(1) average per operation",
+          "spaceComplexity": "O(capacity)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Manually built HashMap + doubly linked list with dummy head/tail sentinels -- shows exactly how LRU eviction works underneath, using this lesson's own Node structure.",
+          "code": "class LRUCache {\n    class Node {\n        int key, value;\n        Node prev, next;\n        Node(int key, int value) { this.key = key; this.value = value; }\n    }\n\n    private final int capacity;\n    private final java.util.Map<Integer, Node> map = new java.util.HashMap<>();\n    private final Node head = new Node(0, 0); // dummy head (most recently used side)\n    private final Node tail = new Node(0, 0); // dummy tail (least recently used side)\n\n    public LRUCache(int capacity) {\n        this.capacity = capacity;\n        head.next = tail;\n        tail.prev = head;\n    }\n\n    public int get(int key) {\n        if (!map.containsKey(key)) return -1;\n        Node node = map.get(key);\n        remove(node);\n        insertAtFront(node);\n        return node.value;\n    }\n\n    public void put(int key, int value) {\n        if (map.containsKey(key)) {\n            remove(map.get(key));\n        }\n        Node newNode = new Node(key, value);\n        map.put(key, newNode);\n        insertAtFront(newNode);\n\n        if (map.size() > capacity) {\n            Node lru = tail.prev;\n            remove(lru);\n            map.remove(lru.key);\n        }\n    }\n\n    private void remove(Node node) {\n        node.prev.next = node.next;\n        node.next.prev = node.prev;\n    }\n\n    private void insertAtFront(Node node) {\n        node.next = head.next;\n        node.prev = head;\n        head.next.prev = node;\n        head.next = node;\n    }\n}",
+          "output": "Matches expected sequence: 1, -1, -1, 3, 4",
+          "timeComplexity": "O(1) for get and put",
+          "spaceComplexity": "O(capacity)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-430",
+      "number": 430,
+      "title": "Flatten a Multilevel Doubly Linked List",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/",
+      "problemStatement": "You are given a doubly linked list where nodes also have an optional CHILD pointer, possibly pointing to a separate doubly linked list. Flatten the list so all nodes appear in a single-level doubly linked list, following the order given by the multilevel structure.",
+      "examples": [
+        { "input": "head = [1,2,3,4,5,6,null,null,null,7,8,9,10,null,null,11,12] (child structure)", "output": "[1,2,3,7,8,11,12,9,10,4,5,6]", "explanation": "The child list under node 3 gets spliced in immediately after node 3, before continuing with node 4." }
+      ],
+      "constraints": ["The number of nodes will not exceed 1000"],
+      "hints": ["This is naturally a DFS (Graph DFS / Tree DFS pattern applied to lists): whenever a node has a child, recursively flatten that child list FIRST, then splice it in between the current node and its original next."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Iteratively use an explicit Stack (Stack and Monotonic Stack) to process child lists depth-first, without true recursion.",
+          "code": "class Node {\n    int val;\n    Node prev, next, child;\n}\n\nclass Solution {\n    public Node flatten(Node head) {\n        if (head == null) return null;\n        java.util.Deque<Node> stack = new java.util.ArrayDeque<>();\n        Node current = head;\n\n        while (current != null) {\n            if (current.child != null) {\n                if (current.next != null) {\n                    stack.push(current.next);\n                }\n                current.next = current.child;\n                current.next.prev = current;\n                current.child = null;\n            }\n            if (current.next == null && !stack.isEmpty()) {\n                Node next = stack.pop();\n                current.next = next;\n                next.prev = current;\n            }\n            current = current.next;\n        }\n        return head;\n    }\n}",
+          "output": "Flattened list in the documented DFS order",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the stack in the worst case (deeply nested children)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "True recursion: flatten the child list first, splice it in, then continue with the rest of the current level -- directly mirrors the DFS pattern.",
+          "code": "class Node {\n    int val;\n    Node prev, next, child;\n}\n\nclass Solution {\n    public Node flatten(Node head) {\n        flattenHelper(head);\n        return head;\n    }\n\n    private Node flattenHelper(Node node) {\n        Node current = node;\n        Node lastNode = node;\n\n        while (current != null) {\n            Node next = current.next;\n            if (current.child != null) {\n                Node childTail = flattenHelper(current.child);\n                current.next = current.child;\n                current.child.prev = current;\n                current.child = null;\n\n                childTail.next = next;\n                if (next != null) next.prev = childTail;\n                lastNode = childTail;\n            } else {\n                lastNode = current;\n            }\n            current = next;\n        }\n        return lastNode;\n    }\n}",
+          "output": "Flattened list in the documented DFS order",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(d) recursion depth, d = maximum nesting depth"
+        }
+      ]
     }
   ],
   "codeExamples": [
