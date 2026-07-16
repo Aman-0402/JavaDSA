@@ -168,6 +168,302 @@
         "Does the hashing approach to two-sum require the array to be sorted?",
         "What is the average time complexity of HashMap's get() and put()?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1-hashing",
+      "number": 1,
+      "title": "Two Sum",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/two-sum/",
+      "problemStatement": "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. Each input has exactly one solution, and you may not use the same element twice.",
+      "examples": [
+        { "input": "nums = [2,7,11,15], target = 9", "output": "[0,1]", "explanation": "nums[0] + nums[1] = 2 + 7 = 9." }
+      ],
+      "constraints": ["2 <= nums.length <= 10^4", "-10^9 <= nums[i] <= 10^9", "Exactly one valid answer exists"],
+      "hints": ["This is the exact hasPairHashing pattern from this lesson's Section 3, but returning INDICES instead of a boolean -- use a HashMap (value -> index) instead of a HashSet."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every pair of indices with nested loops.",
+          "code": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        for (int i = 0; i < nums.length; i++) {\n            for (int j = i + 1; j < nums.length; j++) {\n                if (nums[i] + nums[j] == target) {\n                    return new int[]{i, j};\n                }\n            }\n        }\n        return new int[]{-1, -1};\n    }\n}",
+          "output": "For nums = [2,7,11,15], target = 9: [0,1]",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A HashMap mapping each seen value to its index -- for each number, check if its complement was already seen.",
+          "code": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        java.util.Map<Integer, Integer> seen = new java.util.HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (seen.containsKey(complement)) {\n                return new int[]{seen.get(complement), i};\n            }\n            seen.put(nums[i], i);\n        }\n        return new int[]{-1, -1};\n    }\n}",
+          "output": "For nums = [2,7,11,15], target = 9: [0,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the HashMap"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-217",
+      "number": 217,
+      "title": "Contains Duplicate",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/contains-duplicate/",
+      "problemStatement": "Given an integer array nums, return true if any value appears at least twice, and false if every element is distinct.",
+      "examples": [
+        { "input": "nums = [1,2,3,1]", "output": "true" },
+        { "input": "nums = [1,2,3,4]", "output": "false" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "-10^9 <= nums[i] <= 10^9"],
+      "hints": ["This is precisely this lesson's hasDuplicate function from Section 2, unchanged."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every pair for equality.",
+          "code": "class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        for (int i = 0; i < nums.length; i++) {\n            for (int j = i + 1; j < nums.length; j++) {\n                if (nums[i] == nums[j]) return true;\n            }\n        }\n        return false;\n    }\n}",
+          "output": "For nums = [1,2,3,1]: true",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A HashSet tracking seen values -- if a value is already present, a duplicate exists.",
+          "code": "class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        java.util.Set<Integer> seen = new java.util.HashSet<>();\n        for (int num : nums) {\n            if (!seen.add(num)) {\n                return true; // add() returns false if the value was already present\n            }\n        }\n        return false;\n    }\n}",
+          "output": "For nums = [1,2,3,1]: true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the HashSet"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-242-hashing",
+      "number": 242,
+      "title": "Valid Anagram",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/valid-anagram/",
+      "problemStatement": "Given two strings s and t, return true if t is an anagram of s. (Same problem as covered under Strings -- reframed here to emphasize the hashing/frequency-counting angle.)",
+      "examples": [
+        { "input": "s = \"anagram\", t = \"nagaram\"", "output": "true" }
+      ],
+      "constraints": ["1 <= s.length, t.length <= 5*10^4"],
+      "hints": ["A frequency count (via a fixed-size array acting as a simple hash table, or a HashMap for general characters) is the hashing-based approach to this problem."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Sort both strings and compare directly.",
+          "code": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n        char[] sChars = s.toCharArray();\n        char[] tChars = t.toCharArray();\n        java.util.Arrays.sort(sChars);\n        java.util.Arrays.sort(tChars);\n        return java.util.Arrays.equals(sChars, tChars);\n    }\n}",
+          "output": "For s = \"anagram\", t = \"nagaram\": true",
+          "timeComplexity": "O(n log n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A HashMap (or fixed-size array for lowercase-only inputs) counting character frequencies -- increment for s, decrement for t, all must return to zero.",
+          "code": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n\n        java.util.Map<Character, Integer> counts = new java.util.HashMap<>();\n        for (char c : s.toCharArray()) {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n        for (char c : t.toCharArray()) {\n            if (!counts.containsKey(c) || counts.get(c) == 0) return false;\n            counts.put(c, counts.get(c) - 1);\n        }\n        return true;\n    }\n}",
+          "output": "For s = \"anagram\", t = \"nagaram\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k), where k is the number of distinct characters"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-349",
+      "number": 349,
+      "title": "Intersection of Two Arrays",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/intersection-of-two-arrays/",
+      "problemStatement": "Given two integer arrays nums1 and nums2, return an array of their intersection -- each element in the result must be UNIQUE, and the result can be in any order.",
+      "examples": [
+        { "input": "nums1 = [1,2,2,1], nums2 = [2,2]", "output": "[2]" },
+        { "input": "nums1 = [4,9,5], nums2 = [9,4,9,8,4]", "output": "[9,4]" }
+      ],
+      "constraints": ["1 <= nums1.length, nums2.length <= 1000", "0 <= nums1[i], nums2[i] <= 1000"],
+      "hints": ["Put one array's values into a HashSet, then check which of the other array's values are present -- add matches to a RESULT Set to automatically avoid duplicates."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every element in nums1, scan all of nums2 checking for a match, using a Set to avoid duplicate results.",
+          "code": "class Solution {\n    public int[] intersection(int[] nums1, int[] nums2) {\n        java.util.Set<Integer> result = new java.util.HashSet<>();\n        for (int a : nums1) {\n            for (int b : nums2) {\n                if (a == b) {\n                    result.add(a);\n                    break;\n                }\n            }\n        }\n        int[] output = new int[result.size()];\n        int i = 0;\n        for (int val : result) output[i++] = val;\n        return output;\n    }\n}",
+          "output": "For nums1 = [1,2,2,1], nums2 = [2,2]: [2]",
+          "timeComplexity": "O(n * m)",
+          "spaceComplexity": "O(n) for the result set"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Put nums1 into a HashSet, then check nums2's elements against it, collecting matches into a second Set.",
+          "code": "class Solution {\n    public int[] intersection(int[] nums1, int[] nums2) {\n        java.util.Set<Integer> set1 = new java.util.HashSet<>();\n        for (int num : nums1) set1.add(num);\n\n        java.util.Set<Integer> result = new java.util.HashSet<>();\n        for (int num : nums2) {\n            if (set1.contains(num)) result.add(num);\n        }\n\n        int[] output = new int[result.size()];\n        int i = 0;\n        for (int val : result) output[i++] = val;\n        return output;\n    }\n}",
+          "output": "For nums1 = [1,2,2,1], nums2 = [2,2]: [2]",
+          "timeComplexity": "O(n + m)",
+          "spaceComplexity": "O(n + m) for the sets"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-350",
+      "number": 350,
+      "title": "Intersection of Two Arrays II",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/intersection-of-two-arrays-ii/",
+      "problemStatement": "Given two integer arrays nums1 and nums2, return an array of their intersection -- each element should appear as many times as it shows in BOTH arrays (unlike 349, duplicates in the result are allowed, up to the minimum count in each array).",
+      "examples": [
+        { "input": "nums1 = [1,2,2,1], nums2 = [2,2]", "output": "[2,2]" },
+        { "input": "nums1 = [4,9,5], nums2 = [9,4,9,8,4]", "output": "[4,9]" }
+      ],
+      "constraints": ["1 <= nums1.length, nums2.length <= 1000", "0 <= nums1[i], nums2[i] <= 1000"],
+      "hints": ["Instead of a HashSet, use a HashMap counting frequencies in nums1 -- for each element in nums2, include it in the result and decrement its count if the count is still positive."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each element in nums2, search nums1 for a not-yet-used match, marking it used.",
+          "code": "class Solution {\n    public int[] intersect(int[] nums1, int[] nums2) {\n        boolean[] used = new boolean[nums1.length];\n        java.util.List<Integer> result = new java.util.ArrayList<>();\n\n        for (int b : nums2) {\n            for (int i = 0; i < nums1.length; i++) {\n                if (!used[i] && nums1[i] == b) {\n                    result.add(b);\n                    used[i] = true;\n                    break;\n                }\n            }\n        }\n        int[] output = new int[result.size()];\n        for (int i = 0; i < output.length; i++) output[i] = result.get(i);\n        return output;\n    }\n}",
+          "output": "For nums1 = [1,2,2,1], nums2 = [2,2]: [2,2]",
+          "timeComplexity": "O(n * m)",
+          "spaceComplexity": "O(n) for the used array"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A HashMap counting nums1's frequencies -- scan nums2, including and decrementing counts as matches are found.",
+          "code": "class Solution {\n    public int[] intersect(int[] nums1, int[] nums2) {\n        java.util.Map<Integer, Integer> counts = new java.util.HashMap<>();\n        for (int num : nums1) {\n            counts.put(num, counts.getOrDefault(num, 0) + 1);\n        }\n\n        java.util.List<Integer> result = new java.util.ArrayList<>();\n        for (int num : nums2) {\n            int count = counts.getOrDefault(num, 0);\n            if (count > 0) {\n                result.add(num);\n                counts.put(num, count - 1);\n            }\n        }\n\n        int[] output = new int[result.size()];\n        for (int i = 0; i < output.length; i++) output[i] = result.get(i);\n        return output;\n    }\n}",
+          "output": "For nums1 = [1,2,2,1], nums2 = [2,2]: [2,2]",
+          "timeComplexity": "O(n + m)",
+          "spaceComplexity": "O(n) for the count map"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-205",
+      "number": 205,
+      "title": "Isomorphic Strings",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/isomorphic-strings/",
+      "problemStatement": "Given two strings s and t, determine if they are isomorphic -- characters in s can be replaced to get t, with a consistent one-to-one mapping (no two characters map to the same character, and the mapping is consistent throughout).",
+      "examples": [
+        { "input": "s = \"egg\", t = \"add\"", "output": "true", "explanation": "e->a, g->d consistently." },
+        { "input": "s = \"foo\", t = \"bar\"", "output": "false", "explanation": "o would need to map to both o and a." }
+      ],
+      "constraints": ["1 <= s.length <= 5*10^4", "t.length == s.length"],
+      "hints": ["Use TWO HashMaps -- one mapping s's characters to t's, another mapping t's characters back to s's -- to enforce the mapping is consistent in BOTH directions."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each character in s, check if its very first occurrence's position matches the pattern of t's corresponding character's first occurrence (comparing 'shape' via first-index arrays).",
+          "code": "class Solution {\n    public boolean isIsomorphic(String s, String t) {\n        int[] sFirst = new int[128];\n        int[] tFirst = new int[128];\n        java.util.Arrays.fill(sFirst, -1);\n        java.util.Arrays.fill(tFirst, -1);\n\n        for (int i = 0; i < s.length(); i++) {\n            char sc = s.charAt(i), tc = t.charAt(i);\n            if (sFirst[sc] != tFirst[tc]) return false;\n            sFirst[sc] = i;\n            tFirst[tc] = i;\n        }\n        return true;\n    }\n}",
+          "output": "For s = \"egg\", t = \"add\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(128) fixed arrays"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two HashMaps enforcing a consistent bidirectional mapping between s's and t's characters.",
+          "code": "class Solution {\n    public boolean isIsomorphic(String s, String t) {\n        java.util.Map<Character, Character> sToT = new java.util.HashMap<>();\n        java.util.Map<Character, Character> tToS = new java.util.HashMap<>();\n\n        for (int i = 0; i < s.length(); i++) {\n            char sc = s.charAt(i), tc = t.charAt(i);\n\n            if (sToT.containsKey(sc) && sToT.get(sc) != tc) return false;\n            if (tToS.containsKey(tc) && tToS.get(tc) != sc) return false;\n\n            sToT.put(sc, tc);\n            tToS.put(tc, sc);\n        }\n        return true;\n    }\n}",
+          "output": "For s = \"egg\", t = \"add\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k), where k is the number of distinct characters"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-290",
+      "number": 290,
+      "title": "Word Pattern",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/word-pattern/",
+      "problemStatement": "Given a pattern and a string s, find if s follows the same pattern -- a bijection (consistent one-to-one mapping) between each letter in pattern and each word in s.",
+      "examples": [
+        { "input": "pattern = \"abba\", s = \"dog cat cat dog\"", "output": "true" },
+        { "input": "pattern = \"abba\", s = \"dog cat cat fish\"", "output": "false" }
+      ],
+      "constraints": ["1 <= pattern.length <= 300", "1 <= s.length <= 3000"],
+      "hints": ["Split s into words, then apply the exact same two-HashMap bidirectional-mapping technique as Isomorphic Strings -- just mapping characters to WHOLE words instead of characters to characters."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Split into words, then use first-occurrence-index arrays/maps to compare the 'shape' of pattern against the shape of the word sequence.",
+          "code": "class Solution {\n    public boolean wordPattern(String pattern, String s) {\n        String[] words = s.split(\" \");\n        if (pattern.length() != words.length) return false;\n\n        java.util.Map<Character, Integer> charFirst = new java.util.HashMap<>();\n        java.util.Map<String, Integer> wordFirst = new java.util.HashMap<>();\n\n        for (int i = 0; i < pattern.length(); i++) {\n            char c = pattern.charAt(i);\n            String w = words[i];\n            int cFirst = charFirst.getOrDefault(c, -1);\n            int wFirstIdx = wordFirst.getOrDefault(w, -1);\n            if (cFirst != wFirstIdx) return false;\n            charFirst.put(c, i);\n            wordFirst.put(w, i);\n        }\n        return true;\n    }\n}",
+          "output": "For pattern = \"abba\", s = \"dog cat cat dog\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k), k = distinct characters/words"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two HashMaps, exactly like Isomorphic Strings, but mapping characters to Strings (words) instead of characters to characters.",
+          "code": "class Solution {\n    public boolean wordPattern(String pattern, String s) {\n        String[] words = s.split(\" \");\n        if (pattern.length() != words.length) return false;\n\n        java.util.Map<Character, String> charToWord = new java.util.HashMap<>();\n        java.util.Map<String, Character> wordToChar = new java.util.HashMap<>();\n\n        for (int i = 0; i < pattern.length(); i++) {\n            char c = pattern.charAt(i);\n            String w = words[i];\n\n            if (charToWord.containsKey(c) && !charToWord.get(c).equals(w)) return false;\n            if (wordToChar.containsKey(w) && wordToChar.get(w) != c) return false;\n\n            charToWord.put(c, w);\n            wordToChar.put(w, c);\n        }\n        return true;\n    }\n}",
+          "output": "For pattern = \"abba\", s = \"dog cat cat dog\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k), k = distinct characters/words"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-49",
+      "number": 49,
+      "title": "Group Anagrams",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/group-anagrams/",
+      "problemStatement": "Given an array of strings strs, group the anagrams together. You can return the answer in any order.",
+      "examples": [
+        { "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]", "output": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]", "explanation": "Anagram groups: {eat,tea,ate}, {tan,nat}, {bat}." }
+      ],
+      "constraints": ["1 <= strs.length <= 10^4", "0 <= strs[i].length <= 100"],
+      "hints": ["Two anagrams, once sorted, produce the IDENTICAL String -- use that sorted String as a HashMap key, grouping all strings that share it."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For each string, compare it against every existing group's first member (via sorted comparison) to find where it belongs.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<String>> groupAnagrams(String[] strs) {\n        java.util.List<java.util.List<String>> groups = new java.util.ArrayList<>();\n        for (String s : strs) {\n            boolean placed = false;\n            for (java.util.List<String> group : groups) {\n                if (isAnagram(s, group.get(0))) {\n                    group.add(s);\n                    placed = true;\n                    break;\n                }\n            }\n            if (!placed) {\n                java.util.List<String> newGroup = new java.util.ArrayList<>();\n                newGroup.add(s);\n                groups.add(newGroup);\n            }\n        }\n        return groups;\n    }\n\n    private boolean isAnagram(String a, String b) {\n        char[] ca = a.toCharArray(), cb = b.toCharArray();\n        java.util.Arrays.sort(ca);\n        java.util.Arrays.sort(cb);\n        return java.util.Arrays.equals(ca, cb);\n    }\n}",
+          "output": "For strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]: [[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+          "timeComplexity": "O(n^2 * k log k), n = number of strings, k = average string length",
+          "spaceComplexity": "O(n * k)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A HashMap keyed by each string's SORTED form -- every anagram naturally maps to the same key, grouping them in one pass.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<String>> groupAnagrams(String[] strs) {\n        java.util.Map<String, java.util.List<String>> groups = new java.util.HashMap<>();\n\n        for (String s : strs) {\n            char[] chars = s.toCharArray();\n            java.util.Arrays.sort(chars);\n            String key = new String(chars);\n\n            groups.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(s);\n        }\n        return new java.util.ArrayList<>(groups.values());\n    }\n}",
+          "output": "For strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]: [[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+          "timeComplexity": "O(n * k log k)",
+          "spaceComplexity": "O(n * k)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-128",
+      "number": 128,
+      "title": "Longest Consecutive Sequence",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/longest-consecutive-sequence/",
+      "problemStatement": "Given an unsorted array of integers nums, return the length of the longest run of consecutive integers, in O(n) time.",
+      "examples": [
+        { "input": "nums = [100,4,200,1,3,2]", "output": "4", "explanation": "The longest consecutive run is [1,2,3,4], length 4." }
+      ],
+      "constraints": ["0 <= nums.length <= 10^5", "-10^9 <= nums[i] <= 10^9"],
+      "hints": [
+        "Put all numbers in a HashSet for O(1) existence checks.",
+        "Only START counting a sequence from a number that has NO predecessor (num - 1) in the set -- this ensures each sequence is counted exactly once, keeping the whole algorithm O(n) despite the inner while loop."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Sort the array, then scan for the longest run of consecutive values.",
+          "code": "class Solution {\n    public int longestConsecutive(int[] nums) {\n        if (nums.length == 0) return 0;\n        java.util.Arrays.sort(nums);\n\n        int longest = 1, current = 1;\n        for (int i = 1; i < nums.length; i++) {\n            if (nums[i] == nums[i - 1]) continue; // skip duplicates\n            if (nums[i] == nums[i - 1] + 1) {\n                current++;\n            } else {\n                current = 1;\n            }\n            longest = Math.max(longest, current);\n        }\n        return longest;\n    }\n}",
+          "output": "For nums = [100,4,200,1,3,2]: 4",
+          "timeComplexity": "O(n log n) due to sorting",
+          "spaceComplexity": "O(log n) to O(n) depending on the sort implementation"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A HashSet of all numbers; only start counting from numbers with no predecessor in the set, so each sequence is explored exactly once.",
+          "code": "class Solution {\n    public int longestConsecutive(int[] nums) {\n        java.util.Set<Integer> numSet = new java.util.HashSet<>();\n        for (int num : nums) numSet.add(num);\n\n        int longest = 0;\n        for (int num : numSet) {\n            if (!numSet.contains(num - 1)) { // num is the START of a sequence\n                int length = 1;\n                while (numSet.contains(num + length)) {\n                    length++;\n                }\n                longest = Math.max(longest, length);\n            }\n        }\n        return longest;\n    }\n}",
+          "output": "For nums = [100,4,200,1,3,2]: 4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the HashSet"
+        }
+      ]
     }
   ],
   "codeExamples": [
