@@ -170,6 +170,271 @@
         "Why doesn't text.length work for a String the way it does for an array?",
         "Does trim() modify the original String?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-344",
+      "number": 344,
+      "title": "Reverse String",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/reverse-string/",
+      "problemStatement": "Write a function that reverses a string. The input string is given as an array of characters s, and must be modified in place with O(1) extra memory.",
+      "examples": [
+        { "input": "s = [\"h\",\"e\",\"l\",\"l\",\"o\"]", "output": "[\"o\",\"l\",\"l\",\"e\",\"h\"]" }
+      ],
+      "constraints": ["1 <= s.length <= 10^5", "s[i] is a printable ASCII character"],
+      "hints": ["Two pointers (Two Pointers lesson) from both ends, swapping and converging inward -- no extra array needed."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build a reversed copy in a new array, then copy it back.",
+          "code": "class Solution {\n    public void reverseString(char[] s) {\n        char[] copy = new char[s.length];\n        for (int i = 0; i < s.length; i++) {\n            copy[s.length - 1 - i] = s[i];\n        }\n        System.arraycopy(copy, 0, s, 0, s.length);\n    }\n}",
+          "output": "For s = [h,e,l,l,o]: [o,l,l,e,h]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the copy"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers swapping characters from both ends inward, in place.",
+          "code": "class Solution {\n    public void reverseString(char[] s) {\n        int left = 0, right = s.length - 1;\n        while (left < right) {\n            char temp = s[left];\n            s[left] = s[right];\n            s[right] = temp;\n            left++;\n            right--;\n        }\n    }\n}",
+          "output": "For s = [h,e,l,l,o]: [o,l,l,e,h]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-125-strings",
+      "number": 125,
+      "title": "Valid Palindrome",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/valid-palindrome/",
+      "problemStatement": "Given a string s, return true if it is a palindrome after converting all uppercase letters to lowercase and removing all non-alphanumeric characters. (Same problem as covered under Two Pointers -- reframed here to highlight the String-cleaning angle specifically.)",
+      "examples": [
+        { "input": "s = \"A man, a plan, a canal: Panama\"", "output": "true" }
+      ],
+      "constraints": ["1 <= s.length <= 2*10^5"],
+      "hints": ["String methods like toLowerCase() and Character.isLetterOrDigit() do the cleaning; two pointers then check the palindrome property without building extra Strings."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build a cleaned String using String methods, then compare it against its own reverse.",
+          "code": "class Solution {\n    public boolean isPalindrome(String s) {\n        String cleaned = s.toLowerCase().replaceAll(\"[^a-z0-9]\", \"\");\n        String reversed = new StringBuilder(cleaned).reverse().toString();\n        return cleaned.equals(reversed);\n    }\n}",
+          "output": "For s = \"A man, a plan, a canal: Panama\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the cleaned String copies"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers directly on the original String, skipping non-alphanumeric characters, no extra String built.",
+          "code": "class Solution {\n    public boolean isPalindrome(String s) {\n        int left = 0, right = s.length() - 1;\n        while (left < right) {\n            while (left < right && !Character.isLetterOrDigit(s.charAt(left))) left++;\n            while (left < right && !Character.isLetterOrDigit(s.charAt(right))) right--;\n            if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {\n                return false;\n            }\n            left++;\n            right--;\n        }\n        return true;\n    }\n}",
+          "output": "For s = \"A man, a plan, a canal: Panama\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-14",
+      "number": 14,
+      "title": "Longest Common Prefix",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/longest-common-prefix/",
+      "problemStatement": "Write a function to find the longest common prefix string amongst an array of strings. If there is no common prefix, return an empty string.",
+      "examples": [
+        { "input": "strs = [\"flower\",\"flow\",\"flight\"]", "output": "\"fl\"" },
+        { "input": "strs = [\"dog\",\"racecar\",\"car\"]", "output": "\"\"" }
+      ],
+      "constraints": ["1 <= strs.length <= 200", "0 <= strs[i].length <= 200"],
+      "hints": ["Use the first string as a candidate prefix, and shrink it (using substring) every time it fails to match the start of another string."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Compare characters at each position across ALL strings simultaneously, stopping at the first mismatch or shortest string.",
+          "code": "class Solution {\n    public String longestCommonPrefix(String[] strs) {\n        for (int i = 0; i < strs[0].length(); i++) {\n            char c = strs[0].charAt(i);\n            for (int j = 1; j < strs.length; j++) {\n                if (i == strs[j].length() || strs[j].charAt(i) != c) {\n                    return strs[0].substring(0, i);\n                }\n            }\n        }\n        return strs[0];\n    }\n}",
+          "output": "For strs = [\"flower\",\"flow\",\"flight\"]: \"fl\"",
+          "timeComplexity": "O(n * m), n = number of strings, m = shortest string length",
+          "spaceComplexity": "O(1) extra space"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Start with the first string as the prefix, and shrink it using substring/startsWith whenever it doesn't match the next string.",
+          "code": "class Solution {\n    public String longestCommonPrefix(String[] strs) {\n        String prefix = strs[0];\n        for (int i = 1; i < strs.length; i++) {\n            while (!strs[i].startsWith(prefix)) {\n                prefix = prefix.substring(0, prefix.length() - 1);\n                if (prefix.isEmpty()) return \"\";\n            }\n        }\n        return prefix;\n    }\n}",
+          "output": "For strs = [\"flower\",\"flow\",\"flight\"]: \"fl\"",
+          "timeComplexity": "O(n * m) worst case",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-242",
+      "number": 242,
+      "title": "Valid Anagram",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/valid-anagram/",
+      "problemStatement": "Given two strings s and t, return true if t is an anagram of s (uses exactly the same characters, same counts, any order).",
+      "examples": [
+        { "input": "s = \"anagram\", t = \"nagaram\"", "output": "true" },
+        { "input": "s = \"rat\", t = \"car\"", "output": "false" }
+      ],
+      "constraints": ["1 <= s.length, t.length <= 5*10^4", "s and t consist of lowercase English letters"],
+      "hints": ["Two Strings are anagrams if, once sorted, they're identical -- or, more efficiently, if their character counts match exactly (recall Hashing's frequency-counting pattern)."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Sort both strings' characters and compare the results directly.",
+          "code": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n        char[] sChars = s.toCharArray();\n        char[] tChars = t.toCharArray();\n        java.util.Arrays.sort(sChars);\n        java.util.Arrays.sort(tChars);\n        return java.util.Arrays.equals(sChars, tChars);\n    }\n}",
+          "output": "For s = \"anagram\", t = \"nagaram\": true",
+          "timeComplexity": "O(n log n) due to sorting",
+          "spaceComplexity": "O(n) for the char arrays"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Count character frequencies with a fixed-size array -- increment for s, decrement for t; all counts must return to zero.",
+          "code": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n\n        int[] counts = new int[26];\n        for (int i = 0; i < s.length(); i++) {\n            counts[s.charAt(i) - 'a']++;\n            counts[t.charAt(i) - 'a']--;\n        }\n        for (int c : counts) {\n            if (c != 0) return false;\n        }\n        return true;\n    }\n}",
+          "output": "For s = \"anagram\", t = \"nagaram\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(26) -- constant"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-28",
+      "number": 28,
+      "title": "Find the Index of the First Occurrence in a String",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+      "problemStatement": "Given two strings needle and haystack, return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.",
+      "examples": [
+        { "input": "haystack = \"sadbutsad\", needle = \"sad\"", "output": "0", "explanation": "\"sad\" occurs at index 0 and index 6, so 0 (the first) is returned." },
+        { "input": "haystack = \"leetcode\", needle = \"leeto\"", "output": "-1" }
+      ],
+      "constraints": ["1 <= haystack.length, needle.length <= 10^4", "haystack and needle consist of only lowercase English characters"],
+      "hints": ["Java's own String.indexOf() (from this lesson's Section 4) already solves this directly -- but writing it manually is good practice for understanding what indexOf does internally."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "At every possible starting position in haystack, check if needle matches character by character.",
+          "code": "class Solution {\n    public int strStr(String haystack, String needle) {\n        int n = haystack.length(), m = needle.length();\n        for (int i = 0; i + m <= n; i++) {\n            int j = 0;\n            while (j < m && haystack.charAt(i + j) == needle.charAt(j)) {\n                j++;\n            }\n            if (j == m) return i;\n        }\n        return -1;\n    }\n}",
+          "output": "For haystack = \"sadbutsad\", needle = \"sad\": 0",
+          "timeComplexity": "O(n * m)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Java's built-in String.indexOf() is already highly optimized -- using it directly is the practical, real-world solution.",
+          "code": "class Solution {\n    public int strStr(String haystack, String needle) {\n        return haystack.indexOf(needle);\n    }\n}",
+          "output": "For haystack = \"sadbutsad\", needle = \"sad\": 0",
+          "timeComplexity": "O(n * m) worst case internally, but highly optimized in practice",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-58",
+      "number": 58,
+      "title": "Length of Last Word",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/length-of-last-word/",
+      "problemStatement": "Given a string s consisting of words and spaces, return the length of the last word in the string. A word is a maximal substring consisting of non-space characters only.",
+      "examples": [
+        { "input": "s = \"Hello World\"", "output": "5", "explanation": "The last word is \"World\" with length 5." },
+        { "input": "s = \"   fly me   to   the moon  \"", "output": "4" }
+      ],
+      "constraints": ["1 <= s.length <= 10^4", "s consists of English letters and spaces"],
+      "hints": ["Scan from the END of the string: skip trailing spaces first, then count characters until the next space (or the start of the string)."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use String methods to trim and split the string, then take the last element's length.",
+          "code": "class Solution {\n    public int lengthOfLastWord(String s) {\n        String[] words = s.trim().split(\"\\\\s+\");\n        return words[words.length - 1].length();\n    }\n}",
+          "output": "For s = \"Hello World\": 5",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the split array"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Scan backward from the end: skip trailing spaces, then count non-space characters, without splitting or trimming.",
+          "code": "class Solution {\n    public int lengthOfLastWord(String s) {\n        int i = s.length() - 1;\n        while (i >= 0 && s.charAt(i) == ' ') i--;\n\n        int length = 0;\n        while (i >= 0 && s.charAt(i) != ' ') {\n            length++;\n            i--;\n        }\n        return length;\n    }\n}",
+          "output": "For s = \"Hello World\": 5",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-151",
+      "number": 151,
+      "title": "Reverse Words in a String",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/reverse-words-in-a-string/",
+      "problemStatement": "Given an input string s, reverse the order of the words. A word is a maximal sequence of non-space characters. Return a string with words in reverse order, joined by a single space, with no leading, trailing, or extra spaces.",
+      "examples": [
+        { "input": "s = \"the sky is blue\"", "output": "\"blue is sky the\"" },
+        { "input": "s = \"  hello world  \"", "output": "\"world hello\"" }
+      ],
+      "constraints": ["1 <= s.length <= 10^4", "s contains English letters, digits, spaces, and can contain leading/trailing/multiple spaces"],
+      "hints": ["split() with a regex handling multiple spaces, then rebuild in reverse order using StringBuilder."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Split on whitespace (handling multiple spaces), then manually build the reversed result with string concatenation.",
+          "code": "class Solution {\n    public String reverseWords(String s) {\n        String[] words = s.trim().split(\"\\\\s+\");\n        String result = \"\";\n        for (int i = words.length - 1; i >= 0; i--) {\n            result += words[i];\n            if (i > 0) result += \" \";\n        }\n        return result;\n    }\n}",
+          "output": "For s = \"the sky is blue\": \"blue is sky the\"",
+          "timeComplexity": "O(n^2) worst case, due to repeated String concatenation (recall Strings and Immutability)",
+          "spaceComplexity": "O(n) for the words array"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Split on whitespace, then build the reversed result using StringBuilder instead of String concatenation, avoiding repeated object creation.",
+          "code": "class Solution {\n    public String reverseWords(String s) {\n        String[] words = s.trim().split(\"\\\\s+\");\n        StringBuilder sb = new StringBuilder();\n        for (int i = words.length - 1; i >= 0; i--) {\n            sb.append(words[i]);\n            if (i > 0) sb.append(\" \");\n        }\n        return sb.toString();\n    }\n}",
+          "output": "For s = \"the sky is blue\": \"blue is sky the\"",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the words array and StringBuilder"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-443",
+      "number": 443,
+      "title": "String Compression",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/string-compression/",
+      "problemStatement": "Given an array of characters chars, compress it in place: each group of consecutive repeating characters is replaced by the character followed by its count (if more than 1). Return the new length of the array after compression.",
+      "examples": [
+        { "input": "chars = [\"a\",\"a\",\"b\",\"b\",\"c\",\"c\",\"c\"]", "output": "6, chars = [\"a\",\"2\",\"b\",\"2\",\"c\",\"3\"]" },
+        { "input": "chars = [\"a\"]", "output": "1, chars = [\"a\"]" }
+      ],
+      "constraints": ["1 <= chars.length <= 2000", "chars[i] is a lowercase/uppercase English letter, digit, or symbol"],
+      "hints": [
+        "Two pointers: one (read) scans through counting each run of repeated characters, another (write) overwrites the array in place with the compressed form.",
+        "A count greater than 1 needs each of its digits written individually, since chars holds single characters, not Strings."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build the compressed result in a StringBuilder first, then copy it back into chars.",
+          "code": "class Solution {\n    public int compress(char[] chars) {\n        StringBuilder sb = new StringBuilder();\n        int i = 0;\n        while (i < chars.length) {\n            char current = chars[i];\n            int count = 0;\n            while (i < chars.length && chars[i] == current) {\n                count++;\n                i++;\n            }\n            sb.append(current);\n            if (count > 1) sb.append(count);\n        }\n        for (int j = 0; j < sb.length(); j++) {\n            chars[j] = sb.charAt(j);\n        }\n        return sb.length();\n    }\n}",
+          "output": "For chars = [a,a,b,b,c,c,c]: 6, chars = [a,2,b,2,c,3]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the StringBuilder"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers (read/write) directly on the array -- no extra StringBuilder needed.",
+          "code": "class Solution {\n    public int compress(char[] chars) {\n        int write = 0;\n        int read = 0;\n\n        while (read < chars.length) {\n            char current = chars[read];\n            int count = 0;\n            while (read < chars.length && chars[read] == current) {\n                count++;\n                read++;\n            }\n\n            chars[write] = current;\n            write++;\n\n            if (count > 1) {\n                for (char digit : String.valueOf(count).toCharArray()) {\n                    chars[write] = digit;\n                    write++;\n                }\n            }\n        }\n        return write;\n    }\n}",
+          "output": "For chars = [a,a,b,b,c,c,c]: 6, chars = [a,2,b,2,c,3]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
     }
   ],
   "codeExamples": [
