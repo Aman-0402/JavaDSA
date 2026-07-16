@@ -135,6 +135,151 @@
         "Why might recursive and iterative DFS visit siblings in different orders?",
         "When would you choose DFS over BFS for a graph problem?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-695",
+      "number": 695,
+      "title": "Max Area of Island",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/max-area-of-island/",
+      "problemStatement": "Given an m x n grid of 0's and 1's, return the area (cell count) of the largest connected island (4-directional), or 0 if there is none.",
+      "examples": [
+        { "input": "grid with several islands, largest has 6 connected land cells", "output": "6" }
+      ],
+      "constraints": ["1 <= rows, cols <= 50"],
+      "hints": ["Same as Number of Islands, but instead of just counting islands, DFS returns the cell count of each island and track the max."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "DFS from each unvisited land cell, sinking visited cells to 0 and returning 1 + sum of the 4 recursive calls, tracking the running max area.",
+          "code": "class Solution {\n    public int maxAreaOfIsland(int[][] grid) {\n        int best = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == 1) {\n                    best = Math.max(best, dfs(grid, r, c));\n                }\n            }\n        }\n        return best;\n    }\n\n    private int dfs(int[][] grid, int r, int c) {\n        if (r < 0 || c < 0 || r >= grid.length || c >= grid[0].length || grid[r][c] == 0) return 0;\n        grid[r][c] = 0;\n        return 1 + dfs(grid, r + 1, c) + dfs(grid, r - 1, c) + dfs(grid, r, c + 1) + dfs(grid, r, c - 1);\n    }\n}",
+          "output": "6",
+          "timeComplexity": "O(rows * cols)",
+          "spaceComplexity": "O(rows * cols) recursion stack worst case"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-547",
+      "number": 547,
+      "title": "Number of Provinces",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/number-of-provinces/",
+      "problemStatement": "Given an n x n adjacency matrix isConnected where isConnected[i][j] = 1 means city i and j are directly connected, return the number of provinces (connected components).",
+      "examples": [
+        { "input": "isConnected = [[1,1,0],[1,1,0],[0,0,1]]", "output": "2", "explanation": "Cities 0 and 1 form one province; city 2 is its own province." }
+      ],
+      "constraints": ["1 <= n <= 200"],
+      "hints": ["This is just 'count connected components' on a graph given as an adjacency matrix instead of a list."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "For each unvisited city, DFS across the adjacency matrix row marking all connected cities visited, incrementing the province count once per DFS start.",
+          "code": "class Solution {\n    public int findCircleNum(int[][] isConnected) {\n        int n = isConnected.length;\n        boolean[] visited = new boolean[n];\n        int provinces = 0;\n        for (int i = 0; i < n; i++) {\n            if (!visited[i]) {\n                provinces++;\n                dfs(isConnected, visited, i);\n            }\n        }\n        return provinces;\n    }\n\n    private void dfs(int[][] isConnected, boolean[] visited, int city) {\n        visited[city] = true;\n        for (int neighbor = 0; neighbor < isConnected.length; neighbor++) {\n            if (isConnected[city][neighbor] == 1 && !visited[neighbor]) {\n                dfs(isConnected, visited, neighbor);\n            }\n        }\n    }\n}",
+          "output": "2",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-417",
+      "number": 417,
+      "title": "Pacific Atlantic Water Flow",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+      "problemStatement": "Given an m x n height matrix (Pacific touches the top/left edges, Atlantic touches bottom/right edges), water flows from a cell to a neighbor with height <= current. Return all cells from which water can reach BOTH oceans.",
+      "examples": [
+        { "input": "heights = [[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]", "output": "[[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]" }
+      ],
+      "constraints": ["1 <= rows, cols <= 200"],
+      "hints": ["Checking forward flow from every cell to both oceans is expensive.", "Reverse the problem: DFS/BFS OUTWARD from the ocean border cells, moving to a neighbor only if its height >= current (this simulates water flowing backward, uphill). This marks every cell that CAN reach that ocean."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Run DFS from all Pacific-adjacent border cells (top row, left column) moving to neighbors with height >= current, marking a 'canReachPacific' grid. Do the same from Atlantic-adjacent borders (bottom row, right column) for 'canReachAtlantic'. Cells marked true in both are the answer.",
+          "code": "class Solution {\n    private int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};\n\n    public List<List<Integer>> pacificAtlantic(int[][] heights) {\n        int rows = heights.length, cols = heights[0].length;\n        boolean[][] pacific = new boolean[rows][cols];\n        boolean[][] atlantic = new boolean[rows][cols];\n\n        for (int r = 0; r < rows; r++) {\n            dfs(heights, pacific, r, 0);\n            dfs(heights, atlantic, r, cols - 1);\n        }\n        for (int c = 0; c < cols; c++) {\n            dfs(heights, pacific, 0, c);\n            dfs(heights, atlantic, rows - 1, c);\n        }\n\n        List<List<Integer>> result = new ArrayList<>();\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (pacific[r][c] && atlantic[r][c]) {\n                    result.add(Arrays.asList(r, c));\n                }\n            }\n        }\n        return result;\n    }\n\n    private void dfs(int[][] heights, boolean[][] reach, int r, int c) {\n        reach[r][c] = true;\n        for (int[] d : dirs) {\n            int nr = r + d[0], nc = c + d[1];\n            if (nr >= 0 && nc >= 0 && nr < heights.length && nc < heights[0].length\n                    && !reach[nr][nc] && heights[nr][nc] >= heights[r][c]) {\n                dfs(heights, reach, nr, nc);\n            }\n        }\n    }\n}",
+          "output": "[[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]",
+          "timeComplexity": "O(rows * cols)",
+          "spaceComplexity": "O(rows * cols)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-207",
+      "number": 207,
+      "title": "Course Schedule",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/course-schedule/",
+      "problemStatement": "Given numCourses and a list of prerequisite pairs [a, b] meaning you must take b before a, return whether it is possible to finish all courses (i.e. no cycle in the dependency graph).",
+      "examples": [
+        { "input": "numCourses = 2, prerequisites = [[1,0]]", "output": "true" },
+        { "input": "numCourses = 2, prerequisites = [[1,0],[0,1]]", "output": "false", "explanation": "1 needs 0, and 0 needs 1 -- a cycle, impossible to finish." }
+      ],
+      "constraints": ["1 <= numCourses <= 2000"],
+      "hints": ["Finishing all courses is possible if and only if the prerequisite graph has NO cycle.", "Detect a cycle via DFS with three states per node: unvisited, visiting (in the current recursion path), visited (fully processed) -- revisiting a 'visiting' node means a cycle."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Build an adjacency list (course -> its prerequisites), then DFS each unvisited course tracking a 'visiting' set for the current path. If DFS revisits a node still marked 'visiting', a cycle exists -> return false.",
+          "code": "class Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());\n        for (int[] p : prerequisites) adj.get(p[0]).add(p[1]);\n\n        int[] state = new int[numCourses]; // 0 = unvisited, 1 = visiting, 2 = done\n        for (int course = 0; course < numCourses; course++) {\n            if (state[course] == 0 && hasCycle(course, adj, state)) return false;\n        }\n        return true;\n    }\n\n    private boolean hasCycle(int course, List<List<Integer>> adj, int[] state) {\n        state[course] = 1;\n        for (int prereq : adj.get(course)) {\n            if (state[prereq] == 1) return true;\n            if (state[prereq] == 0 && hasCycle(prereq, adj, state)) return true;\n        }\n        state[course] = 2;\n        return false;\n    }\n}",
+          "output": "true",
+          "timeComplexity": "O(V + E)",
+          "spaceComplexity": "O(V + E)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-210",
+      "number": 210,
+      "title": "Course Schedule II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/course-schedule-ii/",
+      "problemStatement": "Same setup as Course Schedule, but return a valid course ORDER to finish all courses, or an empty array if impossible.",
+      "examples": [
+        { "input": "numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]", "output": "[0,1,2,3]", "explanation": "0 has no prerequisite; 1 and 2 need 0; 3 needs both 1 and 2." }
+      ],
+      "constraints": ["1 <= numCourses <= 2000"],
+      "hints": ["This is topological sort via DFS: after fully exploring a node's dependencies (post-order), push it onto a stack.", "Reverse the stack (or use addFirst on a list) to get a valid ordering."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Same cycle-detection DFS as Course Schedule I, but add each course to the front of the result list right after it's marked 'done' (post-order) -- this produces a valid topological order automatically.",
+          "code": "class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());\n        for (int[] p : prerequisites) adj.get(p[0]).add(p[1]);\n\n        int[] state = new int[numCourses];\n        LinkedList<Integer> order = new LinkedList<>();\n        for (int course = 0; course < numCourses; course++) {\n            if (state[course] == 0 && !dfs(course, adj, state, order)) {\n                return new int[0];\n            }\n        }\n        int[] result = new int[order.size()];\n        for (int i = 0; i < result.length; i++) result[i] = order.get(i);\n        return result;\n    }\n\n    private boolean dfs(int course, List<List<Integer>> adj, int[] state, LinkedList<Integer> order) {\n        state[course] = 1;\n        for (int prereq : adj.get(course)) {\n            if (state[prereq] == 1) return false;\n            if (state[prereq] == 0 && !dfs(prereq, adj, state, order)) return false;\n        }\n        state[course] = 2;\n        order.addFirst(course);\n        return true;\n    }\n}",
+          "output": "[0,1,2,3]",
+          "timeComplexity": "O(V + E)",
+          "spaceComplexity": "O(V + E)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1203",
+      "number": 1203,
+      "title": "Sort Items by Groups Respecting Dependencies",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/",
+      "problemStatement": "n items, each optionally belonging to one of m groups (-1 means no group). beforeItems[i] lists items that must come before item i. Return a valid item order respecting both item-level and group-level dependencies, or [] if impossible.",
+      "examples": [
+        { "input": "n = 8, m = 2, group = [-1,-1,1,0,0,1,0,-1], beforeItems = [[],[6],[5],[6],[3,6],[],[],[]]", "output": "one valid order, e.g. [6,3,4,1,5,2,0,7]" }
+      ],
+      "constraints": ["1 <= m <= n <= 3 * 10^4"],
+      "hints": ["Ungrouped items (-1) each get their own unique group so every item belongs to exactly one group.", "Two separate topological sorts are needed: one over ITEMS (via beforeItems edges), and one over GROUPS (a group has an edge to another group if any item in it must come before an item in the other).", "Merge results: sort groups topologically, then within each group sort its items topologically."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Assign every ungrouped item its own fresh group id. Build a group-level DAG (edge groupA -> groupB if some item in A is a prerequisite of some item in B) and an item-level DAG (from beforeItems). Topologically sort both (Kahn's BFS via in-degree works well here). If either sort can't include all nodes, a cycle exists -> return []. Finally, walk the group order; for each group, append its items in their own topological order.",
+          "code": "class Solution {\n    public int[] sortItems(int n, int m, int[] group, List<List<Integer>> beforeItems) {\n        int groupCount = m;\n        for (int i = 0; i < n; i++) {\n            if (group[i] == -1) group[i] = groupCount++;\n        }\n\n        List<List<Integer>> itemGraph = new ArrayList<>();\n        List<List<Integer>> groupGraph = new ArrayList<>();\n        for (int i = 0; i < n; i++) itemGraph.add(new ArrayList<>());\n        for (int i = 0; i < groupCount; i++) groupGraph.add(new ArrayList<>());\n\n        int[] itemIndegree = new int[n];\n        int[] groupIndegree = new int[groupCount];\n\n        for (int item = 0; item < n; item++) {\n            for (int pre : beforeItems.get(item)) {\n                itemGraph.get(pre).add(item);\n                itemIndegree[item]++;\n                if (group[pre] != group[item]) {\n                    groupGraph.get(group[pre]).add(group[item]);\n                    groupIndegree[group[item]]++;\n                }\n            }\n        }\n\n        List<Integer> itemOrder = topoSort(itemGraph, itemIndegree, n);\n        List<Integer> groupOrder = topoSort(groupGraph, groupIndegree, groupCount);\n        if (itemOrder == null || groupOrder == null) return new int[0];\n\n        Map<Integer, List<Integer>> itemsByGroup = new HashMap<>();\n        for (int item : itemOrder) {\n            itemsByGroup.computeIfAbsent(group[item], k -> new ArrayList<>()).add(item);\n        }\n\n        int[] result = new int[n];\n        int idx = 0;\n        for (int g : groupOrder) {\n            for (int item : itemsByGroup.getOrDefault(g, new ArrayList<>())) {\n                result[idx++] = item;\n            }\n        }\n        return result;\n    }\n\n    private List<Integer> topoSort(List<List<Integer>> graph, int[] indegree, int total) {\n        Queue<Integer> queue = new LinkedList<>();\n        for (int i = 0; i < total; i++) {\n            if (indegree[i] == 0) queue.offer(i);\n        }\n        List<Integer> order = new ArrayList<>();\n        while (!queue.isEmpty()) {\n            int node = queue.poll();\n            order.add(node);\n            for (int next : graph.get(node)) {\n                if (--indegree[next] == 0) queue.offer(next);\n            }\n        }\n        return order.size() == total ? order : null;\n    }\n}",
+          "output": "[6,3,4,1,5,2,0,7]",
+          "timeComplexity": "O(V + E) for items plus O(groups + group edges)",
+          "spaceComplexity": "O(V + E)"
+        }
+      ]
     }
   ],
   "codeExamples": [
