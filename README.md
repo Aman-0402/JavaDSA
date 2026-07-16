@@ -1,51 +1,101 @@
 # Java + DSA + LeetCode Interactive eBook
 
-**Live:** https://aman-0402.github.io/JavaDSA/
+**Live:** [https://aman-0402.github.io/JavaDSA/](https://aman-0402.github.io/JavaDSA/)
 
-A frontend-only, interactive learning platform for Java, Data Structures & Algorithms, and LeetCode interview prep. 100% static — no backend, no build step, no framework.
+Interactive eBook covering Java, Data Structures & Algorithms, and LeetCode interview prep.
 
-## Features
+## Contents
 
-- 14-module roadmap: Java Fundamentals → Control Flow → Methods → Arrays & Strings → OOP → Advanced Java → Java Collections Framework → DSA Foundations → Linked List → Stacks & Queues → Heap → Trees → Graphs → Greedy & Dynamic Programming
-- 247 hand-verified LeetCode problems integrated directly into lessons, each with Brute Force + Optimal Java solutions, complexity analysis, hints, and examples
-- Monaco Editor with two modes: paste-blocked retype practice (reinforces syntax memory) and a freeform scratchpad for trying problems yourself
-- Prism.js syntax highlighting for Java
-- Progress tracking, bookmarks, and personal notes — all saved to `localStorage`, no account needed
-- Search across all lessons and topics
-- Light/dark theme
+### 1. Java Fundamentals
 
-## Tech Stack
+Introduction to Java, Variables, Data Types, Operators, Type Casting, Input and Output, Comments
 
-- HTML5, CSS3, Vanilla ES6+ JavaScript (ES modules)
-- Monaco Editor, Prism.js, Lucide icons
-- JSON-driven lesson content (`data/lessons/*.json`, `data/roadmap.json`)
-- `localStorage` for all persistence — no database, no server
+### 2. Control Flow
 
-## Running Locally
+Conditional Statements (if/else if/else), switch Statement, Loops (overview), for Loop, Enhanced for Loop, while Loop, do-while Loop, break, continue, Labeled Loops
 
-No build step required. Serve the folder with any static file server, e.g.:
+### 3. Methods
 
-```bash
-npx serve .
-```
+Method Declaration and Calling, Parameters and Arguments, Return Types, Method Overloading, Varargs, Recursion Basics, Static vs Instance Methods
 
-Then open the printed local URL in a browser.
+### 4. Arrays & Strings
 
-## Project Structure
+1D Arrays, 2D Arrays, Strings and Immutability, Common String Methods, StringBuilder, Array vs ArrayList (Intro)
 
-```
-index.html
-css/            style, layout, sidebar, lesson, code, practice, leetcode, responsive
-js/             app, router, content-loader, sidebar, code-editor, retype-checker,
-                practice-checker, progress, storage, search, bookmarks, notes, theme
-data/
-  roadmap.json  module → topic → lesson map
-  lessons/      one JSON file per topic
-assets/         images/icons
-```
+### 5. Object-Oriented Programming
 
-See [AGENTS.md](AGENTS.md) for the full lesson schema, content workflow, and project conventions.
+Classes and Objects, Constructors, this Keyword, Encapsulation and Access Modifiers, Inheritance, Polymorphism, Abstract Classes, Interfaces, Packages
 
-## Deployment
+### 6. Advanced Java
 
-Deployed via GitHub Pages directly from this repository — no build artifacts, the static files are served as-is.
+Exception Handling, Generics, Enums, Autoboxing and Unboxing, Annotations Basics
+
+### 7. Java Collections Framework
+
+JCF Overview, List (ArrayList vs LinkedList), Set (HashSet/TreeSet/LinkedHashSet), Map (HashMap/TreeMap/LinkedHashMap), Queue/Deque (ArrayDeque/PriorityQueue), Iterator, Comparable vs Comparator, Collections Utility Class
+
+### 8. DSA Foundations
+
+Big-O Notation, Two Pointers, Sliding Window, Prefix Sum, Difference Array, Hashing, Binary Search, Sorting, Recursion in DSA, Backtracking
+
+### 9. Linked List
+
+Singly Linked List, Doubly Linked List, Circular Linked List
+
+### 10. Stacks & Queues
+
+Stack and Monotonic Stack, Circular Queue, Deque Deep Dive (Sliding Window Maximum)
+
+### 11. Heap
+
+PriorityQueue (Java's Built-In Heap), Manual Heap Implementation, Heap Sort
+
+### 12. Trees
+
+Binary Trees, Binary Search Trees, Tree Traversals (Pre/In/Post-order), BFS (Level Order), DFS (Iterative with Stack), Trie
+
+### 13. Graphs
+
+Graph Representation (Adjacency List/Matrix), Graph BFS, Graph DFS, Topological Sort, Union-Find (DSU)
+
+### 14. Greedy & Dynamic Programming
+
+Greedy Algorithms, DP: Memoization vs Tabulation, 1D DP, 2D DP, 0/1 Knapsack, LCS, LIS, Bit Manipulation, Advanced Patterns (Capstone)
+
+## LeetCode Problems — 247 total
+
+Every problem includes Brute Force + Optimal Java solutions, time/space complexity, hints, and worked examples.
+
+| Category | Count |
+| --- | --- |
+| Arrays | 5 |
+| Prefix Sum | 6 |
+| Difference Array | 5 |
+| Two Pointers | 9 |
+| Sliding Window | 8 |
+| Strings | 8 |
+| Hashing | 9 |
+| Sorting | 7 |
+| Binary Search | 10 |
+| Recursion | 5 |
+| Backtracking | 9 |
+| Linked List | 13 |
+| Stack / Monotonic Stack | 12 |
+| Queue / Deque | 7 |
+| Heap | 7 |
+| Trees | 28 |
+| Trie | 5 |
+| Graphs | 17 |
+| Greedy | 7 |
+| Dynamic Programming | 22 |
+| Bit Manipulation | 7 |
+| Advanced Patterns | 9 |
+
+## Every Lesson Includes
+
+- Explanations, definitions, and real-life analogies
+- Syntax and worked code examples
+- Common mistakes and interview Q&A
+- Memory tricks and key-points recap
+- Retype practice (Monaco editor, paste-blocked) plus a freeform scratchpad for solving LeetCode problems yourself
+- Progress tracking, bookmarks, and personal notes — saved locally in the browser
