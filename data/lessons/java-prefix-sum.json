@@ -1,0 +1,176 @@
+{
+  "id": "java-prefix-sum",
+  "moduleId": "dsa-foundations",
+  "title": "Prefix Sum",
+  "description": "Precomputing running totals to answer any range-sum query in O(1), after building the array once in O(n).",
+  "objectives": [
+    "Build a prefix sum array from an input array",
+    "Answer range-sum queries in O(1) using the prefix sum array",
+    "Recognize when prefix sum beats repeatedly summing a range directly"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: Repeated Range Sums"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suppose we need to answer MANY questions like \"what's the sum from index 2 to index 5?\" on the SAME array, over and over. Summing the range directly each time is wasteful if we're asked this hundreds of times."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "static int rangeSumDirect(int[] arr, int left, int right) {\n    int sum = 0;\n    for (int i = left; i <= right; i++) {\n        sum += arr[i];\n    }\n    return sum;\n}"
+    },
+    {
+      "type": "warning",
+      "text": "Each call to rangeSumDirect is O(range length). If we call this q times on an array of size n, total work is O(q * n) in the worst case. Prefix sum precomputes once so each query becomes O(1)."
+    },
+    {
+      "type": "heading",
+      "text": "2. Building a Prefix Sum Array"
+    },
+    {
+      "type": "definition",
+      "term": "Prefix sum array",
+      "text": "An array where each position holds the sum of all original elements up to and including that position, allowing any range sum to be computed with a simple subtraction."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 1, 5, 3};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(prefix));\n    }\n}",
+      "output": "[2, 6, 7, 12, 15]",
+      "retypePractice": true,
+      "retypeId": "java-prefix-sum-build"
+    },
+    {
+      "type": "dryRun",
+      "title": "Building prefix from {2, 4, 1, 5, 3}",
+      "steps": [
+        "prefix[0] = arr[0] = 2",
+        "prefix[1] = prefix[0] + arr[1] = 2 + 4 = 6",
+        "prefix[2] = prefix[1] + arr[2] = 6 + 1 = 7",
+        "prefix[3] = prefix[2] + arr[3] = 7 + 5 = 12",
+        "prefix[4] = prefix[3] + arr[4] = 12 + 3 = 15"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "prefix[i] represents \"the sum of everything from index 0 to index i.\" This is built in a single O(n) pass, using the same running-total idea from the Sliding Window lesson's windowSum."
+    },
+    {
+      "type": "heading",
+      "text": "3. Answering a Range Sum in O(1)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int rangeSum(int[] prefix, int left, int right) {\n        if (left == 0) {\n            return prefix[right];\n        }\n        return prefix[right] - prefix[left - 1];\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 1, 5, 3};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        System.out.println(rangeSum(prefix, 1, 3)); // sum of arr[1..3]\n        System.out.println(rangeSum(prefix, 0, 4)); // sum of the whole array\n    }\n}",
+      "output": "10\n15",
+      "retypePractice": true,
+      "retypeId": "java-prefix-sum-query"
+    },
+    {
+      "type": "warning",
+      "text": "prefix[right] - prefix[left - 1] works because prefix[right] is 'everything up to right', and prefix[left - 1] is 'everything up to just before left' -- subtracting removes exactly the part we don't want, leaving only arr[left..right]. The left == 0 special case exists because prefix[-1] doesn't exist -- there's nothing to subtract when the range starts at the very beginning."
+    },
+    {
+      "type": "keyPoints",
+      "title": "Verifying rangeSum(prefix, 1, 3)"
+      ,
+      "points": [
+        "arr[1..3] = 4 + 1 + 5 = 10, matching arr indices 1,2,3",
+        "prefix[3] - prefix[0] = 12 - 2 = 10 -- matches!"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Why This Is Faster"
+    },
+    {
+      "type": "table",
+      "title": "Direct summation vs prefix sum, for q queries on n elements",
+      "headers": ["Approach", "Build cost", "Per-query cost", "Total for q queries"],
+      "rows": [
+        ["Direct summation", "None", "O(n) worst case", "O(q * n)"],
+        ["Prefix sum", "O(n), once", "O(1)", "O(n + q)"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int[] arr = {3, 1, 4, 1, 5, 9, 2, 6};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        int[][] queries = {{0, 2}, {3, 5}, {1, 7}};\n        for (int[] q : queries) {\n            int left = q[0];\n            int right = q[1];\n            int sum = (left == 0) ? prefix[right] : prefix[right] - prefix[left - 1];\n            System.out.println(\"Sum[\" + left + \"..\" + right + \"] = \" + sum);\n        }\n    }\n}",
+      "output": "Sum[0..2] = 8\nSum[3..5] = 15\nSum[1..7] = 28",
+      "retypePractice": true,
+      "retypeId": "java-prefix-sum-multi-query"
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the special case for left == 0 -- prefix[left - 1] would be prefix[-1], which doesn't exist and throws an exception.",
+        "Off-by-one confusion between prefix[i] meaning 'sum up to AND INCLUDING i' versus 'sum up to but not including i' -- this lesson uses the inclusive convention consistently.",
+        "Rebuilding the prefix array for every single query instead of building it ONCE and reusing it -- that would defeat the entire purpose.",
+        "Using prefix sum when the array is being frequently MODIFIED between queries -- a static prefix array becomes stale after any update to the original array, requiring a rebuild or a different data structure entirely."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a prefix sum array?",
+          "answer": "An array where each position holds the running total of all original elements up to and including that position, allowing any range sum to be computed quickly via subtraction."
+        },
+        {
+          "question": "How do you compute the sum of arr[left..right] using a prefix sum array?",
+          "answer": "prefix[right] - prefix[left - 1], handling the special case where left == 0 by just returning prefix[right] directly, since there's no prefix[-1]."
+        },
+        {
+          "question": "Why is prefix sum faster than direct summation for answering many range-sum queries?",
+          "answer": "Prefix sum spends O(n) once to build the array, after which every query is answered in O(1) via subtraction. Direct summation costs up to O(n) per query, so for q queries prefix sum is O(n + q) total versus O(q * n) for direct summation."
+        }
+      ],
+      "thirtySecondAnswer": "A prefix sum array stores running totals -- prefix[i] holds the sum of all elements from the start through index i -- built in a single O(n) pass. Once built, any range sum arr[left..right] can be answered in O(1) via prefix[right] - prefix[left - 1] (with a special case when left is 0), since subtracting removes exactly the unwanted portion. This turns q repeated range-sum queries from O(q*n) with direct summation into O(n + q) total, at the cost of needing to rebuild the prefix array if the underlying data changes."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "prefix[i] = \"everything from the start THROUGH i.\" Range sum = big total MINUS the part you don't want: prefix[right] - prefix[left-1]. Build ONCE, query FOREVER in O(1)."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What does prefix[i] represent in a prefix sum array?",
+        "How do you compute the sum of a range [left, right] using a prefix sum array?",
+        "Why is there a special case when left == 0?",
+        "Why is prefix sum better than direct summation for many repeated queries?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-prefix-sum-build", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 1, 5, 3};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(prefix));\n    }\n}", "output": "[2, 6, 7, 12, 15]" },
+    { "id": "java-prefix-sum-query", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int rangeSum(int[] prefix, int left, int right) {\n        if (left == 0) {\n            return prefix[right];\n        }\n        return prefix[right] - prefix[left - 1];\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 1, 5, 3};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        System.out.println(rangeSum(prefix, 1, 3)); // sum of arr[1..3]\n        System.out.println(rangeSum(prefix, 0, 4)); // sum of the whole array\n    }\n}", "output": "10\n15" },
+    { "id": "java-prefix-sum-multi-query", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int[] arr = {3, 1, 4, 1, 5, 9, 2, 6};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        int[][] queries = {{0, 2}, {3, 5}, {1, 7}};\n        for (int[] q : queries) {\n            int left = q[0];\n            int right = q[1];\n            int sum = (left == 0) ? prefix[right] : prefix[right] - prefix[left - 1];\n            System.out.println(\"Sum[\" + left + \"..\" + right + \"] = \" + sum);\n        }\n    }\n}", "output": "Sum[0..2] = 8\nSum[3..5] = 15\nSum[1..7] = 28" }
+  ],
+  "retypePractice": [
+    { "id": "java-prefix-sum-build", "reference": "public class Main {\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 1, 5, 3};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        System.out.println(java.util.Arrays.toString(prefix));\n    }\n}" },
+    { "id": "java-prefix-sum-query", "reference": "public class Main {\n    static int rangeSum(int[] prefix, int left, int right) {\n        if (left == 0) {\n            return prefix[right];\n        }\n        return prefix[right] - prefix[left - 1];\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 1, 5, 3};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        System.out.println(rangeSum(prefix, 1, 3)); // sum of arr[1..3]\n        System.out.println(rangeSum(prefix, 0, 4)); // sum of the whole array\n    }\n}" },
+    { "id": "java-prefix-sum-multi-query", "reference": "public class Main {\n    public static void main(String[] args) {\n        int[] arr = {3, 1, 4, 1, 5, 9, 2, 6};\n        int[] prefix = new int[arr.length];\n\n        prefix[0] = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            prefix[i] = prefix[i - 1] + arr[i];\n        }\n\n        int[][] queries = {{0, 2}, {3, 5}, {1, 7}};\n        for (int[] q : queries) {\n            int left = q[0];\n            int right = q[1];\n            int sum = (left == 0) ? prefix[right] : prefix[right] - prefix[left - 1];\n            System.out.println(\"Sum[\" + left + \"..\" + right + \"] = \" + sum);\n        }\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-prefix-sum-build", "java-prefix-sum-query", "java-prefix-sum-multi-query"]
+  }
+}

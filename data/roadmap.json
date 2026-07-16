@@ -100,7 +100,8 @@
       "topics": [
         { "id": "java-big-o-notation", "title": "Big-O Notation and Complexity Analysis", "lesson": "java-big-o-notation" },
         { "id": "java-two-pointers", "title": "Two Pointers", "lesson": "java-two-pointers" },
-        { "id": "java-sliding-window", "title": "Sliding Window", "lesson": "java-sliding-window" }
+        { "id": "java-sliding-window", "title": "Sliding Window", "lesson": "java-sliding-window" },
+        { "id": "java-prefix-sum", "title": "Prefix Sum", "lesson": "java-prefix-sum" }
       ]
     },
     { "id": "linked-list", "title": "Linked List", "topics": [] },
