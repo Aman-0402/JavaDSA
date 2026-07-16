@@ -127,6 +127,198 @@
         "What two checks happen at the start of each iteration before pushing the new index?",
         "Why is this algorithm O(n) despite its nested loop?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-933",
+      "number": 933,
+      "title": "Number of Recent Calls",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/number-of-recent-calls/",
+      "problemStatement": "Implement a RecentCounter class that counts the number of recent requests within a certain time frame. ping(t) adds a new request at time t and returns the number of requests that occurred in the range [t - 3000, t].",
+      "examples": [
+        { "input": "ping(1); ping(100); ping(3001); ping(3002)", "output": "1, 2, 3, 3", "explanation": "At t=3002, the window is [2, 3002] -- request at t=1 falls out, leaving 100, 3001, 3002 (3 requests)." }
+      ],
+      "constraints": ["1 <= t <= 10^9", "Each test case calls ping with strictly increasing t"],
+      "hints": ["A Queue naturally models this -- since calls arrive in increasing time order, old requests that fall out of the window are always at the FRONT, ready to be dequeued."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Store every timestamp in an ArrayList, and count how many fall in range on every call.",
+          "code": "class RecentCounter {\n    private java.util.List<Integer> calls = new java.util.ArrayList<>();\n\n    public int ping(int t) {\n        calls.add(t);\n        int count = 0;\n        for (int call : calls) {\n            if (call >= t - 3000) count++;\n        }\n        return count;\n    }\n}",
+          "output": "Matches expected sequence: 1, 2, 3, 3",
+          "timeComplexity": "O(n) per call in the worst case",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A Queue: add the new time, then remove from the front while those times are out of the current window.",
+          "code": "class RecentCounter {\n    private java.util.Queue<Integer> queue = new java.util.LinkedList<>();\n\n    public int ping(int t) {\n        queue.offer(t);\n        while (queue.peek() < t - 3000) {\n            queue.poll();\n        }\n        return queue.size();\n    }\n}",
+          "output": "Matches expected sequence: 1, 2, 3, 3",
+          "timeComplexity": "O(1) amortized per call",
+          "spaceComplexity": "O(n) worst case, but bounded by the time window in practice"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-232",
+      "number": 232,
+      "title": "Implement Queue using Stacks",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/implement-queue-using-stacks/",
+      "problemStatement": "Implement a FIFO queue using only two stacks -- push, pop, peek, and empty must be supported.",
+      "examples": [
+        { "input": "push(1); push(2); peek(); pop(); empty()", "output": "null, null, 1, 1, false" }
+      ],
+      "constraints": ["1 <= x <= 9", "At most 100 calls to push, pop, peek, and empty"],
+      "hints": ["Use TWO stacks: an 'in' stack for pushing, and an 'out' stack for popping -- whenever 'out' is empty, dump ALL of 'in' into it, which reverses the order back to FIFO."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Rebalance between the two stacks on EVERY push, keeping 'out' always ready -- correct, but does more work than necessary per push.",
+          "code": "class MyQueue {\n    private java.util.Deque<Integer> in = new java.util.ArrayDeque<>();\n    private java.util.Deque<Integer> out = new java.util.ArrayDeque<>();\n\n    public void push(int x) {\n        while (!out.isEmpty()) in.push(out.pop());\n        in.push(x);\n        while (!in.isEmpty()) out.push(in.pop());\n    }\n\n    public int pop() {\n        return out.pop();\n    }\n\n    public int peek() {\n        return out.peek();\n    }\n\n    public boolean empty() {\n        return out.isEmpty();\n    }\n}",
+          "output": "Matches expected sequence -- peek()=1, pop()=1, empty()=false",
+          "timeComplexity": "O(n) per push",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Only transfer from 'in' to 'out' when 'out' is empty (lazy transfer) -- each element moves between stacks at most twice total, giving amortized O(1).",
+          "code": "class MyQueue {\n    private java.util.Deque<Integer> in = new java.util.ArrayDeque<>();\n    private java.util.Deque<Integer> out = new java.util.ArrayDeque<>();\n\n    public void push(int x) {\n        in.push(x);\n    }\n\n    public int pop() {\n        moveIfNeeded();\n        return out.pop();\n    }\n\n    public int peek() {\n        moveIfNeeded();\n        return out.peek();\n    }\n\n    public boolean empty() {\n        return in.isEmpty() && out.isEmpty();\n    }\n\n    private void moveIfNeeded() {\n        if (out.isEmpty()) {\n            while (!in.isEmpty()) out.push(in.pop());\n        }\n    }\n}",
+          "output": "Matches expected sequence -- peek()=1, pop()=1, empty()=false",
+          "timeComplexity": "O(1) amortized per operation",
+          "spaceComplexity": "O(n) across both stacks"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-225",
+      "number": 225,
+      "title": "Implement Stack using Queues",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/implement-stack-using-queues/",
+      "problemStatement": "Implement a LIFO stack using only queues -- push, pop, top, and empty must be supported.",
+      "examples": [
+        { "input": "push(1); push(2); top(); pop(); empty()", "output": "null, null, 2, 2, false" }
+      ],
+      "constraints": ["1 <= x <= 9", "At most 100 calls to push, pop, top, and empty"],
+      "hints": ["After pushing a new element, rotate the queue so the newly pushed element moves to the FRONT -- this makes the most recently pushed element always the next one out, giving LIFO behavior."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use two queues: push into an empty second queue, then drain the first queue into it (making the new element first), and swap references.",
+          "code": "class MyStack {\n    private java.util.Queue<Integer> queue1 = new java.util.LinkedList<>();\n    private java.util.Queue<Integer> queue2 = new java.util.LinkedList<>();\n\n    public void push(int x) {\n        queue2.offer(x);\n        while (!queue1.isEmpty()) {\n            queue2.offer(queue1.poll());\n        }\n        java.util.Queue<Integer> temp = queue1;\n        queue1 = queue2;\n        queue2 = temp;\n    }\n\n    public int pop() {\n        return queue1.poll();\n    }\n\n    public int top() {\n        return queue1.peek();\n    }\n\n    public boolean empty() {\n        return queue1.isEmpty();\n    }\n}",
+          "output": "Matches expected sequence -- top()=2, pop()=2, empty()=false",
+          "timeComplexity": "O(n) per push",
+          "spaceComplexity": "O(n) across both queues"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A single queue: after pushing, rotate the queue by re-offering every OTHER element behind the new one, bringing it to the front.",
+          "code": "class MyStack {\n    private java.util.Queue<Integer> queue = new java.util.LinkedList<>();\n\n    public void push(int x) {\n        queue.offer(x);\n        int size = queue.size();\n        for (int i = 0; i < size - 1; i++) {\n            queue.offer(queue.poll());\n        }\n    }\n\n    public int pop() {\n        return queue.poll();\n    }\n\n    public int top() {\n        return queue.peek();\n    }\n\n    public boolean empty() {\n        return queue.isEmpty();\n    }\n}",
+          "output": "Matches expected sequence -- top()=2, pop()=2, empty()=false",
+          "timeComplexity": "O(n) per push, O(1) for pop/top",
+          "spaceComplexity": "O(n) for the single queue"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-641",
+      "number": 641,
+      "title": "Design Circular Deque",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/design-circular-deque/",
+      "problemStatement": "Design your implementation of a circular double-ended queue, supporting insertFront, insertLast, deleteFront, deleteLast, getFront, getRear, isEmpty, and isFull.",
+      "examples": [
+        { "input": "MyCircularDeque(3); insertLast(1); insertLast(2); insertFront(3); insertFront(4); getRear(); isFull(); deleteLast(); insertFront(4); getFront()", "output": "true, true, true, false, 2, true, true, true, 4" }
+      ],
+      "constraints": ["1 <= k <= 1000", "0 <= value <= 1000", "At most 2000 calls to the operations"],
+      "hints": ["This combines Circular Queue's array-with-modulo-wraparound technique with the ability to insert/delete from BOTH ends -- front decrements (wrapping) and rear increments (wrapping)."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use java.util.ArrayDeque directly, forgoing the fixed-size circular array mechanics this problem is testing.",
+          "code": "class MyCircularDeque {\n    private java.util.Deque<Integer> deque = new java.util.ArrayDeque<>();\n    private int capacity;\n\n    public MyCircularDeque(int k) {\n        capacity = k;\n    }\n\n    public boolean insertFront(int value) {\n        if (deque.size() == capacity) return false;\n        deque.addFirst(value);\n        return true;\n    }\n\n    public boolean insertLast(int value) {\n        if (deque.size() == capacity) return false;\n        deque.addLast(value);\n        return true;\n    }\n\n    public boolean deleteFront() {\n        if (deque.isEmpty()) return false;\n        deque.removeFirst();\n        return true;\n    }\n\n    public boolean deleteLast() {\n        if (deque.isEmpty()) return false;\n        deque.removeLast();\n        return true;\n    }\n\n    public int getFront() {\n        return deque.isEmpty() ? -1 : deque.peekFirst();\n    }\n\n    public int getRear() {\n        return deque.isEmpty() ? -1 : deque.peekLast();\n    }\n\n    public boolean isEmpty() {\n        return deque.isEmpty();\n    }\n\n    public boolean isFull() {\n        return deque.size() == capacity;\n    }\n}",
+          "output": "Matches expected sequence: true, true, true, false, 2, true, true, true, 4",
+          "timeComplexity": "O(1) for all operations",
+          "spaceComplexity": "O(k)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A fixed-size circular array, tracking front and size -- front decrements (with wraparound) for insertFront, and rear is computed as (front + size - 1) % capacity.",
+          "code": "class MyCircularDeque {\n    private int[] arr;\n    private int front, size, capacity;\n\n    public MyCircularDeque(int k) {\n        arr = new int[k];\n        capacity = k;\n        front = 0;\n        size = 0;\n    }\n\n    public boolean insertFront(int value) {\n        if (size == capacity) return false;\n        front = (front - 1 + capacity) % capacity;\n        arr[front] = value;\n        size++;\n        return true;\n    }\n\n    public boolean insertLast(int value) {\n        if (size == capacity) return false;\n        int rear = (front + size) % capacity;\n        arr[rear] = value;\n        size++;\n        return true;\n    }\n\n    public boolean deleteFront() {\n        if (size == 0) return false;\n        front = (front + 1) % capacity;\n        size--;\n        return true;\n    }\n\n    public boolean deleteLast() {\n        if (size == 0) return false;\n        size--;\n        return true;\n    }\n\n    public int getFront() {\n        return size == 0 ? -1 : arr[front];\n    }\n\n    public int getRear() {\n        return size == 0 ? -1 : arr[(front + size - 1) % capacity];\n    }\n\n    public boolean isEmpty() {\n        return size == 0;\n    }\n\n    public boolean isFull() {\n        return size == capacity;\n    }\n}",
+          "output": "Matches expected sequence: true, true, true, false, 2, true, true, true, 4",
+          "timeComplexity": "O(1) for all operations",
+          "spaceComplexity": "O(k) for the fixed-size array"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-239-queue",
+      "number": 239,
+      "title": "Sliding Window Maximum",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/sliding-window-maximum/",
+      "problemStatement": "Given an array nums and a sliding window of size k, return the maximum value in the window at each position. (Same problem covered in Sliding Window and worked through step by step earlier in THIS lesson -- included here to complete the Queue/Deque roadmap.)",
+      "examples": [
+        { "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3", "output": "[3,3,5,5,6,7]" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "1 <= k <= nums.length"],
+      "hints": ["This lesson's own maxSlidingWindow function, using a monotonic Deque of indices, IS the solution -- no changes needed."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Scan all k elements for every window position.",
+          "code": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        for (int i = 0; i <= nums.length - k; i++) {\n            int max = nums[i];\n            for (int j = i; j < i + k; j++) max = Math.max(max, nums[j]);\n            result[i] = max;\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,3,-1,-3,5,3,6,7], k = 3: [3,3,5,5,6,7]",
+          "timeComplexity": "O(n * k)",
+          "spaceComplexity": "O(n) for the output"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "This lesson's monotonic deque solution, unchanged.",
+          "code": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        java.util.Deque<Integer> deque = new java.util.ArrayDeque<>();\n\n        for (int i = 0; i < nums.length; i++) {\n            if (!deque.isEmpty() && deque.peekFirst() <= i - k) {\n                deque.pollFirst();\n            }\n            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {\n                deque.pollLast();\n            }\n            deque.offerLast(i);\n            if (i >= k - 1) {\n                result[i - k + 1] = nums[deque.peekFirst()];\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,3,-1,-3,5,3,6,7], k = 3: [3,3,5,5,6,7]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k) for the deque"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1438",
+      "number": 1438,
+      "title": "Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/",
+      "problemStatement": "Given an array of integers nums and an integer limit, return the length of the longest contiguous subarray such that the absolute difference between the maximum and minimum values in it is <= limit.",
+      "examples": [
+        { "input": "nums = [8,2,4,7], limit = 4", "output": "2", "explanation": "The subarray [2,4] has max-min = 2, within limit. Longer subarrays exceed the limit." }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "0 <= nums[i] <= 10^9", "0 <= limit <= 10^9"],
+      "hints": ["Sliding Window (variable size) combined with TWO monotonic deques -- one tracking the window's current maximum, one tracking its current minimum -- shrinking the window from the left whenever max - min exceeds limit."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every window, scan to find its max and min directly.",
+          "code": "class Solution {\n    public int longestSubarray(int[] nums, int limit) {\n        int maxLength = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int max = nums[i], min = nums[i];\n            for (int j = i; j < nums.length; j++) {\n                max = Math.max(max, nums[j]);\n                min = Math.min(min, nums[j]);\n                if (max - min <= limit) {\n                    maxLength = Math.max(maxLength, j - i + 1);\n                } else {\n                    break;\n                }\n            }\n        }\n        return maxLength;\n    }\n}",
+          "output": "For nums = [8,2,4,7], limit = 4: 2",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A variable-size sliding window with two monotonic deques -- one decreasing (tracks max), one increasing (tracks min) -- shrinking from the left whenever the window's max-min exceeds limit.",
+          "code": "class Solution {\n    public int longestSubarray(int[] nums, int limit) {\n        java.util.Deque<Integer> maxDeque = new java.util.ArrayDeque<>(); // decreasing values\n        java.util.Deque<Integer> minDeque = new java.util.ArrayDeque<>(); // increasing values\n        int left = 0, maxLength = 0;\n\n        for (int right = 0; right < nums.length; right++) {\n            while (!maxDeque.isEmpty() && nums[maxDeque.peekLast()] < nums[right]) {\n                maxDeque.pollLast();\n            }\n            maxDeque.offerLast(right);\n\n            while (!minDeque.isEmpty() && nums[minDeque.peekLast()] > nums[right]) {\n                minDeque.pollLast();\n            }\n            minDeque.offerLast(right);\n\n            while (nums[maxDeque.peekFirst()] - nums[minDeque.peekFirst()] > limit) {\n                if (maxDeque.peekFirst() == left) maxDeque.pollFirst();\n                if (minDeque.peekFirst() == left) minDeque.pollFirst();\n                left++;\n            }\n            maxLength = Math.max(maxLength, right - left + 1);\n        }\n        return maxLength;\n    }\n}",
+          "output": "For nums = [8,2,4,7], limit = 4: 2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the two deques"
+        }
+      ]
     }
   ],
   "codeExamples": [
