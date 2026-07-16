@@ -407,6 +407,39 @@
           "spaceComplexity": "O(1)"
         }
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-234",
+      "number": 234,
+      "title": "Palindrome Linked List",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/palindrome-linked-list/",
+      "problemStatement": "Given the head of a singly linked list, return true if it is a palindrome, or false otherwise.",
+      "examples": [
+        { "input": "head = [1,2,2,1]", "output": "true" },
+        { "input": "head = [1,2]", "output": "false" }
+      ],
+      "constraints": ["The number of nodes is in the range [1, 10^5]"],
+      "hints": ["Find the middle (fast/slow pointers, like Middle of the Linked List), reverse the second half in place (Reverse Linked List), then compare both halves value by value."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Copy all values into an ArrayList, then use two pointers (Two Pointers lesson) converging from both ends to check the palindrome property.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n}\n\nclass Solution {\n    public boolean isPalindrome(ListNode head) {\n        java.util.List<Integer> values = new java.util.ArrayList<>();\n        for (ListNode n = head; n != null; n = n.next) values.add(n.val);\n\n        int left = 0, right = values.size() - 1;\n        while (left < right) {\n            if (!values.get(left).equals(values.get(right))) return false;\n            left++;\n            right--;\n        }\n        return true;\n    }\n}",
+          "output": "For head = [1,2,2,1]: true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the values list"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Find the middle with fast/slow pointers, reverse the second half in place, then compare the two halves -- O(1) extra space.",
+          "code": "class ListNode {\n    int val;\n    ListNode next;\n}\n\nclass Solution {\n    public boolean isPalindrome(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n\n        ListNode secondHalf = reverse(slow);\n        ListNode firstHalf = head;\n        while (secondHalf != null) {\n            if (firstHalf.val != secondHalf.val) return false;\n            firstHalf = firstHalf.next;\n            secondHalf = secondHalf.next;\n        }\n        return true;\n    }\n\n    private ListNode reverse(ListNode head) {\n        ListNode prev = null;\n        while (head != null) {\n            ListNode next = head.next;\n            head.next = prev;\n            prev = head;\n            head = next;\n        }\n        return prev;\n    }\n}",
+          "output": "For head = [1,2,2,1]: true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
     }
   ],
   "codeExamples": [
