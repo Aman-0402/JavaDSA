@@ -1,0 +1,161 @@
+{
+  "id": "java-recursion-in-dsa",
+  "moduleId": "dsa-foundations",
+  "title": "Recursion in DSA",
+  "description": "Going beyond Recursion Basics -- multiple recursive calls (Fibonacci), the repeated-work problem it exposes, and a first taste of memoization.",
+  "objectives": [
+    "Write a recursive function with more than one recursive call",
+    "Recognize repeated work in naive multi-call recursion",
+    "Fix it with memoization using a HashMap"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Beyond One Recursive Call"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Recursion Basics, factorial(n) made exactly ONE recursive call per invocation. Many DSA problems make MULTIPLE recursive calls -- the classic example is the Fibonacci sequence, where each number is the sum of the two before it."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int fib(int n) {\n        if (n <= 1) {\n            return n; // base case\n        }\n        return fib(n - 1) + fib(n - 2); // TWO recursive calls\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fib(6));\n    }\n}",
+      "output": "8",
+      "retypePractice": true,
+      "retypeId": "java-recursion-dsa-fib-naive"
+    },
+    {
+      "type": "note",
+      "text": "fib(6) = fib(5) + fib(4) = ... = 8, following the sequence 0,1,1,2,3,5,8,13... Each call now branches into TWO more calls (except the base case), unlike factorial's single chain."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Hidden Problem: Repeated Work"
+    },
+    {
+      "type": "dryRun",
+      "title": "Partial call tree for fib(5)",
+      "steps": [
+        "fib(5) calls fib(4) and fib(3)",
+        "fib(4) calls fib(3) and fib(2) -- notice fib(3) is called AGAIN",
+        "fib(3) (from fib(5)'s side) calls fib(2) and fib(1) -- fib(2) is called AGAIN too",
+        "fib(2) gets recomputed from scratch every single time it's needed, even though the answer never changes"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "This naive fib is O(2^n) -- exponential! The same sub-problems (like fib(2) or fib(3)) get recalculated from scratch, repeatedly, instead of being reused. For fib(40), this becomes genuinely too slow to run in reasonable time."
+    },
+    {
+      "type": "heading",
+      "text": "3. The Fix: Memoization"
+    },
+    {
+      "type": "definition",
+      "term": "Memoization",
+      "text": "Caching the results of expensive function calls and returning the cached result when the same inputs occur again, instead of recomputing them."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static Map<Integer, Integer> memo = new HashMap<>();\n\n    static int fibMemo(int n) {\n        if (n <= 1) {\n            return n;\n        }\n        if (memo.containsKey(n)) {\n            return memo.get(n);\n        }\n\n        int result = fibMemo(n - 1) + fibMemo(n - 2);\n        memo.put(n, result);\n        return result;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibMemo(6));\n        System.out.println(fibMemo(30));\n    }\n}",
+      "output": "8\n832040",
+      "retypePractice": true,
+      "retypeId": "java-recursion-dsa-fib-memo"
+    },
+    {
+      "type": "keyPoints",
+      "title": "How memoization fixes it",
+      "points": [
+        "Before computing fibMemo(n), check memo (a HashMap, from the Hashing lesson) -- if we've already solved it, return the cached answer instantly",
+        "Otherwise compute it normally, but SAVE the result into memo before returning",
+        "Each distinct n is now computed only ONCE -- turning O(2^n) into O(n)"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "fibMemo(30) would take a very long time with the naive version, but returns nearly instantly here -- a dramatic, concrete demonstration of memoization's power. This exact idea -- caching sub-problem results -- is the foundation of Dynamic Programming, covered as its own full module (Greedy & Dynamic Programming) later."
+    },
+    {
+      "type": "heading",
+      "text": "4. Multiple Recursive Calls: Generating All Subsets (Preview)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void generateSubsets(int[] nums, int index, List<Integer> current, List<List<Integer>> result) {\n        if (index == nums.length) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n\n        // Choice 1: don't include nums[index]\n        generateSubsets(nums, index + 1, current, result);\n\n        // Choice 2: include nums[index]\n        current.add(nums[index]);\n        generateSubsets(nums, index + 1, current, result);\n        current.remove(current.size() - 1); // undo the choice\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2};\n        List<List<Integer>> result = new ArrayList<>();\n        generateSubsets(nums, 0, new ArrayList<>(), result);\n        System.out.println(result);\n    }\n}",
+      "output": "[[], [2], [1], [1, 2]]",
+      "retypePractice": true,
+      "retypeId": "java-recursion-dsa-subsets"
+    },
+    {
+      "type": "warning",
+      "text": "This is only a PREVIEW of a technique called backtracking -- trying a choice, recursing, then UNDOING that choice (current.remove(...)) to try the next one. Backtracking gets its own full dedicated lesson right after this one, with much more depth."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Writing multi-call recursion (like naive Fibonacci) without recognizing the exponential repeated-work problem it creates for larger inputs.",
+        "Forgetting to check the memo cache BEFORE doing the recursive work, defeating the entire point of memoization.",
+        "Forgetting to actually SAVE a freshly computed result into the memo before returning it.",
+        "Confusing memoization (caching results, top-down from the original call) with the tabulation approach covered later in Dynamic Programming (building up from the base cases instead)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why is naive recursive Fibonacci O(2^n)?",
+          "answer": "Because each call (except the base case) branches into two more recursive calls, and the same sub-problems (like fib(2) or fib(3)) get recomputed repeatedly across different branches of the call tree, instead of being reused."
+        },
+        {
+          "question": "What is memoization, and how does it fix naive Fibonacci's performance?",
+          "answer": "Memoization caches the result of each distinct sub-problem the first time it's computed, and returns that cached result on any later request for the same input -- turning Fibonacci's O(2^n) naive recursion into O(n), since each value from 0 to n is now computed only once."
+        },
+        {
+          "question": "What data structure is typically used for memoization, and why?",
+          "answer": "A HashMap (or an array, when inputs are small non-negative integers), because it provides O(1) average lookup and insertion (from the Hashing lesson), letting the cache check and update happen quickly."
+        }
+      ],
+      "thirtySecondAnswer": "Beyond single-call recursion like factorial, many DSA problems involve multiple recursive calls per invocation, like naive Fibonacci's fib(n-1) + fib(n-2). This creates exponential O(2^n) time, since the same sub-problems get recomputed repeatedly across the call tree. Memoization fixes this by caching each sub-problem's result (typically in a HashMap) the first time it's solved, and returning the cached value on any later request for the same input -- reducing Fibonacci to O(n). This same caching idea is the foundation of Dynamic Programming, and recursion with multiple branching choices (like generating all subsets) previews the backtracking technique covered next."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Naive multi-call recursion = re-solving the same homework problem over and over because you forgot you already solved it. Memoization = writing the answer in the margin the FIRST time, so you just glance at it next time."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why is naive recursive Fibonacci exponential?",
+        "What is memoization, and what data structure commonly implements it?",
+        "How does memoization change Fibonacci's time complexity?",
+        "What technique does 'try a choice, recurse, undo the choice' preview?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-recursion-dsa-fib-naive", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int fib(int n) {\n        if (n <= 1) {\n            return n; // base case\n        }\n        return fib(n - 1) + fib(n - 2); // TWO recursive calls\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fib(6));\n    }\n}", "output": "8" },
+    { "id": "java-recursion-dsa-fib-memo", "lang": "java", "filename": "Main.java", "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static Map<Integer, Integer> memo = new HashMap<>();\n\n    static int fibMemo(int n) {\n        if (n <= 1) {\n            return n;\n        }\n        if (memo.containsKey(n)) {\n            return memo.get(n);\n        }\n\n        int result = fibMemo(n - 1) + fibMemo(n - 2);\n        memo.put(n, result);\n        return result;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibMemo(6));\n        System.out.println(fibMemo(30));\n    }\n}", "output": "8\n832040" },
+    { "id": "java-recursion-dsa-subsets", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void generateSubsets(int[] nums, int index, List<Integer> current, List<List<Integer>> result) {\n        if (index == nums.length) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n\n        // Choice 1: don't include nums[index]\n        generateSubsets(nums, index + 1, current, result);\n\n        // Choice 2: include nums[index]\n        current.add(nums[index]);\n        generateSubsets(nums, index + 1, current, result);\n        current.remove(current.size() - 1); // undo the choice\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2};\n        List<List<Integer>> result = new ArrayList<>();\n        generateSubsets(nums, 0, new ArrayList<>(), result);\n        System.out.println(result);\n    }\n}", "output": "[[], [2], [1], [1, 2]]" }
+  ],
+  "retypePractice": [
+    { "id": "java-recursion-dsa-fib-naive", "reference": "public class Main {\n    static int fib(int n) {\n        if (n <= 1) {\n            return n; // base case\n        }\n        return fib(n - 1) + fib(n - 2); // TWO recursive calls\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fib(6));\n    }\n}" },
+    { "id": "java-recursion-dsa-fib-memo", "reference": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    static Map<Integer, Integer> memo = new HashMap<>();\n\n    static int fibMemo(int n) {\n        if (n <= 1) {\n            return n;\n        }\n        if (memo.containsKey(n)) {\n            return memo.get(n);\n        }\n\n        int result = fibMemo(n - 1) + fibMemo(n - 2);\n        memo.put(n, result);\n        return result;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fibMemo(6));\n        System.out.println(fibMemo(30));\n    }\n}" },
+    { "id": "java-recursion-dsa-subsets", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    static void generateSubsets(int[] nums, int index, List<Integer> current, List<List<Integer>> result) {\n        if (index == nums.length) {\n            result.add(new ArrayList<>(current));\n            return;\n        }\n\n        // Choice 1: don't include nums[index]\n        generateSubsets(nums, index + 1, current, result);\n\n        // Choice 2: include nums[index]\n        current.add(nums[index]);\n        generateSubsets(nums, index + 1, current, result);\n        current.remove(current.size() - 1); // undo the choice\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2};\n        List<List<Integer>> result = new ArrayList<>();\n        generateSubsets(nums, 0, new ArrayList<>(), result);\n        System.out.println(result);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-recursion-dsa-fib-naive", "java-recursion-dsa-fib-memo", "java-recursion-dsa-subsets"]
+  }
+}
