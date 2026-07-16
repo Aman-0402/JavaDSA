@@ -1,0 +1,150 @@
+{
+  "id": "java-binary-trees",
+  "moduleId": "trees",
+  "title": "Binary Trees",
+  "description": "A Node with TWO children instead of one next -- branching structure built manually, just like the Linked List module's Node class.",
+  "objectives": [
+    "Understand a binary tree Node holding left and right children",
+    "Build a small binary tree manually and understand its terminology",
+    "Compute a tree's height recursively"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. From One Next to Two Children"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Singly Linked List, each Node had exactly one next reference, forming a straight chain. A binary tree's Node has TWO references instead -- left and right -- letting the structure BRANCH rather than just chain."
+    },
+    {
+      "type": "definition",
+      "term": "Binary tree",
+      "text": "A hierarchical structure where each Node has at most two children, conventionally called left and right, starting from a single root node."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Node Class and Tree Terminology"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left;\n        Node right;\n\n        Node(int data) {\n            this.data = data;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(10);\n        root.left = new Node(5);\n        root.right = new Node(15);\n        root.left.left = new Node(2);\n        root.left.right = new Node(7);\n\n        System.out.println(root.data);\n        System.out.println(root.left.data);\n        System.out.println(root.left.left.data);\n    }\n}",
+      "output": "10\n5\n2",
+      "retypePractice": true,
+      "retypeId": "java-tree-manual-build"
+    },
+    {
+      "type": "table",
+      "title": "Tree vocabulary",
+      "headers": ["Term", "Meaning"],
+      "rows": [
+        ["Root", "The single topmost node -- every other node is reached by descending from it"],
+        ["Leaf", "A node with no children (both left and right are null)"],
+        ["Height", "The number of edges on the longest path from root to a leaf"],
+        ["Depth of a node", "The number of edges from the root to that specific node"],
+        ["Subtree", "Any node treated as the root of its own smaller tree, formed by it and its descendants"]
+      ]
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Family tree analogy",
+      "text": "Think of an org chart: one CEO (root) at the top, each manager having at most two direct reports (left and right), branching downward. Someone with no reports is a leaf. This is exactly a binary tree's shape, just capped at two children per node."
+    },
+    {
+      "type": "heading",
+      "text": "3. Why Recursion Fits Trees So Naturally"
+    },
+    {
+      "type": "paragraph",
+      "text": "Recall Recursion Basics: a recursive function needs a base case and a recursive case that shrinks toward it. A tree is naturally recursive -- its left subtree and right subtree are themselves complete, smaller binary trees. Most tree algorithms are written by handling the current node, then recursing into left and right."
+    },
+    {
+      "type": "heading",
+      "text": "4. Computing Height Recursively"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static int height(Node node) {\n        if (node == null) {\n            return -1; // base case -- an empty tree has height -1\n        }\n        int leftHeight = height(node.left);\n        int rightHeight = height(node.right);\n        return 1 + Math.max(leftHeight, rightHeight);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(10);\n        root.left = new Node(5);\n        root.right = new Node(15);\n        root.left.left = new Node(2);\n\n        System.out.println(height(root));\n    }\n}",
+      "output": "2",
+      "retypePractice": true,
+      "retypeId": "java-tree-height"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing height(root) where root=10, root.left=5, root.right=15, root.left.left=2",
+      "steps": [
+        "height(node 2): left=null->-1, right=null->-1. Returns 1+max(-1,-1) = 0",
+        "height(node 5): left=height(2)=0, right=null->-1. Returns 1+max(0,-1) = 1",
+        "height(node 15): left=null->-1, right=null->-1. Returns 1+max(-1,-1) = 0",
+        "height(root=10): left=height(5)=1, right=height(15)=0. Returns 1+max(1,0) = 2"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Returning -1 for an empty (null) tree is a common convention that makes the +1 arithmetic work out cleanly -- a single node (no children) then correctly computes height 0, not height 1. Some definitions instead treat a single node's height as 1 -- always check which convention a specific problem expects."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting the base case (node == null) in recursive tree functions -- this causes a NullPointerException the moment you try node.left on a null node.",
+        "Confusing height (longest path to a LEAF) with depth (path from the ROOT to a specific node) -- they're measured in opposite directions.",
+        "Assuming every binary tree is sorted or balanced -- a plain binary tree makes no such guarantee; that's specifically what the Binary Search Tree lesson adds.",
+        "Writing iterative code for tree problems by instinct, when the recursive version is often far simpler given a tree's naturally recursive structure."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is a binary tree?",
+          "answer": "A hierarchical structure where each node has at most two children (left and right), starting from a single root node -- unlike a linked list's single next reference, a tree branches."
+        },
+        {
+          "question": "What is the difference between a tree's height and a specific node's depth?",
+          "answer": "Height is the number of edges on the longest path from the root down to a leaf. Depth is the number of edges from the root down to that specific node -- height looks at the whole tree's longest path, depth looks at one node's distance from the top."
+        },
+        {
+          "question": "Why do most tree algorithms use recursion naturally?",
+          "answer": "A tree's left and right subtrees are themselves complete, smaller binary trees -- this self-similar structure fits recursion's pattern of solving a problem by relying on smaller versions of itself, with the null-child case serving as the base case."
+        }
+      ],
+      "thirtySecondAnswer": "A binary tree's Node holds up to two children, left and right, rooted at a single starting node -- unlike a linked list's single next reference, this lets the structure branch. Key terms: root (topmost node), leaf (no children), height (longest root-to-leaf path in edges), and depth (a specific node's distance from the root). Trees are naturally recursive, since each subtree is itself a complete smaller tree -- most tree functions handle the current node then recurse into left and right, with a null-node base case, exactly as shown by computing height recursively."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Binary tree = an org chart capped at 2 direct reports per manager. Height = longest chain of command to the newest hire (a leaf). Every subtree is itself a smaller org chart -- that's why recursion fits so naturally."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What two references does a binary tree's Node hold?",
+        "What is the difference between height and depth?",
+        "What is a leaf node?",
+        "Why does recursion fit tree problems so naturally?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-tree-manual-build", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left;\n        Node right;\n\n        Node(int data) {\n            this.data = data;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(10);\n        root.left = new Node(5);\n        root.right = new Node(15);\n        root.left.left = new Node(2);\n        root.left.right = new Node(7);\n\n        System.out.println(root.data);\n        System.out.println(root.left.data);\n        System.out.println(root.left.left.data);\n    }\n}", "output": "10\n5\n2" },
+    { "id": "java-tree-height", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static int height(Node node) {\n        if (node == null) {\n            return -1; // base case -- an empty tree has height -1\n        }\n        int leftHeight = height(node.left);\n        int rightHeight = height(node.right);\n        return 1 + Math.max(leftHeight, rightHeight);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(10);\n        root.left = new Node(5);\n        root.right = new Node(15);\n        root.left.left = new Node(2);\n\n        System.out.println(height(root));\n    }\n}", "output": "2" }
+  ],
+  "retypePractice": [
+    { "id": "java-tree-manual-build", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left;\n        Node right;\n\n        Node(int data) {\n            this.data = data;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(10);\n        root.left = new Node(5);\n        root.right = new Node(15);\n        root.left.left = new Node(2);\n        root.left.right = new Node(7);\n\n        System.out.println(root.data);\n        System.out.println(root.left.data);\n        System.out.println(root.left.left.data);\n    }\n}" },
+    { "id": "java-tree-height", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static int height(Node node) {\n        if (node == null) {\n            return -1; // base case -- an empty tree has height -1\n        }\n        int leftHeight = height(node.left);\n        int rightHeight = height(node.right);\n        return 1 + Math.max(leftHeight, rightHeight);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(10);\n        root.left = new Node(5);\n        root.right = new Node(15);\n        root.left.left = new Node(2);\n\n        System.out.println(height(root));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-tree-manual-build", "java-tree-height"]
+  }
+}

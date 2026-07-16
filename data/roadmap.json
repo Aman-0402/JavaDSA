@@ -137,7 +137,13 @@
         { "id": "java-heap-sort", "title": "Heap Sort", "lesson": "java-heap-sort" }
       ]
     },
-    { "id": "trees", "title": "Trees", "topics": [] },
+    {
+      "id": "trees",
+      "title": "Trees",
+      "topics": [
+        { "id": "java-binary-trees", "title": "Binary Trees", "lesson": "java-binary-trees" }
+      ]
+    },
     { "id": "graphs", "title": "Graphs", "topics": [] },
     { "id": "greedy-dp", "title": "Greedy & Dynamic Programming", "topics": [] }
   ]
