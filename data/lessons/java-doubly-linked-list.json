@@ -1,0 +1,163 @@
+{
+  "id": "java-doubly-linked-list",
+  "moduleId": "linked-list",
+  "title": "Doubly Linked List",
+  "description": "Adding a prev reference to each Node, enabling backward traversal and O(1) removal given a direct node reference -- the manual version of what java.util.LinkedList actually is.",
+  "objectives": [
+    "Add a prev reference to Node, enabling backward traversal",
+    "Insert and delete a node while maintaining both prev and next links",
+    "Understand the extra bookkeeping cost vs the benefits gained"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Problem: Singly Linked Lists Only Go Forward"
+    },
+    {
+      "type": "paragraph",
+      "text": "In the Singly Linked List lesson, current.next was the only way to move -- there was no way to go BACKWARD from a node. A doubly linked list adds a second reference, prev, pointing to the previous node."
+    },
+    {
+      "type": "definition",
+      "term": "Doubly linked list",
+      "text": "A linked list where each Node holds references to both the next node AND the previous node, allowing traversal in either direction."
+    },
+    {
+      "type": "heading",
+      "text": "2. The Node Class, Now With prev"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n\n        Node(int data) {\n            this.data = data;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.prev = first;\n        second.next = third;\n        third.prev = second;\n\n        System.out.print(\"Forward: \");\n        Node current = first;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n\n        System.out.print(\"\\nBackward: \");\n        current = third;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.prev;\n        }\n    }\n}",
+      "output": "Forward: 10 20 30 \nBackward: 30 20 10 ",
+      "retypePractice": true,
+      "retypeId": "java-dll-manual-both-ways"
+    },
+    {
+      "type": "warning",
+      "text": "Every link now needs to be set in BOTH directions manually -- second.prev = first must be set alongside first.next = second, or the backward chain breaks even though the forward chain looks fine. This doubled bookkeeping is the trade-off for gaining backward traversal."
+    },
+    {
+      "type": "heading",
+      "text": "3. Insert at Head, Maintaining Both Links"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n        Node(int data) { this.data = data; }\n    }\n\n    static class DoublyLinkedList {\n        Node head;\n\n        void insertAtHead(int data) {\n            Node newNode = new Node(data);\n            newNode.next = head;\n            if (head != null) {\n                head.prev = newNode;\n            }\n            head = newNode;\n        }\n\n        void printForward() {\n            Node current = head;\n            while (current != null) {\n                System.out.print(current.data + \" \");\n                current = current.next;\n            }\n            System.out.println();\n        }\n    }\n\n    public static void main(String[] args) {\n        DoublyLinkedList list = new DoublyLinkedList();\n        list.insertAtHead(30);\n        list.insertAtHead(20);\n        list.insertAtHead(10);\n        list.printForward();\n    }\n}",
+      "output": "10 20 30 ",
+      "retypePractice": true,
+      "retypeId": "java-dll-insert-head"
+    },
+    {
+      "type": "warning",
+      "text": "if (head != null) { head.prev = newNode; } is essential -- without this check, if the list was empty (head == null), head.prev would throw a NullPointerException (recall Exception Handling's checked/unchecked distinction: this is an unchecked exception, easy to trigger accidentally here)."
+    },
+    {
+      "type": "heading",
+      "text": "4. Deleting a Node: The Real Benefit"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node head;\n\n    static void insertAtHead(int data) {\n        Node newNode = new Node(data);\n        newNode.next = head;\n        if (head != null) head.prev = newNode;\n        head = newNode;\n    }\n\n    static void deleteNode(Node node) {\n        if (node.prev != null) {\n            node.prev.next = node.next;\n        } else {\n            head = node.next; // node was the head\n        }\n        if (node.next != null) {\n            node.next.prev = node.prev;\n        }\n    }\n\n    static void printForward() {\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtHead(30);\n        insertAtHead(20);\n        Node middleNode = head; // this is the node holding 20\n        insertAtHead(10);\n\n        deleteNode(middleNode);\n        printForward();\n    }\n}",
+      "output": "10 30 ",
+      "retypePractice": true,
+      "retypeId": "java-dll-delete-node"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this deletion is O(1) given a direct node reference",
+      "points": [
+        "node.prev.next = node.next relinks the PREVIOUS node past the one being deleted",
+        "node.next.prev = node.prev relinks the NEXT node's backward pointer past it too",
+        "No WALKING the list required, unlike a singly linked list's delete() from the previous lesson, which had to search forward from head to find the node just before the target",
+        "This only works because we already HAVE a direct reference to the node (middleNode) -- finding a node by value still requires a search either way"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. Doubly vs Singly: The Trade-off"
+    },
+    {
+      "type": "table",
+      "title": "Singly vs doubly linked list",
+      "headers": ["", "Singly linked list", "Doubly linked list"],
+      "rows": [
+        ["Memory per node", "One reference (next)", "Two references (next AND prev)"],
+        ["Traversal direction", "Forward only", "Forward and backward"],
+        ["Delete given a direct node reference", "O(n) -- must find the PREVIOUS node by walking from head", "O(1) -- prev is already known"],
+        ["Real Java example", "N/A (java.util.LinkedList is doubly linked)", "java.util.LinkedList's actual internal structure"]
+      ]
+    },
+    {
+      "type": "note",
+      "text": "This is the payoff for List: ArrayList vs LinkedList's earlier claim that LinkedList has fast middle insertion/removal -- java.util.LinkedList is internally a doubly linked list exactly like the one built here, which is precisely why it can relink neighbors in O(1) once positioned there."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Updating next without also updating the corresponding prev (or vice versa), leaving the two directions inconsistent with each other.",
+        "Forgetting the null check before dereferencing head.prev (or node.prev/node.next) when the list might be empty or the node might be at an end.",
+        "Assuming deleteNode(node) is O(1) even when you only have the node's VALUE, not a direct reference -- finding it by value still requires an O(n) search first.",
+        "Confusing prev/next direction when relinking during deletion, accidentally creating a broken or circular chain."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the key structural difference between a singly and doubly linked list?",
+          "answer": "Each Node in a doubly linked list holds an additional prev reference to the previous node, alongside next, enabling traversal in both directions -- a singly linked list can only move forward."
+        },
+        {
+          "question": "Why can a doubly linked list delete a node in O(1) given a direct reference to it, while a singly linked list cannot?",
+          "answer": "A doubly linked list already knows the previous node via node.prev, so relinking around the deleted node needs no search. A singly linked list has no prev reference, so it must walk from head to find the node just before the target before it can relink anything."
+        },
+        {
+          "question": "What is the memory trade-off of a doubly linked list compared to a singly linked list?",
+          "answer": "Each node requires an extra reference (prev) beyond next, roughly doubling the per-node reference overhead, in exchange for backward traversal and O(1) deletion given a direct node reference."
+        }
+      ],
+      "thirtySecondAnswer": "A doubly linked list extends the singly linked list's Node with a prev reference alongside next, enabling backward traversal. This costs extra memory per node (two references instead of one) but gains real power: given a direct reference to a node, deletion is O(1), since node.prev.next and node.next.prev can be relinked immediately -- no walking the list to find the previous node, unlike a singly linked list. This is exactly why java.util.LinkedList, previewed in List: ArrayList vs LinkedList, is internally a doubly linked list."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Doubly linked list = a treasure hunt where each clue ALSO tells you where the PREVIOUS clue was. Extra bookkeeping (set both prev and next), but now you can walk backward, and deleting a KNOWN clue is instant -- no retracing your steps needed."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What extra reference does a doubly linked list's Node have compared to a singly linked list's?",
+        "Why is deletion O(1) in a doubly linked list, given a direct node reference?",
+        "What's the memory trade-off of adding prev to every node?",
+        "Which real Java class is internally implemented as a doubly linked list?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-dll-manual-both-ways", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n\n        Node(int data) {\n            this.data = data;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.prev = first;\n        second.next = third;\n        third.prev = second;\n\n        System.out.print(\"Forward: \");\n        Node current = first;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n\n        System.out.print(\"\\nBackward: \");\n        current = third;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.prev;\n        }\n    }\n}", "output": "Forward: 10 20 30 \nBackward: 30 20 10 " },
+    { "id": "java-dll-insert-head", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n        Node(int data) { this.data = data; }\n    }\n\n    static class DoublyLinkedList {\n        Node head;\n\n        void insertAtHead(int data) {\n            Node newNode = new Node(data);\n            newNode.next = head;\n            if (head != null) {\n                head.prev = newNode;\n            }\n            head = newNode;\n        }\n\n        void printForward() {\n            Node current = head;\n            while (current != null) {\n                System.out.print(current.data + \" \");\n                current = current.next;\n            }\n            System.out.println();\n        }\n    }\n\n    public static void main(String[] args) {\n        DoublyLinkedList list = new DoublyLinkedList();\n        list.insertAtHead(30);\n        list.insertAtHead(20);\n        list.insertAtHead(10);\n        list.printForward();\n    }\n}", "output": "10 20 30 " },
+    { "id": "java-dll-delete-node", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node head;\n\n    static void insertAtHead(int data) {\n        Node newNode = new Node(data);\n        newNode.next = head;\n        if (head != null) head.prev = newNode;\n        head = newNode;\n    }\n\n    static void deleteNode(Node node) {\n        if (node.prev != null) {\n            node.prev.next = node.next;\n        } else {\n            head = node.next; // node was the head\n        }\n        if (node.next != null) {\n            node.next.prev = node.prev;\n        }\n    }\n\n    static void printForward() {\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtHead(30);\n        insertAtHead(20);\n        Node middleNode = head; // this is the node holding 20\n        insertAtHead(10);\n\n        deleteNode(middleNode);\n        printForward();\n    }\n}", "output": "10 30 " }
+  ],
+  "retypePractice": [
+    { "id": "java-dll-manual-both-ways", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n\n        Node(int data) {\n            this.data = data;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node first = new Node(10);\n        Node second = new Node(20);\n        Node third = new Node(30);\n\n        first.next = second;\n        second.prev = first;\n        second.next = third;\n        third.prev = second;\n\n        System.out.print(\"Forward: \");\n        Node current = first;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n\n        System.out.print(\"\\nBackward: \");\n        current = third;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.prev;\n        }\n    }\n}" },
+    { "id": "java-dll-insert-head", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n        Node(int data) { this.data = data; }\n    }\n\n    static class DoublyLinkedList {\n        Node head;\n\n        void insertAtHead(int data) {\n            Node newNode = new Node(data);\n            newNode.next = head;\n            if (head != null) {\n                head.prev = newNode;\n            }\n            head = newNode;\n        }\n\n        void printForward() {\n            Node current = head;\n            while (current != null) {\n                System.out.print(current.data + \" \");\n                current = current.next;\n            }\n            System.out.println();\n        }\n    }\n\n    public static void main(String[] args) {\n        DoublyLinkedList list = new DoublyLinkedList();\n        list.insertAtHead(30);\n        list.insertAtHead(20);\n        list.insertAtHead(10);\n        list.printForward();\n    }\n}" },
+    { "id": "java-dll-delete-node", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node next;\n        Node prev;\n        Node(int data) { this.data = data; }\n    }\n\n    static Node head;\n\n    static void insertAtHead(int data) {\n        Node newNode = new Node(data);\n        newNode.next = head;\n        if (head != null) head.prev = newNode;\n        head = newNode;\n    }\n\n    static void deleteNode(Node node) {\n        if (node.prev != null) {\n            node.prev.next = node.next;\n        } else {\n            head = node.next; // node was the head\n        }\n        if (node.next != null) {\n            node.next.prev = node.prev;\n        }\n    }\n\n    static void printForward() {\n        Node current = head;\n        while (current != null) {\n            System.out.print(current.data + \" \");\n            current = current.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insertAtHead(30);\n        insertAtHead(20);\n        Node middleNode = head; // this is the node holding 20\n        insertAtHead(10);\n\n        deleteNode(middleNode);\n        printForward();\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-dll-manual-both-ways", "java-dll-insert-head", "java-dll-delete-node"]
+  }
+}
