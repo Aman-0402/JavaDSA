@@ -1,0 +1,172 @@
+{
+  "id": "java-1d-dp",
+  "moduleId": "greedy-dp",
+  "title": "1D DP",
+  "description": "DP problems where the state is a single index into an array -- Climbing Stairs and House Robber, both solved by deciding what dp[i] should mean.",
+  "objectives": [
+    "Define a 1D DP array's meaning (dp[i]) before writing any code",
+    "Solve Climbing Stairs (a Fibonacci-shaped recurrence in disguise)",
+    "Solve House Robber, where each state has a genuine 'include or exclude' choice"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The First Step: Define dp[i]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every DP problem starts with one crucial question: what does dp[i] actually MEAN? Get this definition right, and the recurrence (how dp[i] relates to earlier values) usually follows naturally."
+    },
+    {
+      "type": "heading",
+      "text": "2. Climbing Stairs"
+    },
+    {
+      "type": "paragraph",
+      "text": "You can climb 1 or 2 steps at a time. How many distinct ways can you reach the top of an n-step staircase?"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int climbStairs(int n) {\n        if (n <= 2) return n;\n\n        int[] dp = new int[n + 1];\n        dp[1] = 1;\n        dp[2] = 2;\n\n        for (int i = 3; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n        return dp[n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(climbStairs(5));\n    }\n}",
+      "output": "8",
+      "retypePractice": true,
+      "retypeId": "java-1ddp-climb-stairs"
+    },
+    {
+      "type": "definition",
+      "term": "dp[i] for Climbing Stairs",
+      "text": "The number of distinct ways to reach step i, using only 1-step or 2-step moves."
+    },
+    {
+      "type": "note",
+      "text": "To reach step i, your LAST move was either a 1-step (from step i-1) or a 2-step (from step i-2) -- so dp[i] = dp[i-1] + dp[i-2]. Recognize this recurrence? It's EXACTLY Fibonacci's shape, from DP Intro, just with different base cases (dp[1]=1, dp[2]=2 instead of fib(0)=0, fib(1)=1)."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing climbStairs(5)",
+      "steps": [
+        "dp[1]=1, dp[2]=2",
+        "dp[3] = dp[2]+dp[1] = 2+1 = 3",
+        "dp[4] = dp[3]+dp[2] = 3+2 = 5",
+        "dp[5] = dp[4]+dp[3] = 5+3 = 8",
+        "Return dp[5] = 8"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. House Robber: A Genuine Include-or-Exclude Choice"
+    },
+    {
+      "type": "paragraph",
+      "text": "Given houses in a row with money amounts, rob houses to maximize total money -- but you CANNOT rob two ADJACENT houses (the alarm triggers). What's the maximum you can steal?"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int rob(int[] nums) {\n        if (nums.length == 0) return 0;\n        if (nums.length == 1) return nums[0];\n\n        int[] dp = new int[nums.length];\n        dp[0] = nums[0];\n        dp[1] = Math.max(nums[0], nums[1]);\n\n        for (int i = 2; i < nums.length; i++) {\n            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);\n        }\n        return dp[nums.length - 1];\n    }\n\n    public static void main(String[] args) {\n        int[] houses = {2, 7, 9, 3, 1};\n        System.out.println(rob(houses));\n    }\n}",
+      "output": "12",
+      "retypePractice": true,
+      "retypeId": "java-1ddp-house-robber"
+    },
+    {
+      "type": "definition",
+      "term": "dp[i] for House Robber",
+      "text": "The maximum amount stealable considering only houses 0 through i (inclusive), obeying the no-adjacent-houses rule."
+    },
+    {
+      "type": "note",
+      "text": "At each house i, there's a genuine CHOICE: SKIP house i (take whatever dp[i-1] already achieved), or ROB house i (take nums[i] PLUS whatever was achievable up through i-2, since i-1 must then be skipped). dp[i] = Math.max(dp[i-1], dp[i-2] + nums[i]) picks whichever choice is better."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing rob({2, 7, 9, 3, 1})",
+      "steps": [
+        "dp[0] = 2",
+        "dp[1] = max(2, 7) = 7",
+        "dp[2] = max(dp[1]=7, dp[0]+nums[2]=2+9=11) = 11",
+        "dp[3] = max(dp[2]=11, dp[1]+nums[3]=7+3=10) = 11",
+        "dp[4] = max(dp[3]=11, dp[2]+nums[4]=11+1=12) = 12",
+        "Return dp[4] = 12 -- achieved by robbing houses at indices 0, 2, and 4 (values 2, 9, 1), none adjacent: 2+9+1 = 12"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "dp[i-2] + nums[i] represents 'rob house i, so house i-1 must be skipped, but everything achievable through i-2 is still fair game' -- this is exactly the no-two-adjacent constraint being enforced by which earlier dp value gets combined with nums[i]."
+    },
+    {
+      "type": "heading",
+      "text": "4. Recognizing the 1D DP Pattern"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Common ingredients across 1D DP problems",
+      "points": [
+        "State: dp[i] means something specific about 'up through position i' -- define this FIRST, in plain words",
+        "Recurrence: dp[i] is computed from a small, fixed number of earlier dp values (dp[i-1], dp[i-2], etc.)",
+        "Base cases: the smallest indices (dp[0], dp[1]) must be set directly, since the recurrence needs them to already exist"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Writing the recurrence before clearly defining what dp[i] actually MEANS -- this leads to confused, buggy transitions.",
+        "Forgetting House Robber's genuine choice (skip vs rob) and instead just summing everything, ignoring the adjacency constraint entirely.",
+        "Off-by-one errors in loop bounds or array sizing -- 1D DP arrays are usually sized n or n+1 depending on whether index 0 or n is meaningful.",
+        "Not setting BOTH necessary base cases (dp[0] and dp[1]) before a recurrence that depends on two previous values, like House Robber's does."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the recurrence for Climbing Stairs, and why does it match Fibonacci's shape?",
+          "answer": "dp[i] = dp[i-1] + dp[i-2], because reaching step i must come from either a 1-step move (from i-1) or a 2-step move (from i-2). This is structurally identical to Fibonacci's recurrence, just with different base case values."
+        },
+        {
+          "question": "What is the recurrence for House Robber, and what choice does it represent at each step?",
+          "answer": "dp[i] = max(dp[i-1], dp[i-2] + nums[i]) -- representing the choice to either skip house i (keeping whatever was achievable through i-1) or rob house i (adding nums[i] to whatever was achievable through i-2, since i-1 must then be skipped)."
+        },
+        {
+          "question": "What is the first step you should take before writing any 1D DP recurrence?",
+          "answer": "Clearly define, in plain words, what dp[i] represents -- getting this definition right makes the recurrence (how dp[i] relates to earlier dp values) follow naturally; skipping this step leads to confused, buggy transitions."
+        }
+      ],
+      "thirtySecondAnswer": "1D DP problems use a single array indexed by position, where dp[i] represents something meaningful about the problem 'up through i' -- defining this clearly is the essential first step. Climbing Stairs has dp[i] = dp[i-1] + dp[i-2] (reaching step i via a 1-step or 2-step move), structurally identical to Fibonacci. House Robber has dp[i] = max(dp[i-1], dp[i-2] + nums[i]), representing a genuine choice at each house: skip it (keep dp[i-1]) or rob it (add nums[i] to dp[i-2], since the adjacent house i-1 must then be skipped). Both need base cases set explicitly before the recurrence loop runs."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "1D DP: define dp[i] in ONE clear sentence FIRST. Climbing Stairs = Fibonacci wearing a staircase costume. House Robber = at every house, ask 'skip it, or take it and skip the one right before?' -- pick whichever total wins."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What should you define before writing any DP recurrence?",
+        "What is Climbing Stairs' recurrence, and why does it resemble Fibonacci?",
+        "What choice does House Robber's recurrence represent at each index?",
+        "Why does House Robber need two base cases (dp[0] and dp[1]) set explicitly?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-1ddp-climb-stairs", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int climbStairs(int n) {\n        if (n <= 2) return n;\n\n        int[] dp = new int[n + 1];\n        dp[1] = 1;\n        dp[2] = 2;\n\n        for (int i = 3; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n        return dp[n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(climbStairs(5));\n    }\n}", "output": "8" },
+    { "id": "java-1ddp-house-robber", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int rob(int[] nums) {\n        if (nums.length == 0) return 0;\n        if (nums.length == 1) return nums[0];\n\n        int[] dp = new int[nums.length];\n        dp[0] = nums[0];\n        dp[1] = Math.max(nums[0], nums[1]);\n\n        for (int i = 2; i < nums.length; i++) {\n            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);\n        }\n        return dp[nums.length - 1];\n    }\n\n    public static void main(String[] args) {\n        int[] houses = {2, 7, 9, 3, 1};\n        System.out.println(rob(houses));\n    }\n}", "output": "12" }
+  ],
+  "retypePractice": [
+    { "id": "java-1ddp-climb-stairs", "reference": "public class Main {\n    static int climbStairs(int n) {\n        if (n <= 2) return n;\n\n        int[] dp = new int[n + 1];\n        dp[1] = 1;\n        dp[2] = 2;\n\n        for (int i = 3; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n        return dp[n];\n    }\n\n    public static void main(String[] args) {\n        System.out.println(climbStairs(5));\n    }\n}" },
+    { "id": "java-1ddp-house-robber", "reference": "public class Main {\n    static int rob(int[] nums) {\n        if (nums.length == 0) return 0;\n        if (nums.length == 1) return nums[0];\n\n        int[] dp = new int[nums.length];\n        dp[0] = nums[0];\n        dp[1] = Math.max(nums[0], nums[1]);\n\n        for (int i = 2; i < nums.length; i++) {\n            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);\n        }\n        return dp[nums.length - 1];\n    }\n\n    public static void main(String[] args) {\n        int[] houses = {2, 7, 9, 3, 1};\n        System.out.println(rob(houses));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-1ddp-climb-stairs", "java-1ddp-house-robber"]
+  }
+}
