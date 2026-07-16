@@ -108,4 +108,4 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 13 | Graphs | ✅ done | Graph Representation (Adjacency List/Matrix), Graph BFS, Graph DFS, Topological Sort, Union-Find (DSU) |
 | 14 | Greedy & Dynamic Programming | ✅ done | Greedy Algorithms, DP: Memoization vs Tabulation, 1D DP, 2D DP, 0/1 Knapsack, LCS, LIS, Bit Manipulation, Advanced Patterns (Capstone) |
 
-LeetCode integration: not started (begins only when user says "start adding LeetCode problems").
+LeetCode integration: ✅ complete — all 247 problems from the original roadmap integrated as `"leetcode"` sections across the relevant lesson files, each with hand-verified Brute Force + Optimal Java approaches. Breakdown by category: Arrays (5), Prefix Sum (6), Difference Array (5), Two Pointers (9), Sliding Window (8), Strings (8), Hashing (9), Sorting (7), Binary Search (10), Recursion (5), Backtracking (9), Linked List (13), Stack/Monotonic Stack (12), Queue/Deque (7), Heap (7), Trees (28), Trie (5), Graphs (17), Greedy (7), DP (22), Bit Manipulation (7), Advanced Patterns (9).
