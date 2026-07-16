@@ -145,6 +145,271 @@
         "What's the difference between a fixed-size and variable-size window?",
         "Why is the variable-size window approach still O(n) despite having a nested while loop?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-643",
+      "number": 643,
+      "title": "Maximum Average Subarray I",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/maximum-average-subarray-i/",
+      "problemStatement": "Given an integer array nums and an integer k, find the maximum average value of any contiguous subarray of length k, and return it.",
+      "examples": [
+        { "input": "nums = [1,12,-5,-6,50,3], k = 4", "output": "12.75000", "explanation": "Window [12,-5,-6,50] sums to 51, average 51/4 = 12.75, the best of all length-4 windows." }
+      ],
+      "constraints": ["n == nums.length", "1 <= k <= n <= 10^5", "-10^4 <= nums[i] <= 10^4"],
+      "hints": ["This IS the fixed-size window max-sum pattern from this lesson's Section 3 -- just divide the max sum by k at the end."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every window start, sum all k elements from scratch.",
+          "code": "class Solution {\n    public double findMaxAverage(int[] nums, int k) {\n        double maxSum = Double.NEGATIVE_INFINITY;\n        for (int i = 0; i <= nums.length - k; i++) {\n            double sum = 0;\n            for (int j = i; j < i + k; j++) sum += nums[j];\n            maxSum = Math.max(maxSum, sum);\n        }\n        return maxSum / k;\n    }\n}",
+          "output": "For nums = [1,12,-5,-6,50,3], k = 4: 12.75",
+          "timeComplexity": "O(n * k)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Fixed-size sliding window: compute the first window's sum, then slide by adding the entering element and subtracting the leaving one.",
+          "code": "class Solution {\n    public double findMaxAverage(int[] nums, int k) {\n        double windowSum = 0;\n        for (int i = 0; i < k; i++) windowSum += nums[i];\n\n        double maxSum = windowSum;\n        for (int i = k; i < nums.length; i++) {\n            windowSum += nums[i] - nums[i - k];\n            maxSum = Math.max(maxSum, windowSum);\n        }\n        return maxSum / k;\n    }\n}",
+          "output": "For nums = [1,12,-5,-6,50,3], k = 4: 12.75",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-209",
+      "number": 209,
+      "title": "Minimum Size Subarray Sum",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/minimum-size-subarray-sum/",
+      "problemStatement": "Given an array of positive integers nums and a positive integer target, return the minimal length of a contiguous subarray whose sum is greater than or equal to target. If there is no such subarray, return 0.",
+      "examples": [
+        { "input": "target = 7, nums = [2,3,1,2,4,3]", "output": "2", "explanation": "The subarray [4,3] has the minimal length under the problem constraint." }
+      ],
+      "constraints": ["1 <= target <= 2^31 - 1", "1 <= nums.length <= 10^5", "1 <= nums[i] <= 10^4"],
+      "hints": ["This is exactly this lesson's variable-size window example, smallestSubarrayLength -- same technique, different variable names."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every subarray's sum directly, tracking the shortest one meeting the target.",
+          "code": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int minLength = Integer.MAX_VALUE;\n        for (int i = 0; i < nums.length; i++) {\n            int sum = 0;\n            for (int j = i; j < nums.length; j++) {\n                sum += nums[j];\n                if (sum >= target) {\n                    minLength = Math.min(minLength, j - i + 1);\n                    break;\n                }\n            }\n        }\n        return minLength == Integer.MAX_VALUE ? 0 : minLength;\n    }\n}",
+          "output": "For target = 7, nums = [2,3,1,2,4,3]: 2",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Variable-size sliding window: expand with right, shrink with left whenever the sum meets target.",
+          "code": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int left = 0, windowSum = 0, minLength = Integer.MAX_VALUE;\n\n        for (int right = 0; right < nums.length; right++) {\n            windowSum += nums[right];\n            while (windowSum >= target) {\n                minLength = Math.min(minLength, right - left + 1);\n                windowSum -= nums[left];\n                left++;\n            }\n        }\n        return minLength == Integer.MAX_VALUE ? 0 : minLength;\n    }\n}",
+          "output": "For target = 7, nums = [2,3,1,2,4,3]: 2",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-3",
+      "number": 3,
+      "title": "Longest Substring Without Repeating Characters",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+      "problemStatement": "Given a string s, find the length of the longest substring without repeating characters.",
+      "examples": [
+        { "input": "s = \"abcabcbb\"", "output": "3", "explanation": "The answer is \"abc\", with length 3." },
+        { "input": "s = \"bbbbb\"", "output": "1" }
+      ],
+      "constraints": ["0 <= s.length <= 5*10^4", "s consists of English letters, digits, symbols and spaces"],
+      "hints": ["This is exactly the Advanced Problem-Solving Patterns capstone's combined Sliding Window + Hashing example -- a Set tracks characters currently in the window."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every substring for uniqueness using a Set, tracking the longest valid one.",
+          "code": "class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        int maxLength = 0;\n        for (int i = 0; i < s.length(); i++) {\n            java.util.Set<Character> seen = new java.util.HashSet<>();\n            int j = i;\n            while (j < s.length() && !seen.contains(s.charAt(j))) {\n                seen.add(s.charAt(j));\n                j++;\n            }\n            maxLength = Math.max(maxLength, j - i);\n        }\n        return maxLength;\n    }\n}",
+          "output": "For s = \"abcabcbb\": 3",
+          "timeComplexity": "O(n^2) worst case",
+          "spaceComplexity": "O(min(n, charset size))"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Variable-size window with a HashSet tracking the window's characters, shrinking from the left whenever a duplicate is found.",
+          "code": "class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        java.util.Set<Character> window = new java.util.HashSet<>();\n        int left = 0, maxLength = 0;\n\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            while (window.contains(c)) {\n                window.remove(s.charAt(left));\n                left++;\n            }\n            window.add(c);\n            maxLength = Math.max(maxLength, right - left + 1);\n        }\n        return maxLength;\n    }\n}",
+          "output": "For s = \"abcabcbb\": 3",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(min(n, charset size))"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-567",
+      "number": 567,
+      "title": "Permutation in String",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/permutation-in-string/",
+      "problemStatement": "Given two strings s1 and s2, return true if s2 contains a permutation of s1 (i.e. some substring of s2 is an anagram of s1).",
+      "examples": [
+        { "input": "s1 = \"ab\", s2 = \"eidbaooo\"", "output": "true", "explanation": "s2 contains \"ba\", a permutation of s1." },
+        { "input": "s1 = \"ab\", s2 = \"eidboaoo\"", "output": "false" }
+      ],
+      "constraints": ["1 <= s1.length, s2.length <= 10^4", "s1 and s2 consist of lowercase English letters"],
+      "hints": ["A fixed-size window of length s1.length() slides across s2 -- if the window's character COUNTS ever match s1's character counts exactly, a permutation exists."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every window of length s1.length() in s2, sort both and compare -- correct, but wasteful.",
+          "code": "class Solution {\n    public boolean checkInclusion(String s1, String s2) {\n        int n = s1.length();\n        char[] sorted1 = s1.toCharArray();\n        java.util.Arrays.sort(sorted1);\n\n        for (int i = 0; i + n <= s2.length(); i++) {\n            char[] window = s2.substring(i, i + n).toCharArray();\n            java.util.Arrays.sort(window);\n            if (java.util.Arrays.equals(sorted1, window)) {\n                return true;\n            }\n        }\n        return false;\n    }\n}",
+          "output": "For s1 = \"ab\", s2 = \"eidbaooo\": true",
+          "timeComplexity": "O(n * m log m), where m is s1's length",
+          "spaceComplexity": "O(m) per window comparison"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Fixed-size sliding window maintaining character COUNT arrays for s1 and the current window, comparing counts directly (no sorting).",
+          "code": "class Solution {\n    public boolean checkInclusion(String s1, String s2) {\n        int n = s1.length(), m = s2.length();\n        if (n > m) return false;\n\n        int[] s1Count = new int[26];\n        int[] windowCount = new int[26];\n\n        for (int i = 0; i < n; i++) {\n            s1Count[s1.charAt(i) - 'a']++;\n            windowCount[s2.charAt(i) - 'a']++;\n        }\n\n        if (java.util.Arrays.equals(s1Count, windowCount)) return true;\n\n        for (int i = n; i < m; i++) {\n            windowCount[s2.charAt(i) - 'a']++;\n            windowCount[s2.charAt(i - n) - 'a']--;\n            if (java.util.Arrays.equals(s1Count, windowCount)) return true;\n        }\n        return false;\n    }\n}",
+          "output": "For s1 = \"ab\", s2 = \"eidbaooo\": true",
+          "timeComplexity": "O(n + 26*m)",
+          "spaceComplexity": "O(26) -- constant size count arrays"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-438",
+      "number": 438,
+      "title": "Find All Anagrams in a String",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/find-all-anagrams-in-a-string/",
+      "problemStatement": "Given two strings s and p, return an array of all the start indices of p's anagrams in s.",
+      "examples": [
+        { "input": "s = \"cbaebabacd\", p = \"abc\"", "output": "[0,6]", "explanation": "The substring at index 0 is \"cba\", an anagram of \"abc\". The substring at index 6 is \"bac\", also an anagram." }
+      ],
+      "constraints": ["1 <= s.length, p.length <= 3*10^4", "s and p consist of lowercase English letters"],
+      "hints": ["Same fixed-size sliding window + character-count technique as Permutation in String -- just collect EVERY matching start index instead of stopping at the first."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every window of length p.length(), sort both and compare.",
+          "code": "class Solution {\n    public java.util.List<Integer> findAnagrams(String s, String p) {\n        java.util.List<Integer> result = new java.util.ArrayList<>();\n        int n = p.length();\n        char[] sortedP = p.toCharArray();\n        java.util.Arrays.sort(sortedP);\n\n        for (int i = 0; i + n <= s.length(); i++) {\n            char[] window = s.substring(i, i + n).toCharArray();\n            java.util.Arrays.sort(window);\n            if (java.util.Arrays.equals(sortedP, window)) {\n                result.add(i);\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For s = \"cbaebabacd\", p = \"abc\": [0, 6]",
+          "timeComplexity": "O(n * m log m), where m is p's length",
+          "spaceComplexity": "O(m) per window"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Fixed-size sliding window with character count arrays, sliding across s and comparing counts in O(26) per step.",
+          "code": "class Solution {\n    public java.util.List<Integer> findAnagrams(String s, String p) {\n        java.util.List<Integer> result = new java.util.ArrayList<>();\n        int n = p.length(), m = s.length();\n        if (n > m) return result;\n\n        int[] pCount = new int[26];\n        int[] windowCount = new int[26];\n\n        for (int i = 0; i < n; i++) {\n            pCount[p.charAt(i) - 'a']++;\n            windowCount[s.charAt(i) - 'a']++;\n        }\n\n        if (java.util.Arrays.equals(pCount, windowCount)) result.add(0);\n\n        for (int i = n; i < m; i++) {\n            windowCount[s.charAt(i) - 'a']++;\n            windowCount[s.charAt(i - n) - 'a']--;\n            if (java.util.Arrays.equals(pCount, windowCount)) {\n                result.add(i - n + 1);\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For s = \"cbaebabacd\", p = \"abc\": [0, 6]",
+          "timeComplexity": "O(n + 26*m)",
+          "spaceComplexity": "O(26) -- constant size count arrays"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-424",
+      "number": 424,
+      "title": "Longest Repeating Character Replacement",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+      "problemStatement": "Given a string s and an integer k, you can replace up to k characters in s with any other uppercase English letter. Return the length of the longest substring containing the same letter after performing this replacement.",
+      "examples": [
+        { "input": "s = \"ABAB\", k = 2", "output": "4", "explanation": "Replace the two 'A's or two 'B's to get \"AAAA\" or \"BBBB\"." },
+        { "input": "s = \"AABABBA\", k = 1", "output": "4" }
+      ],
+      "constraints": ["1 <= s.length <= 10^5", "s consists of only uppercase English letters", "0 <= k <= s.length"],
+      "hints": [
+        "A window is valid if (window length) - (count of its MOST FREQUENT character) <= k -- that's how many characters would need replacing.",
+        "Track character counts within the window; shrink from the left whenever the window becomes invalid."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every window, count character frequencies from scratch and check validity.",
+          "code": "class Solution {\n    public int characterReplacement(String s, int k) {\n        int maxLength = 0;\n        for (int i = 0; i < s.length(); i++) {\n            int[] count = new int[26];\n            int maxFreq = 0;\n            for (int j = i; j < s.length(); j++) {\n                count[s.charAt(j) - 'A']++;\n                maxFreq = Math.max(maxFreq, count[s.charAt(j) - 'A']);\n                int windowLength = j - i + 1;\n                if (windowLength - maxFreq <= k) {\n                    maxLength = Math.max(maxLength, windowLength);\n                }\n            }\n        }\n        return maxLength;\n    }\n}",
+          "output": "For s = \"ABAB\", k = 2: 4",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(26)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Variable-size sliding window tracking character counts and the max frequency seen -- shrink from the left only when the window becomes invalid.",
+          "code": "class Solution {\n    public int characterReplacement(String s, int k) {\n        int[] count = new int[26];\n        int left = 0, maxFreq = 0, maxLength = 0;\n\n        for (int right = 0; right < s.length(); right++) {\n            count[s.charAt(right) - 'A']++;\n            maxFreq = Math.max(maxFreq, count[s.charAt(right) - 'A']);\n\n            while ((right - left + 1) - maxFreq > k) {\n                count[s.charAt(left) - 'A']--;\n                left++;\n            }\n            maxLength = Math.max(maxLength, right - left + 1);\n        }\n        return maxLength;\n    }\n}",
+          "output": "For s = \"ABAB\", k = 2: 4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(26)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-76",
+      "number": 76,
+      "title": "Minimum Window Substring",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/minimum-window-substring/",
+      "problemStatement": "Given two strings s and t, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If no such substring exists, return the empty string.",
+      "examples": [
+        { "input": "s = \"ADOBECODEBANC\", t = \"ABC\"", "output": "\"BANC\"", "explanation": "\"BANC\" includes 'A', 'B', and 'C' from t." }
+      ],
+      "constraints": ["1 <= s.length, t.length <= 10^5", "s and t consist of English letters"],
+      "hints": [
+        "Track how many of each character in t are still NEEDED inside the current window; expand right until all are satisfied, then shrink left as much as possible while still valid.",
+        "This is the most involved variable-size window in this course -- it combines Sliding Window with Hashing (a frequency map) exactly like the capstone lesson's combined example, just with a trickier validity condition."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every substring of s and verify it contains all of t's characters -- correct but very slow.",
+          "code": "class Solution {\n    public String minWindow(String s, String t) {\n        String best = \"\";\n        for (int i = 0; i < s.length(); i++) {\n            for (int j = i; j < s.length(); j++) {\n                String candidate = s.substring(i, j + 1);\n                if (contains(candidate, t) && (best.isEmpty() || candidate.length() < best.length())) {\n                    best = candidate;\n                }\n            }\n        }\n        return best;\n    }\n\n    private boolean contains(String candidate, String t) {\n        int[] need = new int[128];\n        for (char c : t.toCharArray()) need[c]++;\n        for (char c : candidate.toCharArray()) need[c]--;\n        for (int n : need) if (n > 0) return false;\n        return true;\n    }\n}",
+          "output": "For s = \"ADOBECODEBANC\", t = \"ABC\": \"BANC\"",
+          "timeComplexity": "O(n^3) roughly -- substrings times a linear check each",
+          "spaceComplexity": "O(128) per check"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Variable-size window with a need-count map: expand right until all of t is covered, then shrink left as much as possible while staying valid, tracking the smallest valid window seen.",
+          "code": "class Solution {\n    public String minWindow(String s, String t) {\n        int[] need = new int[128];\n        for (char c : t.toCharArray()) need[c]++;\n\n        int required = t.length();\n        int left = 0, bestStart = 0, bestLength = Integer.MAX_VALUE;\n\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            if (need[c] > 0) required--;\n            need[c]--;\n\n            while (required == 0) {\n                if (right - left + 1 < bestLength) {\n                    bestLength = right - left + 1;\n                    bestStart = left;\n                }\n                char leftChar = s.charAt(left);\n                need[leftChar]++;\n                if (need[leftChar] > 0) required++;\n                left++;\n            }\n        }\n        return bestLength == Integer.MAX_VALUE ? \"\" : s.substring(bestStart, bestStart + bestLength);\n    }\n}",
+          "output": "For s = \"ADOBECODEBANC\", t = \"ABC\": \"BANC\"",
+          "timeComplexity": "O(n + m)",
+          "spaceComplexity": "O(128) for the need array"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-239-window",
+      "number": 239,
+      "title": "Sliding Window Maximum",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/sliding-window-maximum/",
+      "problemStatement": "Given an array nums and a sliding window of size k moving from the left to the right, return the maximum value in the window at each position it stops at.",
+      "examples": [
+        { "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3", "output": "[3,3,5,5,6,7]" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^5", "-10^4 <= nums[i] <= 10^4", "1 <= k <= nums.length"],
+      "hints": ["This exact problem is solved step by step in the Deque Deep Dive lesson (Stacks & Queues module), using a monotonic deque of indices."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every window position, scan all k elements to find the max.",
+          "code": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        for (int i = 0; i <= nums.length - k; i++) {\n            int max = nums[i];\n            for (int j = i; j < i + k; j++) {\n                max = Math.max(max, nums[j]);\n            }\n            result[i] = max;\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,3,-1,-3,5,3,6,7], k = 3: [3,3,5,5,6,7]",
+          "timeComplexity": "O(n * k)",
+          "spaceComplexity": "O(n) for the output"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Monotonic deque of indices, kept in decreasing value order -- identical to the Deque Deep Dive lesson's approach.",
+          "code": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int[] result = new int[nums.length - k + 1];\n        java.util.Deque<Integer> deque = new java.util.ArrayDeque<>();\n\n        for (int i = 0; i < nums.length; i++) {\n            if (!deque.isEmpty() && deque.peekFirst() <= i - k) {\n                deque.pollFirst();\n            }\n            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {\n                deque.pollLast();\n            }\n            deque.offerLast(i);\n\n            if (i >= k - 1) {\n                result[i - k + 1] = nums[deque.peekFirst()];\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [1,3,-1,-3,5,3,6,7], k = 3: [3,3,5,5,6,7]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(k) for the deque"
+        }
+      ]
     }
   ],
   "codeExamples": [
