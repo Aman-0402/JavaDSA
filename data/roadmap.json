@@ -153,7 +153,8 @@
       "id": "graphs",
       "title": "Graphs",
       "topics": [
-        { "id": "java-graph-representation", "title": "Graph Representation: Adjacency List and Matrix", "lesson": "java-graph-representation" }
+        { "id": "java-graph-representation", "title": "Graph Representation: Adjacency List and Matrix", "lesson": "java-graph-representation" },
+        { "id": "java-graph-bfs", "title": "Graph BFS", "lesson": "java-graph-bfs" }
       ]
     },
     { "id": "greedy-dp", "title": "Greedy & Dynamic Programming", "topics": [] }

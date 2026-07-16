@@ -1,0 +1,140 @@
+{
+  "id": "java-graph-bfs",
+  "moduleId": "graphs",
+  "title": "Graph BFS",
+  "description": "Extending BFS: Level Order Traversal from trees to graphs -- the key new problem: graphs can have CYCLES, so we must track visited nodes.",
+  "objectives": [
+    "Adapt tree-BFS's Queue-based approach to graphs",
+    "Track visited nodes to avoid infinite loops caused by cycles",
+    "Use BFS to find the shortest path (in edge count) between two nodes"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The New Problem: Cycles"
+    },
+    {
+      "type": "paragraph",
+      "text": "In BFS: Level Order Traversal, we used a Queue to visit a tree level by level. Trees have no cycles, so every node is naturally visited exactly once. Graphs (Graph Representation) CAN have cycles -- without care, BFS could revisit the same nodes forever."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// Graph: 0-1, 1-2, 2-0 (a cycle!)\n// Naive BFS from 0 without tracking visited nodes could bounce\n// between 0, 1, 2 endlessly, since each has a path back to the others."
+    },
+    {
+      "type": "heading",
+      "text": "2. Graph BFS With a Visited Set"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.*;\n\npublic class Main {\n    static void bfs(List<List<Integer>> adjList, int start) {\n        boolean[] visited = new boolean[adjList.size()];\n        Queue<Integer> queue = new LinkedList<>();\n\n        queue.offer(start);\n        visited[start] = true;\n\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            System.out.print(current + \" \");\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true; // mark BEFORE enqueuing\n                    queue.offer(neighbor);\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}, {3,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        bfs(adjList, 0);\n    }\n}",
+      "output": "0 1 2 3 4 ",
+      "retypePractice": true,
+      "retypeId": "java-graph-bfs-basic"
+    },
+    {
+      "type": "warning",
+      "text": "visited[neighbor] = true is set the MOMENT a node is enqueued, not when it's later polled and processed. If we waited until poll() to mark visited, the SAME node could be enqueued multiple times by different neighbors before ever being processed, wasting work and potentially breaking correctness for some algorithms."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing bfs on the graph with edges 0-1,0-2,1-3,2-4,3-4",
+      "steps": [
+        "queue=[0], visited={0}. Poll 0, print 0. Neighbors 1,2 unvisited -- mark visited, enqueue. queue=[1,2]",
+        "Poll 1, print 1. Neighbors: 0 (visited, skip), 3 (unvisited -- mark, enqueue). queue=[2,3]",
+        "Poll 2, print 2. Neighbors: 0 (visited), 4 (unvisited -- mark, enqueue). queue=[3,4]",
+        "Poll 3, print 3. Neighbors: 1 (visited), 4 (ALREADY visited from node 2's turn -- skip). queue=[4]",
+        "Poll 4, print 4. Neighbors: 2 (visited), 3 (visited). queue=[]",
+        "Result: 0 1 2 3 4 -- despite node 4 being reachable via TWO paths (2->4 and 3->4), it's visited only once"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Using BFS for Shortest Path (Unweighted)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.*;\n\npublic class Main {\n    static int shortestPath(List<List<Integer>> adjList, int start, int target) {\n        boolean[] visited = new boolean[adjList.size()];\n        Queue<Integer> queue = new LinkedList<>();\n        int[] distance = new int[adjList.size()];\n\n        queue.offer(start);\n        visited[start] = true;\n\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            if (current == target) {\n                return distance[current];\n            }\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true;\n                    distance[neighbor] = distance[current] + 1;\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return -1; // unreachable\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}, {3,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        System.out.println(shortestPath(adjList, 0, 4));\n    }\n}",
+      "output": "2",
+      "retypePractice": true,
+      "retypeId": "java-graph-bfs-shortest-path"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why BFS finds the SHORTEST path (in unweighted edge count)",
+      "points": [
+        "BFS explores nodes in order of DISTANCE from the start -- everything 1 edge away, then everything 2 edges away, and so on",
+        "The FIRST time a node is reached, it's necessarily via the shortest possible path -- any later path to it would need MORE steps, since BFS already exhausted all shorter options",
+        "distance[neighbor] = distance[current] + 1 propagates this level-by-level distance exactly like the level-grouping from BFS: Level Order Traversal"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "This shortest-path guarantee only holds for UNWEIGHTED graphs, or graphs where every edge counts equally. For graphs with different edge weights (some connections 'costing' more than others), BFS's guarantee breaks down -- weighted shortest-path algorithms are beyond this course's current scope."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting to track visited nodes entirely -- on a graph with cycles, this can cause an infinite loop, unlike tree BFS which never needed this safeguard.",
+        "Marking a node visited only when it's POLLED, rather than when it's ENQUEUED -- this can cause the same node to be added to the queue multiple times.",
+        "Assuming BFS finds the shortest path on a WEIGHTED graph -- BFS's shortest-path guarantee only holds when all edges are equal (unweighted).",
+        "Forgetting to add edges in BOTH directions for an undirected graph, silently turning it into a directed one with missing connections."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Why does graph BFS need a visited array, when tree BFS didn't?",
+          "answer": "Graphs can contain cycles, so without tracking visited nodes, BFS could revisit the same nodes indefinitely. Trees have no cycles, so every node is naturally visited exactly once without any extra bookkeeping."
+        },
+        {
+          "question": "Why is it important to mark a node visited when it's enqueued, rather than when it's polled?",
+          "answer": "If marking is delayed until poll(), the same node could be added to the queue multiple times by different neighbors before being processed, wasting work and potentially causing incorrect results in algorithms that rely on each node being processed exactly once."
+        },
+        {
+          "question": "Why does BFS find the shortest path between two nodes in an unweighted graph?",
+          "answer": "BFS explores nodes in strict order of their distance from the start -- all nodes 1 edge away, then 2 edges away, and so on. The first time any node is reached is therefore necessarily via the shortest possible path, since all shorter paths have already been exhausted."
+        }
+      ],
+      "thirtySecondAnswer": "Graph BFS extends tree BFS's Queue-based level-by-level exploration, but requires a visited array or set, since graphs (unlike trees) can contain cycles that would otherwise cause an infinite loop. Marking a node visited at enqueue time, not poll time, avoids the same node being queued multiple times. Because BFS explores strictly in order of distance from the start, the first time it reaches any node is guaranteed to be via the shortest path (in edge count) -- this only holds for unweighted graphs, where every edge counts equally; weighted shortest-path problems need different algorithms."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Graph BFS = tree BFS PLUS a memory of who you've already met (visited), so cyclic friend groups don't trap you in an endless loop. First to arrive via BFS = shortest path, guaranteed, in an unweighted world."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Why does graph BFS need a visited array, unlike tree BFS?",
+        "Why mark a node visited at enqueue time rather than poll time?",
+        "Why does BFS find the shortest path in an unweighted graph?",
+        "Does BFS's shortest-path guarantee hold for weighted graphs?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-graph-bfs-basic", "lang": "java", "filename": "Main.java", "code": "import java.util.*;\n\npublic class Main {\n    static void bfs(List<List<Integer>> adjList, int start) {\n        boolean[] visited = new boolean[adjList.size()];\n        Queue<Integer> queue = new LinkedList<>();\n\n        queue.offer(start);\n        visited[start] = true;\n\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            System.out.print(current + \" \");\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true; // mark BEFORE enqueuing\n                    queue.offer(neighbor);\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}, {3,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        bfs(adjList, 0);\n    }\n}", "output": "0 1 2 3 4 " },
+    { "id": "java-graph-bfs-shortest-path", "lang": "java", "filename": "Main.java", "code": "import java.util.*;\n\npublic class Main {\n    static int shortestPath(List<List<Integer>> adjList, int start, int target) {\n        boolean[] visited = new boolean[adjList.size()];\n        Queue<Integer> queue = new LinkedList<>();\n        int[] distance = new int[adjList.size()];\n\n        queue.offer(start);\n        visited[start] = true;\n\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            if (current == target) {\n                return distance[current];\n            }\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true;\n                    distance[neighbor] = distance[current] + 1;\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return -1; // unreachable\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}, {3,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        System.out.println(shortestPath(adjList, 0, 4));\n    }\n}", "output": "2" }
+  ],
+  "retypePractice": [
+    { "id": "java-graph-bfs-basic", "reference": "import java.util.*;\n\npublic class Main {\n    static void bfs(List<List<Integer>> adjList, int start) {\n        boolean[] visited = new boolean[adjList.size()];\n        Queue<Integer> queue = new LinkedList<>();\n\n        queue.offer(start);\n        visited[start] = true;\n\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            System.out.print(current + \" \");\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true; // mark BEFORE enqueuing\n                    queue.offer(neighbor);\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}, {3,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        bfs(adjList, 0);\n    }\n}" },
+    { "id": "java-graph-bfs-shortest-path", "reference": "import java.util.*;\n\npublic class Main {\n    static int shortestPath(List<List<Integer>> adjList, int start, int target) {\n        boolean[] visited = new boolean[adjList.size()];\n        Queue<Integer> queue = new LinkedList<>();\n        int[] distance = new int[adjList.size()];\n\n        queue.offer(start);\n        visited[start] = true;\n\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            if (current == target) {\n                return distance[current];\n            }\n\n            for (int neighbor : adjList.get(current)) {\n                if (!visited[neighbor]) {\n                    visited[neighbor] = true;\n                    distance[neighbor] = distance[current] + 1;\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return -1; // unreachable\n    }\n\n    public static void main(String[] args) {\n        int n = 5;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,4}, {3,4}};\n        for (int[] e : edges) {\n            adjList.get(e[0]).add(e[1]);\n            adjList.get(e[1]).add(e[0]);\n        }\n\n        System.out.println(shortestPath(adjList, 0, 4));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-graph-bfs-basic", "java-graph-bfs-shortest-path"]
+  }
+}
