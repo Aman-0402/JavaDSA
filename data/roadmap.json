@@ -120,7 +120,13 @@
       ]
     },
     { "id": "stacks-queues", "title": "Stacks & Queues", "topics": [] },
-    { "id": "heap", "title": "Heap", "topics": [] },
+    {
+      "id": "heap",
+      "title": "Heap",
+      "topics": [
+        { "id": "java-priority-queue-heap", "title": "PriorityQueue (Java's Built-In Heap)", "lesson": "java-priority-queue-heap" }
+      ]
+    },
     { "id": "trees", "title": "Trees", "topics": [] },
     { "id": "graphs", "title": "Graphs", "topics": [] },
     { "id": "greedy-dp", "title": "Greedy & Dynamic Programming", "topics": [] }

@@ -1,0 +1,157 @@
+{
+  "id": "java-priority-queue-heap",
+  "moduleId": "heap",
+  "title": "PriorityQueue (Java's Built-In Heap)",
+  "description": "Going deeper than the Queue/Deque preview -- PriorityQueue's min-heap default, custom ordering with Comparator, and why peek/poll are O(1)/O(log n).",
+  "objectives": [
+    "Understand PriorityQueue as Java's built-in heap, defaulting to a min-heap",
+    "Use a custom Comparator to build a max-heap",
+    "Know peek/poll/offer's time complexities and why they differ"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Preview, Recapped"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Queue and Deque, we saw PriorityQueue always returns the smallest element first, regardless of insertion order, and promised a full lesson once Heap arrived. Today we go deeper into HOW and WHY."
+    },
+    {
+      "type": "definition",
+      "term": "Heap",
+      "text": "A tree-based data structure where each parent is ordered relative to its children (smaller for a min-heap, larger for a max-heap), keeping the smallest (or largest) element always accessible at the root."
+    },
+    {
+      "type": "heading",
+      "text": "2. PriorityQueue Defaults to a Min-Heap"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.PriorityQueue;\n\npublic class Main {\n    public static void main(String[] args) {\n        PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n        minHeap.offer(30);\n        minHeap.offer(10);\n        minHeap.offer(20);\n        minHeap.offer(5);\n\n        System.out.println(minHeap.peek());\n\n        while (!minHeap.isEmpty()) {\n            System.out.print(minHeap.poll() + \" \");\n        }\n    }\n}",
+      "output": "5\n5 10 20 30 ",
+      "retypePractice": true,
+      "retypeId": "java-heap-pq-min"
+    },
+    {
+      "type": "table",
+      "title": "PriorityQueue's core operations",
+      "headers": ["Method", "Purpose", "Time complexity"],
+      "rows": [
+        ["offer(x)", "Inserts x, maintaining heap order", "O(log n)"],
+        ["peek()", "Returns the smallest element WITHOUT removing it", "O(1)"],
+        ["poll()", "Removes AND returns the smallest element", "O(log n)"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "peek() is O(1) because the smallest element is ALWAYS at the root, instantly accessible. poll() is O(log n) because after removing the root, the heap must reorganize itself to restore its ordering property -- this reorganizing is exactly what Manual Heap Implementation (next lesson) shows in full detail."
+    },
+    {
+      "type": "heading",
+      "text": "3. Building a Max-Heap with a Comparator"
+    },
+    {
+      "type": "paragraph",
+      "text": "PriorityQueue only gives a min-heap by default. For a max-heap (largest first), supply a Comparator -- recall Comparable vs Comparator -- that reverses the natural order."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.Collections;\nimport java.util.PriorityQueue;\n\npublic class Main {\n    public static void main(String[] args) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());\n        maxHeap.offer(30);\n        maxHeap.offer(10);\n        maxHeap.offer(20);\n        maxHeap.offer(5);\n\n        System.out.println(maxHeap.peek());\n\n        while (!maxHeap.isEmpty()) {\n            System.out.print(maxHeap.poll() + \" \");\n        }\n    }\n}",
+      "output": "30\n30 20 10 5 ",
+      "retypePractice": true,
+      "retypeId": "java-heap-pq-max"
+    },
+    {
+      "type": "note",
+      "text": "Collections.reverseOrder() (from the Collections Utility Class lesson) provides a Comparator that reverses natural ordering -- passed into the PriorityQueue constructor, it flips the heap's behavior from smallest-first to largest-first."
+    },
+    {
+      "type": "heading",
+      "text": "4. A Real Use Case: Kth Largest Element"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.PriorityQueue;\n\npublic class Main {\n    static int findKthLargest(int[] nums, int k) {\n        PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n\n        for (int num : nums) {\n            minHeap.offer(num);\n            if (minHeap.size() > k) {\n                minHeap.poll(); // discard the smallest, keeping only the top k\n            }\n        }\n        return minHeap.peek();\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {3, 2, 1, 5, 6, 4};\n        System.out.println(findKthLargest(nums, 2));\n    }\n}",
+      "output": "5",
+      "retypePractice": true,
+      "retypeId": "java-heap-kth-largest"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why this finds the 2nd largest",
+      "points": [
+        "The heap is only ever allowed to hold k=2 elements -- whenever it grows past that, the SMALLEST is discarded",
+        "After processing all of {3,2,1,5,6,4}, only the 2 LARGEST values survive in the heap: {5,6}",
+        "The min-heap's root (peek()) is the smaller of those two survivors -- exactly the 2nd largest overall: 5"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Assuming PriorityQueue's toString() or iteration order reflects sorted order -- only poll() repeatedly gives elements in true heap order; the internal array is NOT fully sorted.",
+        "Forgetting PriorityQueue defaults to a min-heap -- needing a max-heap requires an explicit Comparator like Collections.reverseOrder().",
+        "Confusing peek()'s O(1) with poll()'s O(log n) -- removing requires reorganizing the heap, looking does not.",
+        "Using PriorityQueue when you actually need strict FIFO order -- it always prioritizes by value, ignoring insertion order entirely, unlike a plain Queue."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "Does PriorityQueue give elements in sorted order if you iterate over it directly (not via poll())?",
+          "answer": "No. Only repeatedly calling poll() guarantees elements come out in heap order (smallest/largest first). The internal array backing the heap is not fully sorted, so direct iteration order is unspecified."
+        },
+        {
+          "question": "How do you make a PriorityQueue behave as a max-heap instead of the default min-heap?",
+          "answer": "Supply a Comparator that reverses the natural ordering, such as new PriorityQueue<>(Collections.reverseOrder())."
+        },
+        {
+          "question": "Why is peek() O(1) but poll() O(log n) on a PriorityQueue?",
+          "answer": "peek() simply reads the root, which always holds the smallest (or largest, for a max-heap) element -- no work needed. poll() removes the root and then must reorganize the heap to restore its ordering property, which takes O(log n)."
+        }
+      ],
+      "thirtySecondAnswer": "PriorityQueue is Java's built-in heap, defaulting to a min-heap where peek() and poll() always return the smallest element -- peek() is O(1) since the smallest is always at the root, while poll() is O(log n) since removing the root requires reorganizing the heap afterward. A max-heap requires an explicit reversing Comparator, like Collections.reverseOrder(). A classic use case is finding the kth largest element by maintaining a min-heap capped at size k, discarding the smallest whenever it grows past that -- the root ends up being exactly the kth largest survivor."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "PriorityQueue = a hospital ER queue, not a checkout line -- always treats (peek/poll) whoever's most urgent (smallest, by default), no matter arrival order. Want most-severe-first instead? Flip the ordering with a Comparator."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "Does PriorityQueue default to a min-heap or a max-heap?",
+        "How do you make a PriorityQueue behave as a max-heap?",
+        "Why is peek() faster than poll()?",
+        "How does capping a min-heap at size k help find the kth largest element?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-heap-pq-min", "lang": "java", "filename": "Main.java", "code": "import java.util.PriorityQueue;\n\npublic class Main {\n    public static void main(String[] args) {\n        PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n        minHeap.offer(30);\n        minHeap.offer(10);\n        minHeap.offer(20);\n        minHeap.offer(5);\n\n        System.out.println(minHeap.peek());\n\n        while (!minHeap.isEmpty()) {\n            System.out.print(minHeap.poll() + \" \");\n        }\n    }\n}", "output": "5\n5 10 20 30 " },
+    { "id": "java-heap-pq-max", "lang": "java", "filename": "Main.java", "code": "import java.util.Collections;\nimport java.util.PriorityQueue;\n\npublic class Main {\n    public static void main(String[] args) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());\n        maxHeap.offer(30);\n        maxHeap.offer(10);\n        maxHeap.offer(20);\n        maxHeap.offer(5);\n\n        System.out.println(maxHeap.peek());\n\n        while (!maxHeap.isEmpty()) {\n            System.out.print(maxHeap.poll() + \" \");\n        }\n    }\n}", "output": "30\n30 20 10 5 " },
+    { "id": "java-heap-kth-largest", "lang": "java", "filename": "Main.java", "code": "import java.util.PriorityQueue;\n\npublic class Main {\n    static int findKthLargest(int[] nums, int k) {\n        PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n\n        for (int num : nums) {\n            minHeap.offer(num);\n            if (minHeap.size() > k) {\n                minHeap.poll(); // discard the smallest, keeping only the top k\n            }\n        }\n        return minHeap.peek();\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {3, 2, 1, 5, 6, 4};\n        System.out.println(findKthLargest(nums, 2));\n    }\n}", "output": "5" }
+  ],
+  "retypePractice": [
+    { "id": "java-heap-pq-min", "reference": "import java.util.PriorityQueue;\n\npublic class Main {\n    public static void main(String[] args) {\n        PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n        minHeap.offer(30);\n        minHeap.offer(10);\n        minHeap.offer(20);\n        minHeap.offer(5);\n\n        System.out.println(minHeap.peek());\n\n        while (!minHeap.isEmpty()) {\n            System.out.print(minHeap.poll() + \" \");\n        }\n    }\n}" },
+    { "id": "java-heap-pq-max", "reference": "import java.util.Collections;\nimport java.util.PriorityQueue;\n\npublic class Main {\n    public static void main(String[] args) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());\n        maxHeap.offer(30);\n        maxHeap.offer(10);\n        maxHeap.offer(20);\n        maxHeap.offer(5);\n\n        System.out.println(maxHeap.peek());\n\n        while (!maxHeap.isEmpty()) {\n            System.out.print(maxHeap.poll() + \" \");\n        }\n    }\n}" },
+    { "id": "java-heap-kth-largest", "reference": "import java.util.PriorityQueue;\n\npublic class Main {\n    static int findKthLargest(int[] nums, int k) {\n        PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n\n        for (int num : nums) {\n            minHeap.offer(num);\n            if (minHeap.size() > k) {\n                minHeap.poll(); // discard the smallest, keeping only the top k\n            }\n        }\n        return minHeap.peek();\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {3, 2, 1, 5, 6, 4};\n        System.out.println(findKthLargest(nums, 2));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-heap-pq-min", "java-heap-pq-max", "java-heap-kth-largest"]
+  }
+}
