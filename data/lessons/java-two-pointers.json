@@ -140,6 +140,309 @@
         "What's the difference between the opposite-direction and same-direction (slow/fast) two-pointer patterns?",
         "What would happen if you used the pair-sum two-pointer technique on an unsorted array?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-167",
+      "number": 167,
+      "title": "Two Sum II - Input Array Is Sorted",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
+      "problemStatement": "Given a 1-indexed array of integers numbers sorted in non-decreasing order, find two numbers that add up to target. Return the indices (1-indexed) as an array [index1, index2]. You may assume exactly one solution exists.",
+      "examples": [
+        { "input": "numbers = [2,7,11,15], target = 9", "output": "[1,2]", "explanation": "numbers[0] + numbers[1] = 2 + 7 = 9, returned as 1-indexed [1,2]." }
+      ],
+      "constraints": ["2 <= numbers.length <= 3*10^4", "-1000 <= numbers[i] <= 1000", "numbers is sorted in non-decreasing order", "Exactly one valid answer exists"],
+      "hints": ["This is the exact opposite-direction two-pointer pattern from this lesson's Section 2 -- the array being sorted is what makes it work."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every pair with nested loops.",
+          "code": "class Solution {\n    public int[] twoSum(int[] numbers, int target) {\n        for (int i = 0; i < numbers.length; i++) {\n            for (int j = i + 1; j < numbers.length; j++) {\n                if (numbers[i] + numbers[j] == target) {\n                    return new int[]{i + 1, j + 1};\n                }\n            }\n        }\n        return new int[]{-1, -1};\n    }\n}",
+          "output": "For numbers = [2,7,11,15], target = 9: [1,2]",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers converging from opposite ends, exactly as shown in this lesson's Section 2.",
+          "code": "class Solution {\n    public int[] twoSum(int[] numbers, int target) {\n        int left = 0, right = numbers.length - 1;\n        while (left < right) {\n            int sum = numbers[left] + numbers[right];\n            if (sum == target) {\n                return new int[]{left + 1, right + 1};\n            } else if (sum < target) {\n                left++;\n            } else {\n                right--;\n            }\n        }\n        return new int[]{-1, -1};\n    }\n}",
+          "output": "For numbers = [2,7,11,15], target = 9: [1,2]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-125",
+      "number": 125,
+      "title": "Valid Palindrome",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/valid-palindrome/",
+      "problemStatement": "Given a string s, return true if it is a palindrome after converting all uppercase letters to lowercase and removing all non-alphanumeric characters.",
+      "examples": [
+        { "input": "s = \"A man, a plan, a canal: Panama\"", "output": "true", "explanation": "\"amanaplanacanalpanama\" is a palindrome." },
+        { "input": "s = \"race a car\"", "output": "false" }
+      ],
+      "constraints": ["1 <= s.length <= 2*10^5", "s consists only of printable ASCII characters"],
+      "hints": ["Two pointers converging from both ends of the STRING, skipping non-alphanumeric characters as they go, and comparing lowercase letters."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build a cleaned (lowercase, alphanumeric-only) String first, then compare it to its own reverse.",
+          "code": "class Solution {\n    public boolean isPalindrome(String s) {\n        StringBuilder cleaned = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (Character.isLetterOrDigit(c)) {\n                cleaned.append(Character.toLowerCase(c));\n            }\n        }\n        String forward = cleaned.toString();\n        String backward = cleaned.reverse().toString();\n        return forward.equals(backward);\n    }\n}",
+          "output": "For s = \"A man, a plan, a canal: Panama\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the cleaned String copies"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers from both ends of the original string, skipping non-alphanumeric characters in place -- no extra String copies needed.",
+          "code": "class Solution {\n    public boolean isPalindrome(String s) {\n        int left = 0, right = s.length() - 1;\n        while (left < right) {\n            while (left < right && !Character.isLetterOrDigit(s.charAt(left))) left++;\n            while (left < right && !Character.isLetterOrDigit(s.charAt(right))) right--;\n\n            if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {\n                return false;\n            }\n            left++;\n            right--;\n        }\n        return true;\n    }\n}",
+          "output": "For s = \"A man, a plan, a canal: Panama\": true",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-283",
+      "number": 283,
+      "title": "Move Zeroes",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/move-zeroes/",
+      "problemStatement": "Given an integer array nums, move all 0's to the end while maintaining the relative order of the non-zero elements. This must be done in place without making a copy of the array.",
+      "examples": [
+        { "input": "nums = [0,1,0,3,12]", "output": "[1,3,12,0,0]" },
+        { "input": "nums = [0]", "output": "[0]" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4", "-2^31 <= nums[i] <= 2^31 - 1"],
+      "hints": ["This is the same-direction slow/fast two-pointer pattern from this lesson's removeDuplicates example -- slow marks the next position for a non-zero element."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build a new list of non-zero elements, then overwrite nums with them followed by zeros.",
+          "code": "class Solution {\n    public void moveZeroes(int[] nums) {\n        java.util.List<Integer> nonZeros = new java.util.ArrayList<>();\n        for (int num : nums) {\n            if (num != 0) nonZeros.add(num);\n        }\n        for (int i = 0; i < nums.length; i++) {\n            nums[i] = i < nonZeros.size() ? nonZeros.get(i) : 0;\n        }\n    }\n}",
+          "output": "For nums = [0,1,0,3,12]: [1,3,12,0,0]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the extra list"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Same-direction slow/fast pointers, in place -- slow tracks where the next non-zero should go, fast scans ahead.",
+          "code": "class Solution {\n    public void moveZeroes(int[] nums) {\n        int slow = 0;\n        for (int fast = 0; fast < nums.length; fast++) {\n            if (nums[fast] != 0) {\n                int temp = nums[slow];\n                nums[slow] = nums[fast];\n                nums[fast] = temp;\n                slow++;\n            }\n        }\n    }\n}",
+          "output": "For nums = [0,1,0,3,12]: [1,3,12,0,0]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-26",
+      "number": 26,
+      "title": "Remove Duplicates from Sorted Array",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+      "problemStatement": "Given an integer array nums sorted in non-decreasing order, remove duplicates in place such that each unique element appears only once. Return the number of unique elements k; the first k elements of nums should hold the final result.",
+      "examples": [
+        { "input": "nums = [1,1,2]", "output": "2, nums = [1,2,_]", "explanation": "2 unique elements, in the first two positions." },
+        { "input": "nums = [0,0,1,1,1,2,2,3,3,4]", "output": "5, nums = [0,1,2,3,4,_,_,_,_,_]" }
+      ],
+      "constraints": ["1 <= nums.length <= 3*10^4", "-100 <= nums[i] <= 100", "nums is sorted in non-decreasing order"],
+      "hints": ["This is exactly this lesson's removeDuplicates example -- slow/fast pointers, moving forward at different rates."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build a separate list of unique values, then copy them back into nums.",
+          "code": "class Solution {\n    public int removeDuplicates(int[] nums) {\n        java.util.List<Integer> unique = new java.util.ArrayList<>();\n        for (int num : nums) {\n            if (unique.isEmpty() || !unique.get(unique.size() - 1).equals(num)) {\n                unique.add(num);\n            }\n        }\n        for (int i = 0; i < unique.size(); i++) {\n            nums[i] = unique.get(i);\n        }\n        return unique.size();\n    }\n}",
+          "output": "For nums = [1,1,2]: 2, nums = [1,2,...]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the extra list"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "In-place slow/fast pointers, identical to this lesson's own removeDuplicates example.",
+          "code": "class Solution {\n    public int removeDuplicates(int[] nums) {\n        if (nums.length == 0) return 0;\n\n        int slow = 0;\n        for (int fast = 1; fast < nums.length; fast++) {\n            if (nums[fast] != nums[slow]) {\n                slow++;\n                nums[slow] = nums[fast];\n            }\n        }\n        return slow + 1;\n    }\n}",
+          "output": "For nums = [1,1,2]: 2, nums = [1,2,...]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-27",
+      "number": 27,
+      "title": "Remove Element",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/remove-element/",
+      "problemStatement": "Given an array nums and an integer val, remove all occurrences of val in place. Return the number of elements not equal to val (k); the first k elements should hold those values, in any order.",
+      "examples": [
+        { "input": "nums = [3,2,2,3], val = 3", "output": "2, nums = [2,2,_,_]" },
+        { "input": "nums = [0,1,2,2,3,0,4,2], val = 2", "output": "5, nums = [0,1,4,0,3,_,_,_]" }
+      ],
+      "constraints": ["0 <= nums.length <= 100", "0 <= nums[i] <= 50", "0 <= val <= 100"],
+      "hints": ["Same slow/fast pointer shape as Remove Duplicates, but the condition to keep an element is nums[fast] != val instead of a duplicate check."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Build a list of elements that aren't val, then copy them back into nums.",
+          "code": "class Solution {\n    public int removeElement(int[] nums, int val) {\n        java.util.List<Integer> kept = new java.util.ArrayList<>();\n        for (int num : nums) {\n            if (num != val) kept.add(num);\n        }\n        for (int i = 0; i < kept.size(); i++) {\n            nums[i] = kept.get(i);\n        }\n        return kept.size();\n    }\n}",
+          "output": "For nums = [3,2,2,3], val = 3: 2, nums = [2,2,...]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the extra list"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "In-place slow/fast pointers -- slow marks the next position for a kept element.",
+          "code": "class Solution {\n    public int removeElement(int[] nums, int val) {\n        int slow = 0;\n        for (int fast = 0; fast < nums.length; fast++) {\n            if (nums[fast] != val) {\n                nums[slow] = nums[fast];\n                slow++;\n            }\n        }\n        return slow;\n    }\n}",
+          "output": "For nums = [3,2,2,3], val = 3: 2, nums = [2,2,...]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) extra space"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-977",
+      "number": 977,
+      "title": "Squares of a Sorted Array",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/squares-of-a-sorted-array/",
+      "problemStatement": "Given an integer array nums sorted in non-decreasing order, return an array of the squares of each number, also sorted in non-decreasing order.",
+      "examples": [
+        { "input": "nums = [-4,-1,0,3,10]", "output": "[0,1,9,16,100]" },
+        { "input": "nums = [-7,-3,2,3,11]", "output": "[4,9,9,49,121]" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4", "-10^4 <= nums[i] <= 10^4", "nums is sorted in non-decreasing order"],
+      "hints": ["The LARGEST square always comes from whichever end (leftmost or rightmost) has the greater absolute value -- fill the result from the back using two pointers converging inward."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Square every element, then sort the result.",
+          "code": "class Solution {\n    public int[] sortedSquares(int[] nums) {\n        int[] result = new int[nums.length];\n        for (int i = 0; i < nums.length; i++) {\n            result[i] = nums[i] * nums[i];\n        }\n        java.util.Arrays.sort(result);\n        return result;\n    }\n}",
+          "output": "For nums = [-4,-1,0,3,10]: [0,1,9,16,100]",
+          "timeComplexity": "O(n log n) due to sorting",
+          "spaceComplexity": "O(n) for the output (sort itself uses O(log n) auxiliary for primitives)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers from both ends, comparing absolute values, filling the result array from the back forward.",
+          "code": "class Solution {\n    public int[] sortedSquares(int[] nums) {\n        int n = nums.length;\n        int[] result = new int[n];\n        int left = 0, right = n - 1;\n\n        for (int i = n - 1; i >= 0; i--) {\n            int leftSquare = nums[left] * nums[left];\n            int rightSquare = nums[right] * nums[right];\n\n            if (leftSquare > rightSquare) {\n                result[i] = leftSquare;\n                left++;\n            } else {\n                result[i] = rightSquare;\n                right--;\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [-4,-1,0,3,10]: [0,1,9,16,100]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) for the output"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-11",
+      "number": 11,
+      "title": "Container With Most Water",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/container-with-most-water/",
+      "problemStatement": "Given n non-negative integers height[i] representing vertical lines, find two lines that together with the x-axis form a container that holds the most water. Return the maximum amount of water it can store.",
+      "examples": [
+        { "input": "height = [1,8,6,2,5,4,8,3,7]", "output": "49", "explanation": "The lines at index 1 (height 8) and index 8 (height 7) form a container of width 7 and height min(8,7)=7, area 49." }
+      ],
+      "constraints": ["2 <= height.length <= 10^5", "0 <= height[i] <= 10^4"],
+      "hints": [
+        "Start with the widest possible container (both ends). The SHORTER of the two lines is always the bottleneck -- moving that pointer inward is the only way a better area could be found.",
+        "Moving the taller pointer inward can never help, since width shrinks and the height is still capped by the shorter line."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every pair of lines and compute the area, tracking the maximum.",
+          "code": "class Solution {\n    public int maxArea(int[] height) {\n        int maxArea = 0;\n        for (int i = 0; i < height.length; i++) {\n            for (int j = i + 1; j < height.length; j++) {\n                int area = Math.min(height[i], height[j]) * (j - i);\n                maxArea = Math.max(maxArea, area);\n            }\n        }\n        return maxArea;\n    }\n}",
+          "output": "For height = [1,8,6,2,5,4,8,3,7]: 49",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers from both ends, always moving the pointer at the SHORTER line inward, since it's the bottleneck.",
+          "code": "class Solution {\n    public int maxArea(int[] height) {\n        int left = 0, right = height.length - 1;\n        int maxArea = 0;\n\n        while (left < right) {\n            int area = Math.min(height[left], height[right]) * (right - left);\n            maxArea = Math.max(maxArea, area);\n\n            if (height[left] < height[right]) {\n                left++;\n            } else {\n                right--;\n            }\n        }\n        return maxArea;\n    }\n}",
+          "output": "For height = [1,8,6,2,5,4,8,3,7]: 49",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-15",
+      "number": 15,
+      "title": "3Sum",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/3sum/",
+      "problemStatement": "Given an integer array nums, return all unique triplets [nums[i], nums[j], nums[k]] such that i != j != k and nums[i] + nums[j] + nums[k] == 0. The solution set must not contain duplicate triplets.",
+      "examples": [
+        { "input": "nums = [-1,0,1,2,-1,-4]", "output": "[[-1,-1,2],[-1,0,1]]" },
+        { "input": "nums = [0,1,1]", "output": "[]" }
+      ],
+      "constraints": ["3 <= nums.length <= 3000", "-10^5 <= nums[i] <= 10^5"],
+      "hints": [
+        "Sort the array first, then FIX one number and use the opposite-direction Two Pointers technique to find pairs summing to its negation.",
+        "Skip over duplicate values at each level (fixed number and both pointers) to avoid duplicate triplets in the result."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every triplet with three nested loops, using a Set to avoid duplicate results.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> threeSum(int[] nums) {\n        java.util.Set<java.util.List<Integer>> resultSet = new java.util.HashSet<>();\n        java.util.Arrays.sort(nums);\n\n        for (int i = 0; i < nums.length; i++) {\n            for (int j = i + 1; j < nums.length; j++) {\n                for (int k = j + 1; k < nums.length; k++) {\n                    if (nums[i] + nums[j] + nums[k] == 0) {\n                        resultSet.add(java.util.Arrays.asList(nums[i], nums[j], nums[k]));\n                    }\n                }\n            }\n        }\n        return new java.util.ArrayList<>(resultSet);\n    }\n}",
+          "output": "For nums = [-1,0,1,2,-1,-4]: [[-1,-1,2],[-1,0,1]]",
+          "timeComplexity": "O(n^3)",
+          "spaceComplexity": "O(n) for the result set"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Sort first, then fix each number and use opposite-direction two pointers on the rest, skipping duplicates at every level.",
+          "code": "class Solution {\n    public java.util.List<java.util.List<Integer>> threeSum(int[] nums) {\n        java.util.Arrays.sort(nums);\n        java.util.List<java.util.List<Integer>> result = new java.util.ArrayList<>();\n\n        for (int i = 0; i < nums.length - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue; // skip duplicate fixed values\n\n            int left = i + 1, right = nums.length - 1;\n            while (left < right) {\n                int sum = nums[i] + nums[left] + nums[right];\n                if (sum == 0) {\n                    result.add(java.util.Arrays.asList(nums[i], nums[left], nums[right]));\n                    while (left < right && nums[left] == nums[left + 1]) left++;\n                    while (left < right && nums[right] == nums[right - 1]) right--;\n                    left++;\n                    right--;\n                } else if (sum < 0) {\n                    left++;\n                } else {\n                    right--;\n                }\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [-1,0,1,2,-1,-4]: [[-1,-1,2],[-1,0,1]]",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(n) for sorting and the result"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-42",
+      "number": 42,
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "link": "https://leetcode.com/problems/trapping-rain-water/",
+      "problemStatement": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+      "examples": [
+        { "input": "height = [0,1,0,2,1,0,1,3,2,1,2,1]", "output": "6" }
+      ],
+      "constraints": ["1 <= height.length <= 2*10^4", "0 <= height[i] <= 10^5"],
+      "hints": [
+        "Water trapped above any index i is min(maxLeft of i, maxRight of i) - height[i].",
+        "Two pointers from both ends, tracking the running max seen from each side, can compute this in a single pass without precomputing full maxLeft/maxRight arrays."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "For every index, scan left and right separately to find the max height on each side.",
+          "code": "class Solution {\n    public int trap(int[] height) {\n        int total = 0;\n        for (int i = 0; i < height.length; i++) {\n            int maxLeft = 0;\n            for (int j = 0; j <= i; j++) maxLeft = Math.max(maxLeft, height[j]);\n\n            int maxRight = 0;\n            for (int j = i; j < height.length; j++) maxRight = Math.max(maxRight, height[j]);\n\n            total += Math.min(maxLeft, maxRight) - height[i];\n        }\n        return total;\n    }\n}",
+          "output": "For height = [0,1,0,2,1,0,1,3,2,1,2,1]: 6",
+          "timeComplexity": "O(n^2)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two pointers from both ends with running maxLeft/maxRight trackers -- whichever side has the smaller running max determines how much water is trapped at that pointer's position.",
+          "code": "class Solution {\n    public int trap(int[] height) {\n        int left = 0, right = height.length - 1;\n        int maxLeft = 0, maxRight = 0;\n        int total = 0;\n\n        while (left < right) {\n            if (height[left] < height[right]) {\n                maxLeft = Math.max(maxLeft, height[left]);\n                total += maxLeft - height[left];\n                left++;\n            } else {\n                maxRight = Math.max(maxRight, height[right]);\n                total += maxRight - height[right];\n                right--;\n            }\n        }\n        return total;\n    }\n}",
+          "output": "For height = [0,1,0,2,1,0,1,3,2,1,2,1]: 6",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
     }
   ],
   "codeExamples": [
