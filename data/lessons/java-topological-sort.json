@@ -1,0 +1,164 @@
+{
+  "id": "java-topological-sort",
+  "moduleId": "graphs",
+  "title": "Topological Sort",
+  "description": "Ordering tasks with dependencies -- a directed graph problem solved with DFS post-order, or with a queue-based approach (Kahn's algorithm) building on Graph BFS.",
+  "objectives": [
+    "Understand directed graphs and why topological sort only applies to DAGs",
+    "Implement topological sort using DFS post-order",
+    "Implement Kahn's algorithm using in-degree counting and a queue"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. A New Kind of Problem: Ordering With Dependencies"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine course prerequisites: you must take 'Intro to Programming' before 'Data Structures.' This is naturally a DIRECTED graph -- edges have a direction (prerequisite -> course), unlike every graph in Graph Representation, Graph BFS, and Graph DFS so far, which were undirected."
+    },
+    {
+      "type": "definition",
+      "term": "Directed Acyclic Graph (DAG)",
+      "text": "A graph where edges have a direction, and following those directions can never lead back to a starting node -- no cycles. Topological sort only makes sense on a DAG."
+    },
+    {
+      "type": "definition",
+      "term": "Topological sort",
+      "text": "An ordering of a DAG's nodes such that for every directed edge u -> v, u appears BEFORE v in the ordering -- a valid sequence respecting all dependencies."
+    },
+    {
+      "type": "warning",
+      "text": "If the graph has a CYCLE (A depends on B, B depends on A), no valid topological order can exist -- this is exactly how real build systems and package managers detect circular dependency errors."
+    },
+    {
+      "type": "heading",
+      "text": "2. Approach 1: DFS Post-Order, Reversed"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.*;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int node, boolean[] visited, Deque<Integer> result) {\n        visited[node] = true;\n        for (int neighbor : adjList.get(node)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited, result);\n            }\n        }\n        result.push(node); // add to front AFTER all dependents are processed\n    }\n\n    static List<Integer> topologicalSort(List<List<Integer>> adjList, int n) {\n        boolean[] visited = new boolean[n];\n        Deque<Integer> result = new ArrayDeque<>();\n\n        for (int i = 0; i < n; i++) {\n            if (!visited[i]) {\n                dfs(adjList, i, visited, result);\n            }\n        }\n        return new ArrayList<>(result);\n    }\n\n    public static void main(String[] args) {\n        int n = 4;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        // 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3\n        adjList.get(0).add(1);\n        adjList.get(0).add(2);\n        adjList.get(1).add(3);\n        adjList.get(2).add(3);\n\n        System.out.println(topologicalSort(adjList, n));\n    }\n}",
+      "output": "[0, 2, 1, 3]",
+      "retypePractice": true,
+      "retypeId": "java-topo-dfs"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing dfs(0) for edges 0->1, 0->2, 1->3, 2->3",
+      "steps": [
+        "dfs(0): visit0. Neighbors [1,2]. Recurse dfs(1) first",
+        "dfs(1): visit1. Neighbors [3]. Recurse dfs(3)",
+        "dfs(3): visit3. No neighbors. result.push(3) -- result=[3]",
+        "Back in dfs(1): done with neighbors. result.push(1) -- result=[1,3]",
+        "Back in dfs(0): next neighbor 2. Recurse dfs(2)",
+        "dfs(2): visit2. Neighbors [3] -- already visited, skip. result.push(2) -- result=[2,1,3]",
+        "Back in dfs(0): done with neighbors. result.push(0) -- result=[0,2,1,3]",
+        "Final order: [0, 2, 1, 3] -- 0 before both 1 and 2; both 1 and 2 before 3, as required"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "result.push(node) adds to the FRONT, and it happens AFTER recursing into all of node's neighbors -- this means a node is only placed once everything it points to has ALREADY been placed. Since we push to the front each time, the LAST node finished ends up at the very front -- naturally producing a valid dependency order without needing to reverse anything separately."
+    },
+    {
+      "type": "heading",
+      "text": "3. Approach 2: Kahn's Algorithm (BFS-Based)"
+    },
+    {
+      "type": "definition",
+      "term": "In-degree",
+      "text": "The number of incoming edges a node has -- for topological sort, a node with in-degree 0 has no unmet dependencies and can safely go first."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.*;\n\npublic class Main {\n    static List<Integer> topologicalSortKahn(List<List<Integer>> adjList, int n) {\n        int[] inDegree = new int[n];\n        for (List<Integer> neighbors : adjList) {\n            for (int neighbor : neighbors) {\n                inDegree[neighbor]++;\n            }\n        }\n\n        Queue<Integer> queue = new LinkedList<>();\n        for (int i = 0; i < n; i++) {\n            if (inDegree[i] == 0) {\n                queue.offer(i);\n            }\n        }\n\n        List<Integer> result = new ArrayList<>();\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            result.add(current);\n\n            for (int neighbor : adjList.get(current)) {\n                inDegree[neighbor]--;\n                if (inDegree[neighbor] == 0) {\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int n = 4;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        adjList.get(0).add(1);\n        adjList.get(0).add(2);\n        adjList.get(1).add(3);\n        adjList.get(2).add(3);\n\n        System.out.println(topologicalSortKahn(adjList, n));\n    }\n}",
+      "output": "[0, 1, 2, 3]",
+      "retypePractice": true,
+      "retypeId": "java-topo-kahn"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing Kahn's algorithm",
+      "steps": [
+        "Compute in-degrees: node0=0 (nothing points to it), node1=1 (from 0), node2=1 (from 0), node3=2 (from 1 and 2)",
+        "Queue starts with all in-degree-0 nodes: [0]",
+        "Poll 0, add to result=[0]. Decrement neighbors 1,2: inDegree[1]=0 -> enqueue. inDegree[2]=0 -> enqueue. queue=[1,2]",
+        "Poll 1, add to result=[0,1]. Decrement neighbor 3: inDegree[3]=1 (not yet 0) -- don't enqueue",
+        "Poll 2, add to result=[0,1,2]. Decrement neighbor 3: inDegree[3]=0 -- enqueue. queue=[3]",
+        "Poll 3, add to result=[0,1,2,3]. No neighbors",
+        "Final order: [0, 1, 2, 3]"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "Both approaches produce VALID topological orders here, but [0,2,1,3] and [0,1,2,3] are DIFFERENT valid orderings of the SAME graph -- topological sort is not unique when multiple nodes could legally go next. Both respect every dependency: 0 before 1 and 2, and both 1 and 2 before 3."
+    },
+    {
+      "type": "warning",
+      "text": "If result.size() < n at the end of Kahn's algorithm, the graph contains a CYCLE -- some nodes never reach in-degree 0, since they're stuck waiting on each other. This is exactly how Kahn's algorithm doubles as a cycle-detection check."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to run topological sort on an undirected graph, or a directed graph WITH a cycle -- neither has a valid topological ordering.",
+        "Forgetting result.push (not add) in the DFS approach -- pushing to the FRONT is what makes the last-finished node end up first, avoiding a separate reversal step.",
+        "Forgetting to check for leftover unprocessed nodes in Kahn's algorithm as a cycle-detection signal -- result.size() < n means a cycle exists.",
+        "Assuming topological sort produces a UNIQUE answer -- multiple valid orderings often exist for the same DAG."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is topological sort, and what kind of graph does it require?",
+          "answer": "An ordering of a graph's nodes such that for every directed edge u -> v, u comes before v. It only applies to Directed Acyclic Graphs (DAGs) -- a cycle would make a valid ordering impossible."
+        },
+        {
+          "question": "How does the DFS-based approach to topological sort work?",
+          "answer": "Run DFS from every unvisited node; after fully exploring a node's neighbors (post-order), push that node onto the FRONT of a result list. Since a node is only added once everything it depends on has already been added, the result naturally comes out in valid topological order."
+        },
+        {
+          "question": "What is Kahn's algorithm, and how does it detect a cycle?",
+          "answer": "It repeatedly processes nodes with in-degree 0 (no unmet dependencies), decrementing the in-degree of their neighbors and enqueuing any that reach 0. If the final result contains fewer nodes than the graph has, some nodes never reached in-degree 0 -- indicating a cycle."
+        }
+      ],
+      "thirtySecondAnswer": "Topological sort orders a Directed Acyclic Graph's nodes so every edge u -> v has u appearing before v -- used for tasks with dependencies, like course prerequisites or build systems. The DFS approach runs post-order DFS from every unvisited node, pushing each node to the FRONT of a result list only after all its dependents are processed, naturally producing valid order without a separate reversal. Kahn's algorithm instead repeatedly processes nodes with in-degree 0 using a queue, decrementing neighbors' in-degrees as it goes -- if the final result has fewer nodes than the graph, a cycle exists, since those nodes never reached in-degree 0. Multiple valid topological orderings often exist for the same DAG."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Topological sort = a valid class schedule respecting every prerequisite. DFS way: finish a course's LAST requirement, then schedule it, working backward. Kahn's way: schedule anything with ZERO remaining prerequisites first, then free up what THEY were blocking."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What kind of graph does topological sort require?",
+        "In the DFS approach, why does pushing to the front avoid needing a separate reversal?",
+        "How does Kahn's algorithm decide which node to process next?",
+        "How does Kahn's algorithm detect a cycle?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-topo-dfs", "lang": "java", "filename": "Main.java", "code": "import java.util.*;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int node, boolean[] visited, Deque<Integer> result) {\n        visited[node] = true;\n        for (int neighbor : adjList.get(node)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited, result);\n            }\n        }\n        result.push(node); // add to front AFTER all dependents are processed\n    }\n\n    static List<Integer> topologicalSort(List<List<Integer>> adjList, int n) {\n        boolean[] visited = new boolean[n];\n        Deque<Integer> result = new ArrayDeque<>();\n\n        for (int i = 0; i < n; i++) {\n            if (!visited[i]) {\n                dfs(adjList, i, visited, result);\n            }\n        }\n        return new ArrayList<>(result);\n    }\n\n    public static void main(String[] args) {\n        int n = 4;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        // 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3\n        adjList.get(0).add(1);\n        adjList.get(0).add(2);\n        adjList.get(1).add(3);\n        adjList.get(2).add(3);\n\n        System.out.println(topologicalSort(adjList, n));\n    }\n}", "output": "[0, 2, 1, 3]" },
+    { "id": "java-topo-kahn", "lang": "java", "filename": "Main.java", "code": "import java.util.*;\n\npublic class Main {\n    static List<Integer> topologicalSortKahn(List<List<Integer>> adjList, int n) {\n        int[] inDegree = new int[n];\n        for (List<Integer> neighbors : adjList) {\n            for (int neighbor : neighbors) {\n                inDegree[neighbor]++;\n            }\n        }\n\n        Queue<Integer> queue = new LinkedList<>();\n        for (int i = 0; i < n; i++) {\n            if (inDegree[i] == 0) {\n                queue.offer(i);\n            }\n        }\n\n        List<Integer> result = new ArrayList<>();\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            result.add(current);\n\n            for (int neighbor : adjList.get(current)) {\n                inDegree[neighbor]--;\n                if (inDegree[neighbor] == 0) {\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int n = 4;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        adjList.get(0).add(1);\n        adjList.get(0).add(2);\n        adjList.get(1).add(3);\n        adjList.get(2).add(3);\n\n        System.out.println(topologicalSortKahn(adjList, n));\n    }\n}", "output": "[0, 1, 2, 3]" }
+  ],
+  "retypePractice": [
+    { "id": "java-topo-dfs", "reference": "import java.util.*;\n\npublic class Main {\n    static void dfs(List<List<Integer>> adjList, int node, boolean[] visited, Deque<Integer> result) {\n        visited[node] = true;\n        for (int neighbor : adjList.get(node)) {\n            if (!visited[neighbor]) {\n                dfs(adjList, neighbor, visited, result);\n            }\n        }\n        result.push(node); // add to front AFTER all dependents are processed\n    }\n\n    static List<Integer> topologicalSort(List<List<Integer>> adjList, int n) {\n        boolean[] visited = new boolean[n];\n        Deque<Integer> result = new ArrayDeque<>();\n\n        for (int i = 0; i < n; i++) {\n            if (!visited[i]) {\n                dfs(adjList, i, visited, result);\n            }\n        }\n        return new ArrayList<>(result);\n    }\n\n    public static void main(String[] args) {\n        int n = 4;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        // 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3\n        adjList.get(0).add(1);\n        adjList.get(0).add(2);\n        adjList.get(1).add(3);\n        adjList.get(2).add(3);\n\n        System.out.println(topologicalSort(adjList, n));\n    }\n}" },
+    { "id": "java-topo-kahn", "reference": "import java.util.*;\n\npublic class Main {\n    static List<Integer> topologicalSortKahn(List<List<Integer>> adjList, int n) {\n        int[] inDegree = new int[n];\n        for (List<Integer> neighbors : adjList) {\n            for (int neighbor : neighbors) {\n                inDegree[neighbor]++;\n            }\n        }\n\n        Queue<Integer> queue = new LinkedList<>();\n        for (int i = 0; i < n; i++) {\n            if (inDegree[i] == 0) {\n                queue.offer(i);\n            }\n        }\n\n        List<Integer> result = new ArrayList<>();\n        while (!queue.isEmpty()) {\n            int current = queue.poll();\n            result.add(current);\n\n            for (int neighbor : adjList.get(current)) {\n                inDegree[neighbor]--;\n                if (inDegree[neighbor] == 0) {\n                    queue.offer(neighbor);\n                }\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int n = 4;\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) adjList.add(new ArrayList<>());\n\n        adjList.get(0).add(1);\n        adjList.get(0).add(2);\n        adjList.get(1).add(3);\n        adjList.get(2).add(3);\n\n        System.out.println(topologicalSortKahn(adjList, n));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-topo-dfs", "java-topo-kahn"]
+  }
+}
