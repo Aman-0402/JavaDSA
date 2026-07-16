@@ -171,7 +171,8 @@
         { "id": "java-knapsack", "title": "0/1 Knapsack", "lesson": "java-knapsack" },
         { "id": "java-lcs", "title": "Longest Common Subsequence (LCS)", "lesson": "java-lcs" },
         { "id": "java-lis", "title": "Longest Increasing Subsequence (LIS)", "lesson": "java-lis" },
-        { "id": "java-bit-manipulation", "title": "Bit Manipulation", "lesson": "java-bit-manipulation" }
+        { "id": "java-bit-manipulation", "title": "Bit Manipulation", "lesson": "java-bit-manipulation" },
+        { "id": "java-advanced-patterns", "title": "Advanced Problem-Solving Patterns (Capstone)", "lesson": "java-advanced-patterns" }
       ]
     }
   ]

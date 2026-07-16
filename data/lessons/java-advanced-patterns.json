@@ -1,0 +1,160 @@
+{
+  "id": "java-advanced-patterns",
+  "moduleId": "greedy-dp",
+  "title": "Advanced Problem-Solving Patterns (Capstone)",
+  "description": "A recognition guide tying every technique from Two Pointers through Dynamic Programming together -- not new syntax, but the map for choosing the right tool when facing a new problem.",
+  "objectives": [
+    "Recognize which pattern a new problem resembles, based on its shape and constraints",
+    "See how a single problem can sometimes be solved with more than one pattern",
+    "Build a mental checklist for approaching an unfamiliar DSA problem"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Why This Lesson Has (Almost) No New Code"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every technique needed is already covered -- Two Pointers, Sliding Window, Prefix Sum, Hashing, Binary Search, Recursion, Backtracking, Greedy, and Dynamic Programming. The hardest real-world skill isn't knowing an algorithm exists -- it's recognizing WHICH one applies to a brand new problem you've never seen. This lesson is that recognition guide."
+    },
+    {
+      "type": "heading",
+      "text": "2. A Pattern Recognition Checklist"
+    },
+    {
+      "type": "table",
+      "title": "Problem signals -> likely technique",
+      "headers": ["If the problem involves...", "Consider..."],
+      "rows": [
+        ["A SORTED array, and pairs/triples summing to a target", "Two Pointers (from opposite ends)"],
+        ["A CONTIGUOUS subarray/substring, min/max/count over all windows", "Sliding Window (fixed or variable size)"],
+        ["MANY range-sum queries on a fixed array", "Prefix Sum"],
+        ["MANY range-update operations, read final result only", "Difference Array"],
+        ["\"Have I seen this before?\" / counting occurrences / pair lookups", "Hashing (HashMap/HashSet)"],
+        ["A SORTED array, searching for a value or boundary", "Binary Search"],
+        ["Exploring ALL possible choices, with the ability to abandon invalid paths", "Backtracking"],
+        ["Repeatedly making the 'best right now' choice, with a PROVABLE greedy property", "Greedy"],
+        ["Overlapping sub-problems, and asking 'what's the best/count/way' up to some state", "Dynamic Programming (memoization or tabulation)"],
+        ["Tree/graph structure, visiting nodes level by level", "BFS"],
+        ["Tree/graph structure, diving deep down one path first", "DFS"],
+        ["Checking bits directly, or a single unpaired/unique value among duplicates", "Bit Manipulation"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "3. Worked Example: Recognizing Multiple Valid Approaches"
+    },
+    {
+      "type": "paragraph",
+      "text": "Take the pair-sum problem: given an array and a target, does any pair sum to it? We've now seen THREE different ways to approach variants of this exact question across this course."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "// Approach 1: Two Pointers (Two Pointers lesson) -- REQUIRES a sorted array\n// left/right pointers converge from opposite ends: O(n) time, O(1) extra space\n\n// Approach 2: Hashing (Hashing lesson) -- works on UNSORTED arrays\n// HashSet tracks seen values, checking target - num as we go: O(n) time, O(n) space\n\n// Approach 3: Brute force (mentioned in both lessons as the baseline)\n// nested loops checking every pair: O(n^2) time, O(1) space -- what we're improving on"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Choosing between them",
+      "points": [
+        "If the array is ALREADY sorted (or sorting it is acceptable/cheap), Two Pointers uses less extra memory",
+        "If the array is UNSORTED and sorting isn't desired, Hashing solves it in one pass without reordering anything",
+        "Both beat brute force's O(n^2) -- recognizing this is more valuable than memorizing one 'correct' answer"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Worked Example: A Problem That Combines Patterns"
+    },
+    {
+      "type": "paragraph",
+      "text": "Some real problems blend multiple techniques. Consider: 'find the length of the longest substring with all unique characters.' This is fundamentally a SLIDING WINDOW problem (contiguous substring, window grows/shrinks) COMBINED with HASHING (a Set tracking characters currently in the window)."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static int longestUniqueSubstring(String s) {\n        Set<Character> window = new HashSet<>();\n        int left = 0;\n        int maxLength = 0;\n\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            while (window.contains(c)) {\n                window.remove(s.charAt(left));\n                left++;\n            }\n            window.add(c);\n            maxLength = Math.max(maxLength, right - left + 1);\n        }\n        return maxLength;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(longestUniqueSubstring(\"abcabcbb\"));\n    }\n}",
+      "output": "3",
+      "retypePractice": true,
+      "retypeId": "java-patterns-combined"
+    },
+    {
+      "type": "note",
+      "text": "This is Sliding Window's variable-size expand/shrink structure, using a HashSet (Hashing) to check membership in O(1) instead of scanning the current window every time. Recognizing that TWO patterns combine here -- rather than treating this as some entirely new, unfamiliar problem -- is exactly the skill this capstone lesson is building."
+    },
+    {
+      "type": "heading",
+      "text": "5. A Practical Approach to a New Problem"
+    },
+    {
+      "type": "keyPoints",
+      "title": "A mental checklist when facing an unfamiliar problem",
+      "points": [
+        "What's the input shape? (array, string, tree, graph, sorted or not?)",
+        "What's actually being asked? (existence, count, minimum/maximum, all possibilities?)",
+        "Does brute force work, and what's ITS complexity? (always a valid, if slow, starting point)",
+        "Does the problem's shape match any pattern from the table above?",
+        "Could two patterns combine, like Sliding Window + Hashing here?",
+        "If nothing fits cleanly, can Dynamic Programming decompose it into overlapping sub-problems?"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Trying to memorize solutions to specific problems instead of recognizing the underlying PATTERN -- patterns transfer to new problems, memorized solutions don't.",
+        "Assuming every problem has exactly ONE correct approach -- many have multiple valid solutions with different trade-offs (like pair-sum's Two Pointers vs Hashing).",
+        "Jumping straight to a complex technique (DP, backtracking) before checking if a simpler pattern (two pointers, sliding window, hashing) already solves it more directly.",
+        "Not writing the brute force solution first, even mentally -- it's often the fastest way to understand the problem correctly before optimizing."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "When solving an unfamiliar DSA problem, what should you check before choosing an approach?",
+          "answer": "The input's shape (sorted array, string, tree, graph?), what's actually being asked (existence, count, min/max, all possibilities?), whether a brute-force approach works as a starting baseline, and whether the problem's shape matches a known pattern -- possibly more than one combined."
+        },
+        {
+          "question": "Give an example of a problem that can be solved with more than one valid pattern.",
+          "answer": "Pair-sum: Two Pointers works in O(n) time and O(1) space if the array is sorted; Hashing works in O(n) time and O(n) space on an unsorted array without needing to sort first -- both are valid, with different trade-offs."
+        },
+        {
+          "question": "How can Sliding Window and Hashing combine to solve a single problem?",
+          "answer": "In problems like 'longest substring with all unique characters,' a sliding window expands and shrinks over a contiguous range, while a HashSet tracks which characters are currently inside the window, giving O(1) membership checks instead of rescanning the window each time."
+        }
+      ],
+      "thirtySecondAnswer": "The real skill in DSA problem-solving is pattern recognition, not memorization: matching a new problem's shape (sorted array? contiguous range? tree/graph? overlapping sub-problems?) to a known technique from Two Pointers through Dynamic Programming. Many problems have multiple valid approaches with different trade-offs -- pair-sum solves via Two Pointers (sorted, O(1) space) or Hashing (unsorted, O(n) space) -- and some problems combine two patterns at once, like Sliding Window plus Hashing for longest-unique-substring. A practical approach: identify the input shape and the actual question being asked, start from brute force as a baseline, then look for a matching (or combined) pattern to optimize."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Don't memorize ANSWERS -- memorize the SHAPE each pattern solves. Sorted + pair-sum = Two Pointers. Contiguous + window = Sliding Window. 'Have I seen this?' = Hashing. Overlapping sub-problems = DP. Match the shape, not the specific problem."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What questions should you ask yourself when facing an unfamiliar DSA problem?",
+        "Name two different valid patterns for solving pair-sum, and their trade-offs.",
+        "How do Sliding Window and Hashing combine in the longest-unique-substring problem?",
+        "Why is pattern recognition more valuable than memorizing individual solutions?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-patterns-combined", "lang": "java", "filename": "Main.java", "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static int longestUniqueSubstring(String s) {\n        Set<Character> window = new HashSet<>();\n        int left = 0;\n        int maxLength = 0;\n\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            while (window.contains(c)) {\n                window.remove(s.charAt(left));\n                left++;\n            }\n            window.add(c);\n            maxLength = Math.max(maxLength, right - left + 1);\n        }\n        return maxLength;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(longestUniqueSubstring(\"abcabcbb\"));\n    }\n}", "output": "3" }
+  ],
+  "retypePractice": [
+    { "id": "java-patterns-combined", "reference": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    static int longestUniqueSubstring(String s) {\n        Set<Character> window = new HashSet<>();\n        int left = 0;\n        int maxLength = 0;\n\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            while (window.contains(c)) {\n                window.remove(s.charAt(left));\n                left++;\n            }\n            window.add(c);\n            maxLength = Math.max(maxLength, right - left + 1);\n        }\n        return maxLength;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(longestUniqueSubstring(\"abcabcbb\"));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-patterns-combined"]
+  }
+}
