@@ -1,0 +1,160 @@
+{
+  "id": "java-collections-utility-class",
+  "moduleId": "collections-framework",
+  "title": "Collections Utility Class",
+  "description": "The java.util.Collections helper class -- fully explaining Collections.sort() from the Comparable vs Comparator lesson, plus other handy static methods.",
+  "objectives": [
+    "Understand Collections as a utility class of static helper methods for collections",
+    "Use sort(), reverse(), max(), min(), and shuffle()",
+    "Distinguish the Collections utility class from the Collection/Collections Framework concept"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Collections.sort(), Fully Explained"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've used Collections.sort(students) and Collections.sort(students, byName) since Comparable vs Comparator without naming Collections itself. It's a utility class -- a class made entirely of static helper methods (recall Static vs Instance Methods), none of which need an object to call."
+    },
+    {
+      "type": "definition",
+      "term": "Collections (utility class)",
+      "text": "A class in java.util providing static helper methods that operate on List, Set, and other collections -- sorting, searching, reversing, and more."
+    },
+    {
+      "type": "warning",
+      "text": "Collections (capital C, the utility class) is easy to confuse with Collection (the base interface List/Set both extend) -- they sound nearly identical but serve completely different roles. Collections is a toolbox of static methods; Collection is an interface type."
+    },
+    {
+      "type": "heading",
+      "text": "2. sort()"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(30);\n        numbers.add(10);\n        numbers.add(20);\n\n        Collections.sort(numbers);\n        System.out.println(numbers);\n    }\n}",
+      "output": "[10, 20, 30]",
+      "retypePractice": true,
+      "retypeId": "java-collections-sort"
+    },
+    {
+      "type": "note",
+      "text": "Integer already implements Comparable<Integer> (numeric order), so Collections.sort(numbers) works directly without needing a custom Comparator -- exactly like String's natural alphabetical order used in earlier lessons."
+    },
+    {
+      "type": "heading",
+      "text": "3. reverse(), max(), min()"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(30);\n        numbers.add(10);\n        numbers.add(20);\n\n        System.out.println(Collections.max(numbers));\n        System.out.println(Collections.min(numbers));\n\n        Collections.reverse(numbers);\n        System.out.println(numbers);\n    }\n}",
+      "output": "30\n10\n[20, 10, 30]",
+      "retypePractice": true,
+      "retypeId": "java-collections-max-min-reverse"
+    },
+    {
+      "type": "table",
+      "title": "Common Collections methods",
+      "headers": ["Method", "Purpose"],
+      "rows": [
+        ["sort(list)", "Sorts using natural order (Comparable)"],
+        ["sort(list, comparator)", "Sorts using a custom Comparator"],
+        ["reverse(list)", "Reverses the list's current order, in place"],
+        ["max(collection)", "Returns the largest element"],
+        ["min(collection)", "Returns the smallest element"],
+        ["shuffle(list)", "Randomly reorders the list's elements"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Collections.reverse(numbers) here just reverses whatever order numbers was ALREADY in ([30, 10, 20] became [20, 10, 30]) -- it does NOT sort first. To get descending sorted order, you'd sort() first, then reverse(), or use a Comparator that reverses the comparison."
+    },
+    {
+      "type": "heading",
+      "text": "4. Putting It Together"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> scores = new ArrayList<>();\n        scores.add(75);\n        scores.add(92);\n        scores.add(60);\n        scores.add(88);\n\n        Collections.sort(scores);\n        Collections.reverse(scores);\n\n        System.out.println(\"Highest to lowest: \" + scores);\n        System.out.println(\"Top score: \" + Collections.max(scores));\n    }\n}",
+      "output": "Highest to lowest: [92, 88, 75, 60]\nTop score: 92",
+      "retypePractice": true,
+      "retypeId": "java-collections-top-scores"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Tracing it",
+      "points": [
+        "sort(scores) gives ascending order: [60, 75, 88, 92]",
+        "reverse(scores) flips that to descending: [92, 88, 75, 60]",
+        "max(scores) still correctly finds 92 regardless of the list's current order, since it scans the whole collection"
+      ]
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing Collections (the utility class) with Collection (the base interface) -- similarly named but entirely different roles.",
+        "Assuming Collections.reverse() sorts the list -- it only reverses whatever order already exists.",
+        "Calling Collections.sort() on a list of a custom class with no Comparable implementation and no Comparator argument -- this fails to compile, as covered in Comparable vs Comparator.",
+        "Forgetting these are STATIC methods, called as Collections.sort(...), never on a specific list instance like list.sort_() (note: List does have its own instance sort(comparator) method too, but Collections.sort predates it and remains extremely common)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the Collections class?",
+          "answer": "A utility class in java.util providing static helper methods for operating on collections -- such as sort(), reverse(), max(), min(), and shuffle() -- none of which require creating an object to call."
+        },
+        {
+          "question": "What is the difference between Collections and Collection?",
+          "answer": "Collections (with an s) is the static utility class of helper methods. Collection (no s) is the base interface that List, Set, and Queue all extend -- they are unrelated despite the similar name."
+        },
+        {
+          "question": "Does Collections.reverse() sort a list?",
+          "answer": "No. It only reverses whatever order the list currently has -- to get descending sorted order, you'd typically sort() first and then reverse(), or supply a Comparator that reverses the comparison directly."
+        }
+      ],
+      "thirtySecondAnswer": "Collections is a utility class in java.util offering static helper methods for collections: sort() (using Comparable or a supplied Comparator), reverse() (flips current order, doesn't sort), max()/min() (find extremes), and shuffle() (randomizes order). It's easily confused with Collection, the unrelated base interface that List and Set extend. A common combo is sort() followed by reverse() to get descending order, since reverse() alone only flips whatever order already exists rather than sorting from scratch."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Collections (with an s) = the TOOLBOX of static helpers. Collection (no s) = the INTERFACE family (List, Set, Queue). reverse() flips what's there -- it does NOT sort for you."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What is the Collections utility class used for?",
+        "What's the difference between Collections and Collection?",
+        "Does Collections.reverse() sort a list, or just flip its current order?",
+        "How would you get a list sorted in descending order using Collections?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-collections-sort", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(30);\n        numbers.add(10);\n        numbers.add(20);\n\n        Collections.sort(numbers);\n        System.out.println(numbers);\n    }\n}", "output": "[10, 20, 30]" },
+    { "id": "java-collections-max-min-reverse", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(30);\n        numbers.add(10);\n        numbers.add(20);\n\n        System.out.println(Collections.max(numbers));\n        System.out.println(Collections.min(numbers));\n\n        Collections.reverse(numbers);\n        System.out.println(numbers);\n    }\n}", "output": "30\n10\n[20, 10, 30]" },
+    { "id": "java-collections-top-scores", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> scores = new ArrayList<>();\n        scores.add(75);\n        scores.add(92);\n        scores.add(60);\n        scores.add(88);\n\n        Collections.sort(scores);\n        Collections.reverse(scores);\n\n        System.out.println(\"Highest to lowest: \" + scores);\n        System.out.println(\"Top score: \" + Collections.max(scores));\n    }\n}", "output": "Highest to lowest: [92, 88, 75, 60]\nTop score: 92" }
+  ],
+  "retypePractice": [
+    { "id": "java-collections-sort", "reference": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(30);\n        numbers.add(10);\n        numbers.add(20);\n\n        Collections.sort(numbers);\n        System.out.println(numbers);\n    }\n}" },
+    { "id": "java-collections-max-min-reverse", "reference": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>();\n        numbers.add(30);\n        numbers.add(10);\n        numbers.add(20);\n\n        System.out.println(Collections.max(numbers));\n        System.out.println(Collections.min(numbers));\n\n        Collections.reverse(numbers);\n        System.out.println(numbers);\n    }\n}" },
+    { "id": "java-collections-top-scores", "reference": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> scores = new ArrayList<>();\n        scores.add(75);\n        scores.add(92);\n        scores.add(60);\n        scores.add(88);\n\n        Collections.sort(scores);\n        Collections.reverse(scores);\n\n        System.out.println(\"Highest to lowest: \" + scores);\n        System.out.println(\"Top score: \" + Collections.max(scores));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-collections-sort", "java-collections-max-min-reverse", "java-collections-top-scores"]
+  }
+}

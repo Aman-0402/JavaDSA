@@ -90,7 +90,8 @@
         { "id": "java-map-implementations", "title": "Map: HashMap, TreeMap, LinkedHashMap", "lesson": "java-map-implementations" },
         { "id": "java-queue-deque", "title": "Queue and Deque: ArrayDeque, PriorityQueue", "lesson": "java-queue-deque" },
         { "id": "java-iterator", "title": "Iterator", "lesson": "java-iterator" },
-        { "id": "java-comparable-vs-comparator", "title": "Comparable vs Comparator", "lesson": "java-comparable-vs-comparator" }
+        { "id": "java-comparable-vs-comparator", "title": "Comparable vs Comparator", "lesson": "java-comparable-vs-comparator" },
+        { "id": "java-collections-utility-class", "title": "Collections Utility Class", "lesson": "java-collections-utility-class" }
       ]
     },
     { "id": "dsa-foundations", "title": "DSA Foundations", "topics": [] },
