@@ -1,0 +1,143 @@
+{
+  "id": "java-tree-dfs-iterative",
+  "moduleId": "trees",
+  "title": "DFS: Iterative Traversal with a Stack",
+  "description": "Rewriting pre-order traversal without recursion, using an explicit Stack -- revealing that recursion was secretly using a stack (the call stack) all along.",
+  "objectives": [
+    "Implement iterative pre-order traversal using an explicit Stack",
+    "Understand that recursive DFS and the call stack are the same idea, made visible",
+    "Know why iterative DFS matters (avoiding stack overflow on very deep trees)"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. The Hidden Stack Behind Recursion"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Recursion Basics, we mentioned every recursive call is tracked on something called the call stack. Pre-order, in-order, and post-order (Tree Traversals) are all recursive Depth-First Search -- today we make that hidden stack EXPLICIT, using the Stack and Monotonic Stack lesson's ArrayDeque."
+    },
+    {
+      "type": "heading",
+      "text": "2. Iterative Pre-order Traversal"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void preOrderIterative(Node root) {\n        if (root == null) return;\n\n        Deque<Node> stack = new ArrayDeque<>();\n        stack.push(root);\n\n        while (!stack.isEmpty()) {\n            Node current = stack.pop();\n            System.out.print(current.data + \" \");\n\n            // Push RIGHT first, so LEFT gets popped (and thus visited) first\n            if (current.right != null) stack.push(current.right);\n            if (current.left != null) stack.push(current.left);\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        preOrderIterative(root);\n    }\n}",
+      "output": "1 2 4 5 3 ",
+      "retypePractice": true,
+      "retypeId": "java-tree-dfs-preorder-iter"
+    },
+    {
+      "type": "warning",
+      "text": "Pushing RIGHT before LEFT looks backward at first, but it's deliberate -- a Stack is LIFO (Stack and Monotonic Stack), so whatever is pushed LAST comes out FIRST. Pushing right then left means left gets popped (and printed) before right, matching pre-order's node-left-right order."
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing preOrderIterative on 1(2(4,5),3)",
+      "steps": [
+        "stack=[1]. Pop 1, print 1. Push right(3), then left(2). stack=[3,2] (2 on top)",
+        "Pop 2, print 2. Push right(5), then left(4). stack=[3,5,4] (4 on top)",
+        "Pop 4, print 4. No children -- nothing pushed. stack=[3,5]",
+        "Pop 5, print 5. No children. stack=[3]",
+        "Pop 3, print 3. No children. stack=[]",
+        "Stack empty -- done. Result: 1 2 4 5 3 -- IDENTICAL to the recursive pre-order from Tree Traversals!"
+      ]
+    },
+    {
+      "type": "note",
+      "text": "This produces the EXACT same output as the recursive preOrder from Tree Traversals -- because it's doing the exact same thing. Recursion was using the JVM's own call stack implicitly; here we manage an equivalent stack ourselves, explicitly."
+    },
+    {
+      "type": "heading",
+      "text": "3. Why Bother With Iterative DFS?"
+    },
+    {
+      "type": "keyPoints",
+      "title": "When iterative DFS matters",
+      "points": [
+        "A VERY deep tree (thousands of levels) can exhaust the call stack with recursion, causing a StackOverflowError (mentioned back in Recursion Basics)",
+        "An explicit Stack lives on the HEAP, not the fixed-size call stack, so it can grow far larger before running into memory limits",
+        "Some environments/interviews specifically ask for an iterative solution to test understanding beyond 'just calling recursion'"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Iterative In-order (A Trickier Variant)"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void inOrderIterative(Node root) {\n        Deque<Node> stack = new ArrayDeque<>();\n        Node current = root;\n\n        while (current != null || !stack.isEmpty()) {\n            while (current != null) {\n                stack.push(current);\n                current = current.left; // go as far left as possible first\n            }\n            current = stack.pop();\n            System.out.print(current.data + \" \");\n            current = current.right;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        inOrderIterative(root);\n    }\n}",
+      "output": "4 2 5 1 3 ",
+      "retypePractice": true,
+      "retypeId": "java-tree-dfs-inorder-iter"
+    },
+    {
+      "type": "warning",
+      "text": "This is more involved than pre-order's iterative version because in-order needs to process a node BETWEEN its children -- the inner while loop pushes every node along the leftmost path first, mimicking exactly where recursive in-order would have gone before ever printing anything."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Pushing left before right in iterative pre-order, accidentally reversing the intended visiting order due to the stack's LIFO behavior.",
+        "Assuming iterative DFS is a DIFFERENT traversal from recursive DFS -- it's the SAME traversal, just with the call stack made explicit and manual.",
+        "Forgetting recursive DFS can StackOverflowError on sufficiently deep trees, which is exactly the practical reason iterative versions sometimes matter.",
+        "Trying to write iterative in-order the same simple way as iterative pre-order -- in-order's 'process between children' requirement genuinely needs the more careful two-loop structure shown here."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "How does recursive DFS relate to an explicit Stack-based iterative version?",
+          "answer": "They are the same underlying traversal -- recursion implicitly uses the JVM's call stack to track pending work, while an iterative version makes that stack explicit and manages it manually, producing identical output."
+        },
+        {
+          "question": "In iterative pre-order traversal, why is the right child pushed before the left child?",
+          "answer": "Because a stack is LIFO -- whatever is pushed last comes out first. Pushing right then left ensures left is popped (and thus visited) before right, matching pre-order's node-left-right visiting order."
+        },
+        {
+          "question": "Why might an iterative DFS implementation be preferred over a recursive one in practice?",
+          "answer": "A very deep tree can exhaust the JVM's fixed-size call stack with recursion, causing a StackOverflowError. An explicit Stack object lives on the heap and can grow much larger before hitting a memory limit."
+        }
+      ],
+      "thirtySecondAnswer": "Iterative DFS rewrites the recursive pre/in/post-order traversals using an explicit Stack instead of the JVM's implicit call stack -- it's the same traversal, just made visible and manual. For pre-order, pushing the right child before the left ensures left is visited first, due to the stack's LIFO order, producing identical output to the recursive version. Iterative DFS matters practically because very deep trees can overflow the fixed-size call stack with recursion, while an explicit Stack object on the heap can grow much larger. In-order's iterative version is trickier, requiring a loop that first descends fully left before processing any node, mirroring where recursion would have gone before printing."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Recursive DFS = an invisible stack the JVM manages for you. Iterative DFS = the SAME stack, now visible in your own hands. Push right, then left -- LIFO flips it back to the correct visiting order."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "How does iterative DFS relate to recursive DFS?",
+        "Why is the right child pushed before the left child in iterative pre-order?",
+        "Why might you prefer an iterative DFS over a recursive one for a very deep tree?",
+        "What makes iterative in-order trickier than iterative pre-order?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-tree-dfs-preorder-iter", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void preOrderIterative(Node root) {\n        if (root == null) return;\n\n        Deque<Node> stack = new ArrayDeque<>();\n        stack.push(root);\n\n        while (!stack.isEmpty()) {\n            Node current = stack.pop();\n            System.out.print(current.data + \" \");\n\n            // Push RIGHT first, so LEFT gets popped (and thus visited) first\n            if (current.right != null) stack.push(current.right);\n            if (current.left != null) stack.push(current.left);\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        preOrderIterative(root);\n    }\n}", "output": "1 2 4 5 3 " },
+    { "id": "java-tree-dfs-inorder-iter", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void inOrderIterative(Node root) {\n        Deque<Node> stack = new ArrayDeque<>();\n        Node current = root;\n\n        while (current != null || !stack.isEmpty()) {\n            while (current != null) {\n                stack.push(current);\n                current = current.left; // go as far left as possible first\n            }\n            current = stack.pop();\n            System.out.print(current.data + \" \");\n            current = current.right;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        inOrderIterative(root);\n    }\n}", "output": "4 2 5 1 3 " }
+  ],
+  "retypePractice": [
+    { "id": "java-tree-dfs-preorder-iter", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void preOrderIterative(Node root) {\n        if (root == null) return;\n\n        Deque<Node> stack = new ArrayDeque<>();\n        stack.push(root);\n\n        while (!stack.isEmpty()) {\n            Node current = stack.pop();\n            System.out.print(current.data + \" \");\n\n            // Push RIGHT first, so LEFT gets popped (and thus visited) first\n            if (current.right != null) stack.push(current.right);\n            if (current.left != null) stack.push(current.left);\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        preOrderIterative(root);\n    }\n}" },
+    { "id": "java-tree-dfs-inorder-iter", "reference": "import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void inOrderIterative(Node root) {\n        Deque<Node> stack = new ArrayDeque<>();\n        Node current = root;\n\n        while (current != null || !stack.isEmpty()) {\n            while (current != null) {\n                stack.push(current);\n                current = current.left; // go as far left as possible first\n            }\n            current = stack.pop();\n            System.out.print(current.data + \" \");\n            current = current.right;\n        }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        inOrderIterative(root);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-tree-dfs-preorder-iter", "java-tree-dfs-inorder-iter"]
+  }
+}
