@@ -1,0 +1,160 @@
+{
+  "id": "java-tree-traversals",
+  "moduleId": "trees",
+  "title": "Tree Traversals: Pre-order, In-order, Post-order",
+  "description": "Formally naming the printInOrder pattern from Binary Search Trees, and its two siblings -- three ways to visit every node, differing only in WHEN you process the current node.",
+  "objectives": [
+    "Implement pre-order, in-order, and post-order traversal recursively",
+    "Understand each traversal's visiting order and a use case for each",
+    "Recognize these as depth-first traversals (previewed for the next lesson)"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Same Tree, Three Different Orders"
+    },
+    {
+      "type": "paragraph",
+      "text": "In Binary Search Trees, printInOrder visited left, then the node, then right. That's ONE of three classic traversal orders -- all three visit every node exactly once, differing only in WHEN the current node is processed relative to its children."
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n    }\n}"
+    },
+    {
+      "type": "note",
+      "text": "We'll trace all three traversals against this SAME tree throughout this lesson:\n        1\n       / \\\n      2   3\n     / \\\n    4   5"
+    },
+    {
+      "type": "heading",
+      "text": "2. Pre-order: Node, Left, Right"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void preOrder(Node node) {\n        if (node == null) return;\n        System.out.print(node.data + \" \"); // process NODE first\n        preOrder(node.left);\n        preOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        preOrder(root);\n    }\n}",
+      "output": "1 2 4 5 3 ",
+      "retypePractice": true,
+      "retypeId": "java-traversal-preorder"
+    },
+    {
+      "type": "note",
+      "text": "Pre-order visits the node BEFORE its children -- useful for creating a COPY of a tree, since you write down the parent before its children exist in the copy."
+    },
+    {
+      "type": "heading",
+      "text": "3. In-order: Left, Node, Right"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void inOrder(Node node) {\n        if (node == null) return;\n        inOrder(node.left);\n        System.out.print(node.data + \" \"); // process NODE in the middle\n        inOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        inOrder(root);\n    }\n}",
+      "output": "4 2 5 1 3 ",
+      "retypePractice": true,
+      "retypeId": "java-traversal-inorder"
+    },
+    {
+      "type": "warning",
+      "text": "This is the EXACT function that was called printInOrder in Binary Search Trees, now given its formal name. Recall: for a BST specifically, in-order traversal always visits values in ascending sorted order -- that guarantee does NOT hold for a plain (non-BST) binary tree, like the one used in this lesson."
+    },
+    {
+      "type": "heading",
+      "text": "4. Post-order: Left, Right, Node"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void postOrder(Node node) {\n        if (node == null) return;\n        postOrder(node.left);\n        postOrder(node.right);\n        System.out.print(node.data + \" \"); // process NODE last\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        postOrder(root);\n    }\n}",
+      "output": "4 5 2 3 1 ",
+      "retypePractice": true,
+      "retypeId": "java-traversal-postorder"
+    },
+    {
+      "type": "note",
+      "text": "Post-order visits the node AFTER both its children -- useful for DELETING a tree safely (delete children before the parent that references them) or computing something that depends on children's results first, like the height calculation from Binary Trees, which is itself a post-order-shaped computation."
+    },
+    {
+      "type": "table",
+      "title": "The three orders, side by side",
+      "headers": ["Traversal", "Order", "Common use case"],
+      "rows": [
+        ["Pre-order", "Node, Left, Right", "Copying/serializing a tree's structure"],
+        ["In-order", "Left, Node, Right", "Getting sorted output from a BST"],
+        ["Post-order", "Left, Right, Node", "Deleting a tree, or computations needing children's results first"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "5. These Are All Depth-First"
+    },
+    {
+      "type": "note",
+      "text": "All three traversals dive as DEEP as possible down one branch before backtracking to explore another -- this is Depth-First Search (DFS), previewed here and covered as its own dedicated lesson, contrasted with Breadth-First Search (BFS / Level Order), covered right after."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing the three traversal orders -- the only difference is WHERE the node's own processing line sits relative to the two recursive calls.",
+        "Assuming in-order traversal gives sorted output for ANY binary tree -- that guarantee only holds specifically for a Binary Search Tree.",
+        "Forgetting the base case (node == null) -- without it, every traversal crashes with a NullPointerException at the tree's edges.",
+        "Using the wrong traversal for a task -- e.g. using pre-order when a computation genuinely needs children's results first (post-order's job)."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between pre-order, in-order, and post-order traversal?",
+          "answer": "They differ only in when the current node is processed relative to its children: pre-order processes it first (node, left, right), in-order processes it between its children (left, node, right), and post-order processes it last (left, right, node)."
+        },
+        {
+          "question": "Which traversal gives sorted output, and under what condition?",
+          "answer": "In-order traversal, but only when the tree is specifically a Binary Search Tree -- a plain binary tree with no BST ordering gives no such guarantee."
+        },
+        {
+          "question": "Why is post-order traversal useful for deleting a tree?",
+          "answer": "It processes both children before the parent node itself, ensuring a node's children are fully handled (e.g. deleted) before the node that references them is removed."
+        }
+      ],
+      "thirtySecondAnswer": "Pre-order, in-order, and post-order all visit every node in a tree exactly once, differing only in when the current node is processed relative to recursing into its left and right children: pre-order processes the node first, in-order processes it between the two recursive calls, and post-order processes it last. In-order traversal specifically produces sorted output when the tree is a Binary Search Tree. Post-order suits tasks needing children's results first, like safe tree deletion or height computation. All three are forms of Depth-First Search, diving fully down one branch before backtracking -- contrasted with Breadth-First (Level Order) traversal, covered next."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Pre = node comes BEFORE its kids (prefix). In = node sits IN BETWEEN its kids (infix). Post = node comes AFTER its kids (postfix). Same recursion, node's print line just moves position."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the key difference between pre-order, in-order, and post-order?",
+        "For which kind of tree does in-order traversal give sorted output?",
+        "Why is post-order suited to safely deleting a tree?",
+        "What broader category of traversal do all three belong to?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-traversal-preorder", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void preOrder(Node node) {\n        if (node == null) return;\n        System.out.print(node.data + \" \"); // process NODE first\n        preOrder(node.left);\n        preOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        preOrder(root);\n    }\n}", "output": "1 2 4 5 3 " },
+    { "id": "java-traversal-inorder", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void inOrder(Node node) {\n        if (node == null) return;\n        inOrder(node.left);\n        System.out.print(node.data + \" \"); // process NODE in the middle\n        inOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        inOrder(root);\n    }\n}", "output": "4 2 5 1 3 " },
+    { "id": "java-traversal-postorder", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void postOrder(Node node) {\n        if (node == null) return;\n        postOrder(node.left);\n        postOrder(node.right);\n        System.out.print(node.data + \" \"); // process NODE last\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        postOrder(root);\n    }\n}", "output": "4 5 2 3 1 " }
+  ],
+  "retypePractice": [
+    { "id": "java-traversal-preorder", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void preOrder(Node node) {\n        if (node == null) return;\n        System.out.print(node.data + \" \"); // process NODE first\n        preOrder(node.left);\n        preOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        preOrder(root);\n    }\n}" },
+    { "id": "java-traversal-inorder", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void inOrder(Node node) {\n        if (node == null) return;\n        inOrder(node.left);\n        System.out.print(node.data + \" \"); // process NODE in the middle\n        inOrder(node.right);\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        inOrder(root);\n    }\n}" },
+    { "id": "java-traversal-postorder", "reference": "public class Main {\n    static class Node {\n        int data;\n        Node left, right;\n        Node(int data) { this.data = data; }\n    }\n\n    static void postOrder(Node node) {\n        if (node == null) return;\n        postOrder(node.left);\n        postOrder(node.right);\n        System.out.print(node.data + \" \"); // process NODE last\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(1);\n        root.left = new Node(2);\n        root.right = new Node(3);\n        root.left.left = new Node(4);\n        root.left.right = new Node(5);\n\n        postOrder(root);\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-traversal-preorder", "java-traversal-inorder", "java-traversal-postorder"]
+  }
+}
