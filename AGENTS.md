@@ -105,7 +105,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | 10 | Stacks & Queues | ✅ done | Stack and Monotonic Stack, Circular Queue, Deque Deep Dive (Sliding Window Maximum) |
 | 11 | Heap | ✅ done | PriorityQueue (Java's Built-In Heap), Manual Heap Implementation, Heap Sort |
 | 12 | Trees | ✅ done | Binary Trees, Binary Search Trees, Tree Traversals (Pre/In/Post-order), BFS (Level Order), DFS (Iterative with Stack), Trie |
-| 13 | Graphs | ⬜ | — |
+| 13 | Graphs | ✅ done | Graph Representation (Adjacency List/Matrix), Graph BFS, Graph DFS, Topological Sort, Union-Find (DSU) |
 | 14 | Greedy & Dynamic Programming | ⬜ | — |
 
 LeetCode integration: not started (begins only when user says "start adding LeetCode problems").
