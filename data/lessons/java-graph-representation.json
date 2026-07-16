@@ -1,0 +1,153 @@
+{
+  "id": "java-graph-representation",
+  "moduleId": "graphs",
+  "title": "Graph Representation: Adjacency List and Matrix",
+  "description": "Beyond trees -- nodes that can connect to ANY other node, not just two children, represented two different ways in code.",
+  "objectives": [
+    "Understand a graph as nodes (vertices) and connections (edges), more general than a tree",
+    "Represent a graph with an adjacency list (List of Lists / Map of Lists)",
+    "Represent the same graph with an adjacency matrix, and compare trade-offs"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Beyond Trees: Arbitrary Connections"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every tree in the Trees module had a strict rule: each node has AT MOST two children (or, for a Trie, one parent), and there's exactly one path from the root to any node. A graph drops these restrictions entirely -- any node can connect to any number of other nodes, in any pattern, including cycles."
+    },
+    {
+      "type": "definition",
+      "term": "Graph",
+      "text": "A collection of vertices (nodes) connected by edges, with no restriction on how many connections a vertex can have or what shape those connections form."
+    },
+    {
+      "type": "realLifeExample",
+      "title": "Social network analogy",
+      "text": "A tree is like a strict company org chart -- one boss per person. A graph is like a friendship network -- anyone can be friends with anyone, friendships can form loops (A-B-C-A), and there's no single 'root' friend everyone descends from."
+    },
+    {
+      "type": "heading",
+      "text": "2. Adjacency List: A List of Neighbors per Node"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        int n = 5; // nodes 0 through 4\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            adjList.add(new ArrayList<>());\n        }\n\n        // Undirected edges: 0-1, 0-2, 1-3, 2-4\n        addEdge(adjList, 0, 1);\n        addEdge(adjList, 0, 2);\n        addEdge(adjList, 1, 3);\n        addEdge(adjList, 2, 4);\n\n        System.out.println(adjList);\n    }\n\n    static void addEdge(List<List<Integer>> adjList, int u, int v) {\n        adjList.get(u).add(v);\n        adjList.get(v).add(u); // undirected -- both directions\n    }\n}",
+      "output": "[[1, 2], [0, 3], [0, 4], [1], [2]]",
+      "retypePractice": true,
+      "retypeId": "java-graph-adj-list"
+    },
+    {
+      "type": "definition",
+      "term": "Adjacency list",
+      "text": "A graph representation where each node stores a list of its directly connected neighbors -- commonly a List of Lists, or a Map<Node, List<Node>> for non-integer node identities."
+    },
+    {
+      "type": "note",
+      "text": "adjList.get(0) is [1, 2] -- node 0 connects directly to nodes 1 and 2. For an UNDIRECTED edge (a connection with no direction, like a two-way friendship), we add the connection in BOTH directions, as addEdge does here."
+    },
+    {
+      "type": "heading",
+      "text": "3. Adjacency Matrix: A Grid of Connections"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int[][] adjMatrix = new int[n][n];\n\n        addEdge(adjMatrix, 0, 1);\n        addEdge(adjMatrix, 0, 2);\n        addEdge(adjMatrix, 1, 3);\n        addEdge(adjMatrix, 2, 4);\n\n        for (int[] row : adjMatrix) {\n            System.out.println(java.util.Arrays.toString(row));\n        }\n    }\n\n    static void addEdge(int[][] adjMatrix, int u, int v) {\n        adjMatrix[u][v] = 1;\n        adjMatrix[v][u] = 1;\n    }\n}",
+      "output": "[0, 1, 1, 0, 0]\n[1, 0, 0, 1, 0]\n[1, 0, 0, 0, 1]\n[0, 1, 0, 0, 0]\n[0, 0, 1, 0, 0]",
+      "retypePractice": true,
+      "retypeId": "java-graph-adj-matrix"
+    },
+    {
+      "type": "definition",
+      "term": "Adjacency matrix",
+      "text": "A graph representation using an n x n 2D array (recall 2D Arrays), where a 1 (or edge weight) at [i][j] means an edge exists between node i and node j, and 0 means no edge."
+    },
+    {
+      "type": "note",
+      "text": "adjMatrix[0][1] = 1 and adjMatrix[1][0] = 1 both being set represents the same undirected edge -- notice the matrix here is symmetric across its diagonal, which is always true for undirected graphs."
+    },
+    {
+      "type": "heading",
+      "text": "4. Comparing the Two Representations"
+    },
+    {
+      "type": "table",
+      "title": "Adjacency list vs adjacency matrix",
+      "headers": ["", "Adjacency List", "Adjacency Matrix"],
+      "rows": [
+        ["Space used", "O(V + E) -- proportional to actual edges", "O(V^2) -- always, regardless of edge count"],
+        ["Check if edge (u,v) exists", "O(degree of u) -- scan u's neighbor list", "O(1) -- direct lookup adjMatrix[u][v]"],
+        ["List all of a node's neighbors", "O(degree of u) -- already a list", "O(V) -- must scan the entire row"],
+        ["Best for", "SPARSE graphs (few edges relative to nodes)", "DENSE graphs, or when edge-existence checks are frequent"]
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "Most real-world graphs (social networks, road maps, dependency graphs) are SPARSE -- each node connects to relatively few others, not everyone. For these, adjacency list's O(V + E) space is far more efficient than a matrix's guaranteed O(V^2), which is why adjacency list is the more common default choice in practice, including for the BFS and DFS lessons coming up next."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Forgetting to add the edge in BOTH directions for an undirected graph -- adjList.get(u).add(v) alone only represents a one-way (directed) connection.",
+        "Using an adjacency matrix by default for large, sparse graphs, wasting O(V^2) space when most of the matrix would just be zeros.",
+        "Confusing a graph's generality with a tree's restrictions -- a graph can have cycles and multiple paths between nodes; a tree cannot.",
+        "Assuming adjacency list gives O(1) edge-existence checks like a matrix does -- checking if v is a neighbor of u requires scanning u's list, not a direct lookup."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the key structural difference between a graph and a tree?",
+          "answer": "A tree restricts each node to at most a fixed number of children (e.g. 2 for binary trees) with exactly one path from the root to any node and no cycles. A graph has no such restriction -- any node can connect to any number of others, and cycles are allowed."
+        },
+        {
+          "question": "What is the space complexity of an adjacency list vs an adjacency matrix?",
+          "answer": "An adjacency list uses O(V + E) space, proportional to the actual number of vertices and edges. An adjacency matrix always uses O(V^2) space, regardless of how many edges actually exist."
+        },
+        {
+          "question": "When would an adjacency matrix be preferred over an adjacency list?",
+          "answer": "When the graph is dense (edges close to the maximum possible) or when frequent O(1) edge-existence checks (\"is there an edge between u and v?\") matter more than saving space -- for sparse graphs, an adjacency list is generally more efficient."
+        }
+      ],
+      "thirtySecondAnswer": "A graph generalizes a tree by removing restrictions on how nodes connect -- any node can link to any number of others, cycles are allowed, and there's no single root. Adjacency list represents this as a list of neighbors per node, using O(V + E) space -- efficient for the sparse graphs common in practice. Adjacency matrix represents it as an n x n grid where a 1 at [i][j] marks an edge, using O(V^2) space always, but giving O(1) edge-existence checks. Adjacency list is the more common default, especially for sparse graphs, and is what the upcoming BFS and DFS lessons build on."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "Adjacency list = each person's own contact list -- only stores who THEY actually know. Adjacency matrix = a full seating chart marking every possible pair -- checks are instant, but the chart's size never shrinks even if most seats are empty."
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "How does a graph differ structurally from a tree?",
+        "What is the space complexity of an adjacency list vs an adjacency matrix?",
+        "Why do you need to add an edge in both directions for an undirected graph's adjacency list?",
+        "When would you prefer an adjacency matrix over an adjacency list?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-graph-adj-list", "lang": "java", "filename": "Main.java", "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        int n = 5; // nodes 0 through 4\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            adjList.add(new ArrayList<>());\n        }\n\n        // Undirected edges: 0-1, 0-2, 1-3, 2-4\n        addEdge(adjList, 0, 1);\n        addEdge(adjList, 0, 2);\n        addEdge(adjList, 1, 3);\n        addEdge(adjList, 2, 4);\n\n        System.out.println(adjList);\n    }\n\n    static void addEdge(List<List<Integer>> adjList, int u, int v) {\n        adjList.get(u).add(v);\n        adjList.get(v).add(u); // undirected -- both directions\n    }\n}", "output": "[[1, 2], [0, 3], [0, 4], [1], [2]]" },
+    { "id": "java-graph-adj-matrix", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int[][] adjMatrix = new int[n][n];\n\n        addEdge(adjMatrix, 0, 1);\n        addEdge(adjMatrix, 0, 2);\n        addEdge(adjMatrix, 1, 3);\n        addEdge(adjMatrix, 2, 4);\n\n        for (int[] row : adjMatrix) {\n            System.out.println(java.util.Arrays.toString(row));\n        }\n    }\n\n    static void addEdge(int[][] adjMatrix, int u, int v) {\n        adjMatrix[u][v] = 1;\n        adjMatrix[v][u] = 1;\n    }\n}", "output": "[0, 1, 1, 0, 0]\n[1, 0, 0, 1, 0]\n[1, 0, 0, 0, 1]\n[0, 1, 0, 0, 0]\n[0, 0, 1, 0, 0]" }
+  ],
+  "retypePractice": [
+    { "id": "java-graph-adj-list", "reference": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        int n = 5; // nodes 0 through 4\n        List<List<Integer>> adjList = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            adjList.add(new ArrayList<>());\n        }\n\n        // Undirected edges: 0-1, 0-2, 1-3, 2-4\n        addEdge(adjList, 0, 1);\n        addEdge(adjList, 0, 2);\n        addEdge(adjList, 1, 3);\n        addEdge(adjList, 2, 4);\n\n        System.out.println(adjList);\n    }\n\n    static void addEdge(List<List<Integer>> adjList, int u, int v) {\n        adjList.get(u).add(v);\n        adjList.get(v).add(u); // undirected -- both directions\n    }\n}" },
+    { "id": "java-graph-adj-matrix", "reference": "public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int[][] adjMatrix = new int[n][n];\n\n        addEdge(adjMatrix, 0, 1);\n        addEdge(adjMatrix, 0, 2);\n        addEdge(adjMatrix, 1, 3);\n        addEdge(adjMatrix, 2, 4);\n\n        for (int[] row : adjMatrix) {\n            System.out.println(java.util.Arrays.toString(row));\n        }\n    }\n\n    static void addEdge(int[][] adjMatrix, int u, int v) {\n        adjMatrix[u][v] = 1;\n        adjMatrix[v][u] = 1;\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-graph-adj-list", "java-graph-adj-matrix"]
+  }
+}
