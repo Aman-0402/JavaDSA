@@ -135,6 +135,334 @@
         "Why is left + (right - left) / 2 safer than (left + right) / 2?",
         "How would you modify binary search to find the FIRST occurrence of a duplicated value?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-704",
+      "number": 704,
+      "title": "Binary Search",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/binary-search/",
+      "problemStatement": "Given a sorted array of integers nums and an integer target, return the index of target if it exists, or -1 otherwise. Write an O(log n) algorithm.",
+      "examples": [
+        { "input": "nums = [-1,0,3,5,9,12], target = 9", "output": "4" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4", "nums is sorted in ascending order, all unique"],
+      "hints": ["This IS the exact binarySearch function from this lesson's Section 2, unmodified."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Linear scan, checking every element.",
+          "code": "class Solution {\n    public int search(int[] nums, int target) {\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] == target) return i;\n        }\n        return -1;\n    }\n}",
+          "output": "For nums = [-1,0,3,5,9,12], target = 9: 4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Standard binary search, exactly as covered in this lesson.",
+          "code": "class Solution {\n    public int search(int[] nums, int target) {\n        int left = 0, right = nums.length - 1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] == target) return mid;\n            else if (nums[mid] < target) left = mid + 1;\n            else right = mid - 1;\n        }\n        return -1;\n    }\n}",
+          "output": "For nums = [-1,0,3,5,9,12], target = 9: 4",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-35",
+      "number": 35,
+      "title": "Search Insert Position",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/search-insert-position/",
+      "problemStatement": "Given a sorted array of distinct integers nums and a target value, return the index if the target is found. If not, return the index where it would be inserted to keep the array sorted.",
+      "examples": [
+        { "input": "nums = [1,3,5,6], target = 5", "output": "2" },
+        { "input": "nums = [1,3,5,6], target = 2", "output": "1" }
+      ],
+      "constraints": ["1 <= nums.length <= 10^4", "nums sorted, distinct"],
+      "hints": ["Standard binary search, but instead of returning -1 on a miss, return where left ends up -- that IS the correct insertion point."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Linear scan for the first index whose value is >= target.",
+          "code": "class Solution {\n    public int searchInsert(int[] nums, int target) {\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] >= target) return i;\n        }\n        return nums.length;\n    }\n}",
+          "output": "For nums = [1,3,5,6], target = 2: 1",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search; when the loop ends without finding target, left has naturally converged to the correct insertion index.",
+          "code": "class Solution {\n    public int searchInsert(int[] nums, int target) {\n        int left = 0, right = nums.length - 1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] == target) return mid;\n            else if (nums[mid] < target) left = mid + 1;\n            else right = mid - 1;\n        }\n        return left;\n    }\n}",
+          "output": "For nums = [1,3,5,6], target = 2: 1",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-69",
+      "number": 69,
+      "title": "Sqrt(x)",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/sqrtx/",
+      "problemStatement": "Given a non-negative integer x, return the square root of x rounded DOWN to the nearest integer. You must not use any built-in exponent function.",
+      "examples": [
+        { "input": "x = 8", "output": "2", "explanation": "sqrt(8) = 2.828..., truncated to 2." }
+      ],
+      "constraints": ["0 <= x <= 2^31 - 1"],
+      "hints": ["Binary search on the ANSWER itself: search the range [0, x] for the largest value whose square doesn't exceed x."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Try every integer from 0 upward until its square exceeds x.",
+          "code": "class Solution {\n    public int mySqrt(int x) {\n        int i = 0;\n        while ((long) (i + 1) * (i + 1) <= x) {\n            i++;\n        }\n        return i;\n    }\n}",
+          "output": "For x = 8: 2",
+          "timeComplexity": "O(sqrt(x))",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search on the range [0, x] for the largest value whose square is <= x -- using long to avoid overflow when squaring.",
+          "code": "class Solution {\n    public int mySqrt(int x) {\n        if (x < 2) return x;\n\n        long left = 1, right = x;\n        long answer = 1;\n        while (left <= right) {\n            long mid = left + (right - left) / 2;\n            if (mid * mid <= x) {\n                answer = mid;\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return (int) answer;\n    }\n}",
+          "output": "For x = 8: 2",
+          "timeComplexity": "O(log x)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-367",
+      "number": 367,
+      "title": "Valid Perfect Square",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/valid-perfect-square/",
+      "problemStatement": "Given a positive integer num, return true if num is a perfect square, false otherwise. You must not use any built-in exponent function.",
+      "examples": [
+        { "input": "num = 16", "output": "true" },
+        { "input": "num = 14", "output": "false" }
+      ],
+      "constraints": ["1 <= num <= 2^31 - 1"],
+      "hints": ["Same binary-search-on-the-answer technique as Sqrt(x) -- find the integer square root, then check if squaring it gives back exactly num."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Try every integer from 1 upward until its square reaches or exceeds num.",
+          "code": "class Solution {\n    public boolean isPerfectSquare(int num) {\n        long i = 1;\n        while (i * i < num) i++;\n        return i * i == num;\n    }\n}",
+          "output": "For num = 16: true",
+          "timeComplexity": "O(sqrt(num))",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search for the integer square root, then verify by squaring it back.",
+          "code": "class Solution {\n    public boolean isPerfectSquare(int num) {\n        long left = 1, right = num;\n        while (left <= right) {\n            long mid = left + (right - left) / 2;\n            long square = mid * mid;\n            if (square == num) return true;\n            else if (square < num) left = mid + 1;\n            else right = mid - 1;\n        }\n        return false;\n    }\n}",
+          "output": "For num = 16: true",
+          "timeComplexity": "O(log num)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-374",
+      "number": 374,
+      "title": "Guess Number Higher or Lower",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/guess-number-higher-or-lower/",
+      "problemStatement": "A number is picked between 1 and n. You must guess which number is picked, using a provided API guess(num) that returns -1 if the pick is lower than num, 1 if higher, and 0 if you guessed correctly. Minimize the number of calls.",
+      "examples": [
+        { "input": "n = 10, pick = 6", "output": "6" }
+      ],
+      "constraints": ["1 <= n <= 2^31 - 1", "1 <= pick <= n"],
+      "hints": ["The guess() API result plays the exact role of the arr[mid] comparison in ordinary binary search -- the 'array' here is just the range of numbers 1 to n, never materialized."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Guess every number from 1 upward until correct -- valid, but far more calls than necessary.",
+          "code": "/* The guess API is defined in the parent class GuessGame.\n   int guess(int num); */\nclass Solution extends GuessGame {\n    public int guessNumber(int n) {\n        for (int i = 1; i <= n; i++) {\n            if (guess(i) == 0) return i;\n        }\n        return -1;\n    }\n}",
+          "output": "For n = 10, pick = 6: 6",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search over the range [1, n], using guess()'s result exactly like a comparison against a sorted array's middle element.",
+          "code": "/* The guess API is defined in the parent class GuessGame.\n   int guess(int num); */\nclass Solution extends GuessGame {\n    public int guessNumber(int n) {\n        int left = 1, right = n;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            int result = guess(mid);\n            if (result == 0) return mid;\n            else if (result < 0) right = mid - 1; // pick is lower\n            else left = mid + 1; // pick is higher\n        }\n        return -1;\n    }\n}",
+          "output": "For n = 10, pick = 6: 6",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-278",
+      "number": 278,
+      "title": "First Bad Version",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/first-bad-version/",
+      "problemStatement": "You are given n versions [1, n], and want to find the first bad one, given that all versions after a bad one are also bad. You are provided an API isBadVersion(version) that returns whether a given version is bad. Minimize the number of calls.",
+      "examples": [
+        { "input": "n = 5, bad = 4", "output": "4", "explanation": "Versions 4 and 5 are bad; the FIRST bad version is 4." }
+      ],
+      "constraints": ["1 <= bad <= n <= 2^31 - 1"],
+      "hints": ["This is exactly this course's firstOccurrence pattern from the Binary Search lesson's Section 5, but the 'array' being searched is conceptual (isBadVersion) rather than a real array."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Check every version starting from 1 until the first bad one is found.",
+          "code": "/* The isBadVersion API is defined in the parent class VersionControl.\n   boolean isBadVersion(int version); */\nclass Solution extends VersionControl {\n    public int firstBadVersion(int n) {\n        for (int i = 1; i <= n; i++) {\n            if (isBadVersion(i)) return i;\n        }\n        return -1;\n    }\n}",
+          "output": "For n = 5, bad = 4: 4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search for the leftmost 'bad' version -- whenever isBadVersion(mid) is true, it might still not be the FIRST bad one, so search left; otherwise search right.",
+          "code": "/* The isBadVersion API is defined in the parent class VersionControl.\n   boolean isBadVersion(int version); */\nclass Solution extends VersionControl {\n    public int firstBadVersion(int n) {\n        int left = 1, right = n;\n        while (left < right) {\n            int mid = left + (right - left) / 2;\n            if (isBadVersion(mid)) {\n                right = mid; // mid might BE the first bad version -- keep it in range\n            } else {\n                left = mid + 1;\n            }\n        }\n        return left;\n    }\n}",
+          "output": "For n = 5, bad = 4: 4",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-34",
+      "number": 34,
+      "title": "Find First and Last Position of Element in Sorted Array",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/",
+      "problemStatement": "Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value. If not found, return [-1, -1]. Must run in O(log n).",
+      "examples": [
+        { "input": "nums = [5,7,7,8,8,10], target = 8", "output": "[3,4]" },
+        { "input": "nums = [5,7,7,8,8,10], target = 6", "output": "[-1,-1]" }
+      ],
+      "constraints": ["0 <= nums.length <= 10^5", "-10^9 <= nums[i], target <= 10^9"],
+      "hints": ["Run this lesson's firstOccurrence twice: once as-is for the leftmost bound, once with the direction flipped (search right after a match) for the rightmost bound."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Linear scan tracking the first and last index where nums[i] == target.",
+          "code": "class Solution {\n    public int[] searchRange(int[] nums, int target) {\n        int first = -1, last = -1;\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] == target) {\n                if (first == -1) first = i;\n                last = i;\n            }\n        }\n        return new int[]{first, last};\n    }\n}",
+          "output": "For nums = [5,7,7,8,8,10], target = 8: [3,4]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Two binary searches: one biased to find the leftmost match, one biased to find the rightmost match.",
+          "code": "class Solution {\n    public int[] searchRange(int[] nums, int target) {\n        return new int[]{findBound(nums, target, true), findBound(nums, target, false)};\n    }\n\n    private int findBound(int[] nums, int target, boolean findFirst) {\n        int left = 0, right = nums.length - 1, result = -1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] == target) {\n                result = mid;\n                if (findFirst) right = mid - 1; // keep searching LEFT for an earlier match\n                else left = mid + 1;            // keep searching RIGHT for a later match\n            } else if (nums[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n        return result;\n    }\n}",
+          "output": "For nums = [5,7,7,8,8,10], target = 8: [3,4]",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-33",
+      "number": 33,
+      "title": "Search in Rotated Sorted Array",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+      "problemStatement": "Given the array nums after a possible rotation and an integer target, return the index of target if it exists, or -1 otherwise, in O(log n) time.",
+      "examples": [
+        { "input": "nums = [4,5,6,7,0,1,2], target = 0", "output": "4" },
+        { "input": "nums = [4,5,6,7,0,1,2], target = 3", "output": "-1" }
+      ],
+      "constraints": ["1 <= nums.length <= 5000", "nums is an ascending array, possibly rotated, all values distinct"],
+      "hints": ["At every step, AT LEAST ONE half of the current range is genuinely sorted -- determine which half is sorted, then check if target falls within that half's range to decide which side to search."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Linear scan for the target.",
+          "code": "class Solution {\n    public int search(int[] nums, int target) {\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] == target) return i;\n        }\n        return -1;\n    }\n}",
+          "output": "For nums = [4,5,6,7,0,1,2], target = 0: 4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Modified binary search: identify which half (left or right of mid) is properly sorted, then decide which side to continue into based on whether target falls in that sorted half's range.",
+          "code": "class Solution {\n    public int search(int[] nums, int target) {\n        int left = 0, right = nums.length - 1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] == target) return mid;\n\n            if (nums[left] <= nums[mid]) { // left half is sorted\n                if (nums[left] <= target && target < nums[mid]) {\n                    right = mid - 1;\n                } else {\n                    left = mid + 1;\n                }\n            } else { // right half is sorted\n                if (nums[mid] < target && target <= nums[right]) {\n                    left = mid + 1;\n                } else {\n                    right = mid - 1;\n                }\n            }\n        }\n        return -1;\n    }\n}",
+          "output": "For nums = [4,5,6,7,0,1,2], target = 0: 4",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-153",
+      "number": 153,
+      "title": "Find Minimum in Rotated Sorted Array",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+      "problemStatement": "Given a rotated sorted array nums of unique elements, return the minimum element, in O(log n) time.",
+      "examples": [
+        { "input": "nums = [3,4,5,1,2]", "output": "1" },
+        { "input": "nums = [4,5,6,7,0,1,2]", "output": "0" }
+      ],
+      "constraints": ["n == nums.length", "1 <= n <= 5000", "nums was originally sorted, then rotated between 1 and n times"],
+      "hints": ["Compare nums[mid] to nums[right] -- if nums[mid] > nums[right], the minimum lies to the RIGHT of mid; otherwise it's at mid or to the LEFT."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Scan the whole array tracking the minimum seen.",
+          "code": "class Solution {\n    public int findMin(int[] nums) {\n        int min = nums[0];\n        for (int num : nums) {\n            min = Math.min(min, num);\n        }\n        return min;\n    }\n}",
+          "output": "For nums = [3,4,5,1,2]: 1",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search comparing nums[mid] to nums[right] to determine which half contains the rotation point (and thus the minimum).",
+          "code": "class Solution {\n    public int findMin(int[] nums) {\n        int left = 0, right = nums.length - 1;\n        while (left < right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] > nums[right]) {\n                left = mid + 1;\n            } else {\n                right = mid;\n            }\n        }\n        return nums[left];\n    }\n}",
+          "output": "For nums = [3,4,5,1,2]: 1",
+          "timeComplexity": "O(log n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-875",
+      "number": 875,
+      "title": "Koko Eating Bananas",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/koko-eating-bananas/",
+      "problemStatement": "Koko has piles of bananas and h hours to eat them all. Each hour she chooses a pile and eats k bananas from it (or the whole pile if it has fewer than k). Return the minimum integer eating speed k such that she can eat all bananas within h hours.",
+      "examples": [
+        { "input": "piles = [3,6,7,11], h = 8", "output": "4" }
+      ],
+      "constraints": ["1 <= piles.length <= 10^4", "piles.length <= h <= 10^9", "1 <= piles[i] <= 10^9"],
+      "hints": [
+        "Binary search on the ANSWER (the eating speed k itself), not on the piles array -- this is a search over the range [1, max(piles)].",
+        "For a candidate speed k, compute the total hours needed; feasibility (hours <= h) is monotonic in k, which is exactly what makes binary search valid here."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Try every possible speed from 1 upward, checking feasibility, until the smallest working speed is found.",
+          "code": "class Solution {\n    public int minEatingSpeed(int[] piles, int h) {\n        int maxPile = 0;\n        for (int p : piles) maxPile = Math.max(maxPile, p);\n\n        for (int k = 1; k <= maxPile; k++) {\n            if (hoursNeeded(piles, k) <= h) {\n                return k;\n            }\n        }\n        return maxPile;\n    }\n\n    private long hoursNeeded(int[] piles, int k) {\n        long hours = 0;\n        for (int p : piles) {\n            hours += (p + k - 1) / k; // ceiling division\n        }\n        return hours;\n    }\n}",
+          "output": "For piles = [3,6,7,11], h = 8: 4",
+          "timeComplexity": "O(maxPile * n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Binary search on the eating speed itself, in the range [1, max(piles)], using feasibility (hours needed <= h) to decide direction.",
+          "code": "class Solution {\n    public int minEatingSpeed(int[] piles, int h) {\n        int left = 1, right = 0;\n        for (int p : piles) right = Math.max(right, p);\n\n        while (left < right) {\n            int mid = left + (right - left) / 2;\n            if (hoursNeeded(piles, mid) <= h) {\n                right = mid;\n            } else {\n                left = mid + 1;\n            }\n        }\n        return left;\n    }\n\n    private long hoursNeeded(int[] piles, int k) {\n        long hours = 0;\n        for (int p : piles) {\n            hours += (p + k - 1) / k;\n        }\n        return hours;\n    }\n}",
+          "output": "For piles = [3,6,7,11], h = 8: 4",
+          "timeComplexity": "O(n * log(maxPile))",
+          "spaceComplexity": "O(1)"
+        }
+      ]
     }
   ],
   "codeExamples": [
