@@ -116,6 +116,38 @@
         "Why must reading the queue use (front + i) % length instead of a plain loop?",
         "What real Java class already implements this wraparound behavior internally?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-622",
+      "number": 622,
+      "title": "Design Circular Queue",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/design-circular-queue/",
+      "problemStatement": "Design your implementation of a circular queue, supporting enQueue, deQueue, Front, Rear, isEmpty, and isFull, all in O(1).",
+      "examples": [
+        { "input": "MyCircularQueue(3); enQueue(1); enQueue(2); enQueue(3); enQueue(4); Rear(); isFull(); deQueue(); enQueue(4); Rear()", "output": "true, true, true, false, 3, true, true, true, 4", "explanation": "Capacity 3 fills after 3 enqueues; a 4th enqueue fails until a deQueue makes room." }
+      ],
+      "constraints": ["1 <= k <= 1000", "0 <= value <= 1000", "At most 3000 calls to the operations"],
+      "hints": ["This IS the exact circular queue built in this lesson -- front/size tracking with modulo wraparound, wrapped in a class with the LeetCode-required method names."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Use a plain ArrayDeque, forgoing the fixed-size circular array entirely -- functionally correct, but doesn't demonstrate the circular buffer mechanics this problem is testing.",
+          "code": "class MyCircularQueue {\n    private java.util.Deque<Integer> deque = new java.util.ArrayDeque<>();\n    private int capacity;\n\n    public MyCircularQueue(int k) {\n        capacity = k;\n    }\n\n    public boolean enQueue(int value) {\n        if (deque.size() == capacity) return false;\n        deque.addLast(value);\n        return true;\n    }\n\n    public boolean deQueue() {\n        if (deque.isEmpty()) return false;\n        deque.removeFirst();\n        return true;\n    }\n\n    public int Front() {\n        return deque.isEmpty() ? -1 : deque.peekFirst();\n    }\n\n    public int Rear() {\n        return deque.isEmpty() ? -1 : deque.peekLast();\n    }\n\n    public boolean isEmpty() {\n        return deque.isEmpty();\n    }\n\n    public boolean isFull() {\n        return deque.size() == capacity;\n    }\n}",
+          "output": "Matches expected sequence: true, true, true, false, 3, true, true, true, 4",
+          "timeComplexity": "O(1) for all operations",
+          "spaceComplexity": "O(k)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "A fixed-size array with front index and size counter, exactly as built in this lesson's enqueue/dequeue functions.",
+          "code": "class MyCircularQueue {\n    private int[] queue;\n    private int front;\n    private int size;\n    private int capacity;\n\n    public MyCircularQueue(int k) {\n        queue = new int[k];\n        capacity = k;\n        front = 0;\n        size = 0;\n    }\n\n    public boolean enQueue(int value) {\n        if (size == capacity) return false;\n        int rear = (front + size) % capacity;\n        queue[rear] = value;\n        size++;\n        return true;\n    }\n\n    public boolean deQueue() {\n        if (size == 0) return false;\n        front = (front + 1) % capacity;\n        size--;\n        return true;\n    }\n\n    public int Front() {\n        return size == 0 ? -1 : queue[front];\n    }\n\n    public int Rear() {\n        return size == 0 ? -1 : queue[(front + size - 1) % capacity];\n    }\n\n    public boolean isEmpty() {\n        return size == 0;\n    }\n\n    public boolean isFull() {\n        return size == capacity;\n    }\n}",
+          "output": "Matches expected sequence: true, true, true, false, 3, true, true, true, 4",
+          "timeComplexity": "O(1) for all operations",
+          "spaceComplexity": "O(k) for the fixed-size array"
+        }
+      ]
     }
   ],
   "codeExamples": [
