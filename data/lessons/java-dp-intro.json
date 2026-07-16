@@ -142,6 +142,62 @@
         "Why might tabulation avoid a risk that memoization has for very large inputs?",
         "Do memoization and tabulation give different answers for the same problem?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-509-dp",
+      "number": 509,
+      "title": "Fibonacci Number",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/fibonacci-number/",
+      "problemStatement": "Given n, return the nth Fibonacci number (F(0) = 0, F(1) = 1, F(n) = F(n-1) + F(n-2)).",
+      "examples": [
+        { "input": "n = 4", "output": "3", "explanation": "F(0)=0, F(1)=1, F(2)=1, F(3)=2, F(4)=3." }
+      ],
+      "constraints": ["0 <= n <= 30"],
+      "hints": ["Naive recursion recomputes the same subproblems exponentially many times.", "Memoize, or better, tabulate bottom-up since each state only needs the previous two values (O(1) space possible)."],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Plain recursion with no caching -- recomputes F(n-2) many times across different call branches, giving exponential time.",
+          "code": "class Solution {\n    public int fib(int n) {\n        if (n <= 1) return n;\n        return fib(n - 1) + fib(n - 2);\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(2^n)",
+          "spaceComplexity": "O(n) recursion stack"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Bottom-up tabulation keeping only the last two values -- no need for a full array since F(n) only depends on F(n-1) and F(n-2).",
+          "code": "class Solution {\n    public int fib(int n) {\n        if (n <= 1) return n;\n        int prev2 = 0, prev1 = 1;\n        for (int i = 2; i <= n; i++) {\n            int current = prev1 + prev2;\n            prev2 = prev1;\n            prev1 = current;\n        }\n        return prev1;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-70",
+      "number": 70,
+      "title": "Climbing Stairs",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/climbing-stairs/",
+      "problemStatement": "You're climbing n stairs, taking 1 or 2 steps at a time. Return the number of distinct ways to reach the top.",
+      "examples": [
+        { "input": "n = 3", "output": "3", "explanation": "Ways: 1+1+1, 1+2, 2+1." }
+      ],
+      "constraints": ["1 <= n <= 45"],
+      "hints": ["ways(n) = ways(n-1) + ways(n-2) -- to reach step n, your last move was either a 1-step from n-1 or a 2-step from n-2.", "This is exactly the Fibonacci recurrence with different base cases."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Same O(1)-space tabulation pattern as Fibonacci: track only the previous two counts.",
+          "code": "class Solution {\n    public int climbStairs(int n) {\n        if (n <= 2) return n;\n        int prev2 = 1, prev1 = 2;\n        for (int i = 3; i <= n; i++) {\n            int current = prev1 + prev2;\n            prev2 = prev1;\n            prev1 = current;\n        }\n        return prev1;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
     }
   ],
   "codeExamples": [
