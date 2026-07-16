@@ -152,6 +152,102 @@
         "What choice does House Robber's recurrence represent at each index?",
         "Why does House Robber need two base cases (dp[0] and dp[1]) set explicitly?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-746",
+      "number": 746,
+      "title": "Min Cost Climbing Stairs",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/min-cost-climbing-stairs/",
+      "problemStatement": "Each step i has a cost[i] to step ON it. You can start at step 0 or 1, and move 1 or 2 steps at a time. Return the minimum cost to reach the top (one step past the last index).",
+      "examples": [
+        { "input": "cost = [10,15,20]", "output": "15", "explanation": "Start at step 1 (cost 15), then jump 2 steps to the top -- total cost 15." }
+      ],
+      "constraints": ["2 <= cost.length <= 1000"],
+      "hints": ["dp[i] = min cost to REACH step i = cost[i] + min(dp[i-1], dp[i-2]).", "Answer is min(dp[n-1], dp[n-2]) since you can jump into the 'top' from either of the last two steps."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Tabulate the min cost to reach each step, tracking only the previous two values.",
+          "code": "class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n        int prev2 = 0, prev1 = 0;\n        for (int i = 2; i <= cost.length; i++) {\n            int current = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]);\n            prev2 = prev1;\n            prev1 = current;\n        }\n        return prev1;\n    }\n}",
+          "output": "15",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-198",
+      "number": 198,
+      "title": "House Robber",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/house-robber/",
+      "problemStatement": "Given the money in each house along a street, return the max total you can rob without robbing two adjacent houses.",
+      "examples": [
+        { "input": "nums = [1,2,3,1]", "output": "4", "explanation": "Rob house 0 (1) and house 2 (3): total 4." }
+      ],
+      "constraints": ["1 <= nums.length <= 100"],
+      "hints": ["dp[i] = max(dp[i-1] (skip house i), dp[i-2] + nums[i] (rob house i))."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Tabulate max loot up to each house, tracking only the previous two values.",
+          "code": "class Solution {\n    public int rob(int[] nums) {\n        int prev2 = 0, prev1 = 0;\n        for (int num : nums) {\n            int current = Math.max(prev1, prev2 + num);\n            prev2 = prev1;\n            prev1 = current;\n        }\n        return prev1;\n    }\n}",
+          "output": "4",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-213",
+      "number": 213,
+      "title": "House Robber II",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/house-robber-ii/",
+      "problemStatement": "Same as House Robber, but the houses are arranged in a CIRCLE (first and last houses are adjacent).",
+      "examples": [
+        { "input": "nums = [2,3,2]", "output": "3", "explanation": "Can't rob both house 0 (2) and house 2 (2) since they're adjacent in the circle -- best is just house 1 (3)." }
+      ],
+      "constraints": ["1 <= nums.length <= 100"],
+      "hints": ["Since house 0 and house n-1 can't both be robbed, split into two cases: rob from the range [0, n-2] (excluding last), or [1, n-1] (excluding first). Run House Robber's linear solution on each and take the max."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Run the standard House Robber tabulation twice -- once excluding the last house, once excluding the first house -- and return the better result (this correctly handles the circular adjacency).",
+          "code": "class Solution {\n    public int rob(int[] nums) {\n        int n = nums.length;\n        if (n == 1) return nums[0];\n        return Math.max(robRange(nums, 0, n - 2), robRange(nums, 1, n - 1));\n    }\n\n    private int robRange(int[] nums, int start, int end) {\n        int prev2 = 0, prev1 = 0;\n        for (int i = start; i <= end; i++) {\n            int current = Math.max(prev1, prev2 + nums[i]);\n            prev2 = prev1;\n            prev1 = current;\n        }\n        return prev1;\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-322",
+      "number": 322,
+      "title": "Coin Change",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/coin-change/",
+      "problemStatement": "Given coin denominations and a target amount, return the fewest coins needed to make that amount, or -1 if impossible.",
+      "examples": [
+        { "input": "coins = [1,2,5], amount = 11", "output": "3", "explanation": "11 = 5 + 5 + 1, using 3 coins." }
+      ],
+      "constraints": ["1 <= coins.length <= 12", "0 <= amount <= 10^4"],
+      "hints": ["Greedy (always take the largest coin) fails for arbitrary denominations -- this needs DP.", "dp[amt] = 1 + min(dp[amt - coin]) over all usable coins; dp[0] = 0."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Bottom-up tabulation: dp[amt] holds the fewest coins to make amt, initialized to a large sentinel (amount+1) meaning unreachable, with dp[0] = 0. For each amount, try every coin and take the best.",
+          "code": "class Solution {\n    public int coinChange(int[] coins, int amount) {\n        int[] dp = new int[amount + 1];\n        Arrays.fill(dp, amount + 1);\n        dp[0] = 0;\n        for (int amt = 1; amt <= amount; amt++) {\n            for (int coin : coins) {\n                if (coin <= amt) {\n                    dp[amt] = Math.min(dp[amt], dp[amt - coin] + 1);\n                }\n            }\n        }\n        return dp[amount] > amount ? -1 : dp[amount];\n    }\n}",
+          "output": "3",
+          "timeComplexity": "O(amount * coins.length)",
+          "spaceComplexity": "O(amount)"
+        }
+      ]
     }
   ],
   "codeExamples": [
