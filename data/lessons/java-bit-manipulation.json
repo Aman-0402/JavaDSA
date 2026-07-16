@@ -1,0 +1,163 @@
+{
+  "id": "java-bit-manipulation",
+  "moduleId": "greedy-dp",
+  "title": "Bit Manipulation",
+  "description": "Working directly with a number's binary representation using &, |, ^, ~, <<, >> -- a completely different toolkit from arrays, trees, or DP.",
+  "objectives": [
+    "Use AND, OR, XOR, NOT, and shift operators on integers",
+    "Check, set, and clear a specific bit",
+    "Use XOR's self-canceling property to find a single non-duplicate in an array"
+  ],
+  "sections": [
+    {
+      "type": "heading",
+      "text": "1. Numbers Are Already Binary Underneath"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every int in Java (Data Types) is stored as 32 bits internally. Bit manipulation operates DIRECTLY on those bits, using operators we haven't covered since a brief mention in the Operators lesson."
+    },
+    {
+      "type": "table",
+      "title": "Bitwise operators",
+      "headers": ["Operator", "Name", "Effect"],
+      "rows": [
+        ["&", "AND", "1 only if BOTH bits are 1"],
+        ["|", "OR", "1 if EITHER bit is 1"],
+        ["^", "XOR", "1 if the bits are DIFFERENT"],
+        ["~", "NOT", "Flips every bit"],
+        ["<<", "Left shift", "Shifts bits left, filling with 0 -- equivalent to multiplying by 2 per shift"],
+        [">>", "Right shift", "Shifts bits right -- equivalent to dividing by 2 per shift (rounding toward negative infinity)"]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int a = 5;  // binary: 0101\n        int b = 3;  // binary: 0011\n\n        System.out.println(a & b); // 0001 = 1\n        System.out.println(a | b); // 0111 = 7\n        System.out.println(a ^ b); // 0110 = 6\n        System.out.println(a << 1); // 1010 = 10 (5 * 2)\n        System.out.println(a >> 1); // 0010 = 2 (5 / 2, rounded down)\n    }\n}",
+      "output": "1\n7\n6\n10\n2",
+      "retypePractice": true,
+      "retypeId": "java-bits-basic-ops"
+    },
+    {
+      "type": "heading",
+      "text": "2. Checking, Setting, and Clearing a Specific Bit"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static boolean isBitSet(int num, int position) {\n        return (num & (1 << position)) != 0;\n    }\n\n    static int setBit(int num, int position) {\n        return num | (1 << position);\n    }\n\n    static int clearBit(int num, int position) {\n        return num & ~(1 << position);\n    }\n\n    public static void main(String[] args) {\n        int num = 5; // binary: 0101\n\n        System.out.println(isBitSet(num, 0)); // bit 0 (value 1) -- is it set?\n        System.out.println(isBitSet(num, 1)); // bit 1 (value 2) -- is it set?\n\n        System.out.println(setBit(num, 1));   // set bit 1 -> 0111 = 7\n        System.out.println(clearBit(num, 0)); // clear bit 0 -> 0100 = 4\n    }\n}",
+      "output": "true\nfalse\n7\n4",
+      "retypePractice": true,
+      "retypeId": "java-bits-check-set-clear"
+    },
+    {
+      "type": "note",
+      "text": "1 << position creates a MASK with only that one bit set -- e.g. 1 << 1 is 0010. ANDing with this mask (isBitSet) isolates just that bit; ORing with it (setBit) forces that bit to 1 without disturbing others; ANDing with its NOT (clearBit) forces that bit to 0 without disturbing others."
+    },
+    {
+      "type": "heading",
+      "text": "3. XOR's Special Property: Self-Canceling"
+    },
+    {
+      "type": "keyPoints",
+      "title": "Why XOR is uniquely useful",
+      "points": [
+        "x ^ x = 0 -- any number XORed with itself cancels to zero",
+        "x ^ 0 = x -- XORing with zero changes nothing",
+        "XOR is commutative and associative -- order doesn't matter, so a ^ b ^ a always simplifies to b, regardless of grouping"
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "4. Classic Application: Find the Single Non-Duplicate"
+    },
+    {
+      "type": "code",
+      "lang": "java",
+      "filename": "Main.java",
+      "code": "public class Main {\n    static int findSingle(int[] nums) {\n        int result = 0;\n        for (int num : nums) {\n            result ^= num;\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {4, 1, 2, 1, 2};\n        System.out.println(findSingle(nums));\n    }\n}",
+      "output": "4",
+      "retypePractice": true,
+      "retypeId": "java-bits-find-single"
+    },
+    {
+      "type": "dryRun",
+      "title": "Tracing findSingle({4, 1, 2, 1, 2})",
+      "steps": [
+        "result=0. XOR with 4: result=4",
+        "XOR with 1: result=4^1=5",
+        "XOR with 2: result=5^2=7",
+        "XOR with 1: result=7^1=6 -- this cancels the FIRST 1's effect, since XORing the same value twice returns to the original",
+        "XOR with 2: result=6^2=4 -- this cancels the FIRST 2's effect too",
+        "Final result: 4 -- the only number that appeared once, since every OTHER pair canceled itself out"
+      ]
+    },
+    {
+      "type": "warning",
+      "text": "This solves a problem in O(n) time and O(1) EXTRA space -- no HashSet needed (unlike the Hashing lesson's duplicate-detection approach), since XOR's self-canceling property does all the work. This only applies when EVERY number appears exactly twice EXCEPT one -- a specific problem shape, not a general-purpose duplicate finder."
+    },
+    {
+      "type": "commonMistakes",
+      "title": "Common Beginner Mistakes",
+      "items": [
+        "Confusing & (bitwise AND) with && (logical AND from Operators) -- they operate on entirely different things: individual bits vs whole boolean expressions.",
+        "Forgetting 1 << position creates a mask with only ONE bit set -- a common building block for isolating, setting, or clearing a specific bit.",
+        "Misapplying the XOR-single-number trick to a problem where MULTIPLE numbers appear an odd number of times -- it only works cleanly when exactly one number appears an odd number of times and all others appear an even number of times.",
+        "Assuming >> always behaves like dividing by 2 exactly -- for negative numbers, right shift rounds toward negative infinity, which can surprise beginners expecting truncation toward zero."
+      ]
+    },
+    {
+      "type": "interviewQuestions",
+      "title": "Interview Questions",
+      "questions": [
+        {
+          "question": "What is the difference between & and &&?",
+          "answer": "& is the bitwise AND operator, comparing individual bits of two numbers. && is the logical AND operator (from Operators), combining two boolean expressions -- they operate on entirely different kinds of values."
+        },
+        {
+          "question": "How do you check if a specific bit is set in a number?",
+          "answer": "Use (num & (1 << position)) != 0 -- shifting 1 to create a mask isolating just that bit position, then ANDing with num to check if that bit is 1."
+        },
+        {
+          "question": "How can XOR find the single number in an array where every other number appears exactly twice?",
+          "answer": "XORing all elements together cancels out every pair (since x ^ x = 0), leaving only the number that appears once, since x ^ 0 = x. This achieves O(n) time and O(1) extra space, without needing a HashSet."
+        }
+      ],
+      "thirtySecondAnswer": "Bit manipulation works directly on a number's binary representation using &, |, ^, ~, <<, and >>. A mask created with 1 << position isolates, sets, or clears a specific bit via AND, OR, and AND-with-NOT respectively. XOR's self-canceling property (x ^ x = 0, x ^ 0 = x) enables the classic single-number trick: XORing every element in an array where all but one number appears exactly twice leaves only the unpaired number, solving the problem in O(n) time and O(1) extra space, without a HashSet."
+    },
+    {
+      "type": "memoryTrick",
+      "title": "Trick to Remember",
+      "text": "& isolates or checks a bit. | sets a bit. & ~ clears a bit. ^ toggles a bit, and cancels itself out when XORed with its own value twice -- 'XOR everything, survivors reveal themselves.'"
+    },
+    {
+      "type": "quickCheck",
+      "title": "Quick Understanding Check",
+      "questions": [
+        "What's the difference between & and &&?",
+        "How do you check if bit position p is set in a number num?",
+        "What two properties of XOR make the single-number trick work?",
+        "Does the XOR single-number trick work if more than one number appears an odd number of times?"
+      ]
+    }
+  ],
+  "codeExamples": [
+    { "id": "java-bits-basic-ops", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    public static void main(String[] args) {\n        int a = 5;  // binary: 0101\n        int b = 3;  // binary: 0011\n\n        System.out.println(a & b); // 0001 = 1\n        System.out.println(a | b); // 0111 = 7\n        System.out.println(a ^ b); // 0110 = 6\n        System.out.println(a << 1); // 1010 = 10 (5 * 2)\n        System.out.println(a >> 1); // 0010 = 2 (5 / 2, rounded down)\n    }\n}", "output": "1\n7\n6\n10\n2" },
+    { "id": "java-bits-check-set-clear", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static boolean isBitSet(int num, int position) {\n        return (num & (1 << position)) != 0;\n    }\n\n    static int setBit(int num, int position) {\n        return num | (1 << position);\n    }\n\n    static int clearBit(int num, int position) {\n        return num & ~(1 << position);\n    }\n\n    public static void main(String[] args) {\n        int num = 5; // binary: 0101\n\n        System.out.println(isBitSet(num, 0)); // bit 0 (value 1) -- is it set?\n        System.out.println(isBitSet(num, 1)); // bit 1 (value 2) -- is it set?\n\n        System.out.println(setBit(num, 1));   // set bit 1 -> 0111 = 7\n        System.out.println(clearBit(num, 0)); // clear bit 0 -> 0100 = 4\n    }\n}", "output": "true\nfalse\n7\n4" },
+    { "id": "java-bits-find-single", "lang": "java", "filename": "Main.java", "code": "public class Main {\n    static int findSingle(int[] nums) {\n        int result = 0;\n        for (int num : nums) {\n            result ^= num;\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {4, 1, 2, 1, 2};\n        System.out.println(findSingle(nums));\n    }\n}", "output": "4" }
+  ],
+  "retypePractice": [
+    { "id": "java-bits-basic-ops", "reference": "public class Main {\n    public static void main(String[] args) {\n        int a = 5;  // binary: 0101\n        int b = 3;  // binary: 0011\n\n        System.out.println(a & b); // 0001 = 1\n        System.out.println(a | b); // 0111 = 7\n        System.out.println(a ^ b); // 0110 = 6\n        System.out.println(a << 1); // 1010 = 10 (5 * 2)\n        System.out.println(a >> 1); // 0010 = 2 (5 / 2, rounded down)\n    }\n}" },
+    { "id": "java-bits-check-set-clear", "reference": "public class Main {\n    static boolean isBitSet(int num, int position) {\n        return (num & (1 << position)) != 0;\n    }\n\n    static int setBit(int num, int position) {\n        return num | (1 << position);\n    }\n\n    static int clearBit(int num, int position) {\n        return num & ~(1 << position);\n    }\n\n    public static void main(String[] args) {\n        int num = 5; // binary: 0101\n\n        System.out.println(isBitSet(num, 0)); // bit 0 (value 1) -- is it set?\n        System.out.println(isBitSet(num, 1)); // bit 1 (value 2) -- is it set?\n\n        System.out.println(setBit(num, 1));   // set bit 1 -> 0111 = 7\n        System.out.println(clearBit(num, 0)); // clear bit 0 -> 0100 = 4\n    }\n}" },
+    { "id": "java-bits-find-single", "reference": "public class Main {\n    static int findSingle(int[] nums) {\n        int result = 0;\n        for (int num : nums) {\n            result ^= num;\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {4, 1, 2, 1, 2};\n        System.out.println(findSingle(nums));\n    }\n}" }
+  ],
+  "practiceQuestions": [],
+  "interviewQuestions": true,
+  "leetcode": [],
+  "completionRules": {
+    "requireAllSectionsViewed": true,
+    "requireRetypeIds": ["java-bits-basic-ops", "java-bits-check-set-clear", "java-bits-find-single"]
+  }
+}
