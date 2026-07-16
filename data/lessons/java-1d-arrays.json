@@ -187,6 +187,43 @@
         "Why should a loop condition use i < array.length instead of i <= array.length?",
         "What exception is thrown for an invalid array index?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1929",
+      "number": 1929,
+      "title": "Concatenation of Array",
+      "difficulty": "Easy",
+      "link": "https://leetcode.com/problems/concatenation-of-array/",
+      "problemStatement": "Given an integer array nums of length n, return an array ans of length 2n where ans[i] == nums[i] and ans[i + n] == nums[i] for 0 <= i < n (i.e. ans is the concatenation of two nums arrays).",
+      "examples": [
+        { "input": "nums = [1,2,1]", "output": "[1,2,1,1,2,1]", "explanation": "The array ans is formed by concatenating nums with itself." },
+        { "input": "nums = [1,3,2,1]", "output": "[1,3,2,1,1,3,2,1]" }
+      ],
+      "constraints": ["n == nums.length", "1 <= n <= 1000", "1 <= nums[i] <= 1000"],
+      "hints": [
+        "The result array's length is always exactly double the input's length.",
+        "Every element needs to appear at TWO positions in the result: its own index, and its own index plus n.",
+        "You don't need any conditional logic — a single pass filling both halves at once works."
+      ],
+      "approaches": [
+        {
+          "label": "Brute Force",
+          "explanation": "Create the result array, then run two separate loops: one to copy nums into the first half, another to copy nums into the second half.",
+          "code": "class Solution {\n    public int[] getConcatenation(int[] nums) {\n        int n = nums.length;\n        int[] ans = new int[2 * n];\n\n        for (int i = 0; i < n; i++) {\n            ans[i] = nums[i];\n        }\n        for (int i = 0; i < n; i++) {\n            ans[i + n] = nums[i];\n        }\n        return ans;\n    }\n}",
+          "output": "For nums = [1,2,1]: ans = [1,2,1,1,2,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) (for the output array, not counting it as extra since it's the required result)"
+        },
+        {
+          "label": "Optimal",
+          "explanation": "Combine both copies into a single pass — for each index i, set both ans[i] and ans[i + n] at once. Same complexity, one loop instead of two.",
+          "code": "class Solution {\n    public int[] getConcatenation(int[] nums) {\n        int n = nums.length;\n        int[] ans = new int[2 * n];\n\n        for (int i = 0; i < n; i++) {\n            ans[i] = nums[i];\n            ans[i + n] = nums[i];\n        }\n        return ans;\n    }\n}",
+          "output": "For nums = [1,2,1]: ans = [1,2,1,1,2,1]",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n) (for the required output array)"
+        }
+      ]
     }
   ],
   "codeExamples": [
