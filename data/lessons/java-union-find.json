@@ -138,6 +138,102 @@
         "How does Union-Find detect a cycle while building a graph edge by edge?",
         "Can Union-Find tell you the shortest path between two nodes?"
       ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-684",
+      "number": 684,
+      "title": "Redundant Connection",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/redundant-connection/",
+      "problemStatement": "A tree with n nodes had one extra edge added, creating exactly one cycle. Given the edges in input order, return the edge that can be removed to restore a tree (if multiple answers exist, return the one appearing LAST in the input).",
+      "examples": [
+        { "input": "edges = [[1,2],[1,3],[2,3]]", "output": "[2,3]", "explanation": "1-2 and 1-3 already connect all 3 nodes as a tree; edge 2-3 closes a cycle and is the last edge that does so." }
+      ],
+      "constraints": ["3 <= n <= 1000"],
+      "hints": ["Process edges in order, union-ing their endpoints.", "The first edge whose two endpoints are ALREADY in the same set (union fails / find(a) == find(b)) is the redundant one -- since it's processed in input order, it's automatically the last such edge if there were ties earlier... actually the first cycle-closing edge found IS the answer since a tree-plus-one-edge has exactly one cycle."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Union-Find with path compression. Process edges in order: if both endpoints already share a root (find(a) == find(b)), this edge closes the (only) cycle -- return it immediately. Otherwise union them.",
+          "code": "class Solution {\n    private int[] parent;\n\n    public int[] findRedundantConnection(int[][] edges) {\n        int n = edges.length;\n        parent = new int[n + 1];\n        for (int i = 0; i <= n; i++) parent[i] = i;\n\n        for (int[] edge : edges) {\n            int rootA = find(edge[0]);\n            int rootB = find(edge[1]);\n            if (rootA == rootB) return edge;\n            parent[rootA] = rootB;\n        }\n        return new int[0];\n    }\n\n    private int find(int x) {\n        if (parent[x] != x) parent[x] = find(parent[x]);\n        return parent[x];\n    }\n}",
+          "output": "[2,3]",
+          "timeComplexity": "O(n * alpha(n))",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-721",
+      "number": 721,
+      "title": "Accounts Merge",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/accounts-merge/",
+      "problemStatement": "Given a list of accounts, each [name, email1, email2, ...], merge accounts that share at least one email (same person can have different accounts with the same name but different emails). Return merged accounts with emails sorted, name first.",
+      "examples": [
+        { "input": "accounts = [[\"John\",\"johnsmith@mail.com\",\"john_newyork@mail.com\"],[\"John\",\"johnsmith@mail.com\",\"john00@mail.com\"],[\"Mary\",\"mary@mail.com\"],[\"John\",\"johnny@mail.com\"]]", "output": "[[\"John\",\"john00@mail.com\",\"john_newyork@mail.com\",\"johnsmith@mail.com\"],[\"Mary\",\"mary@mail.com\"],[\"John\",\"johnny@mail.com\"]]", "explanation": "The first two John accounts share johnsmith@mail.com, so they merge. The last John (johnny@mail.com) shares no email with either, so stays separate." }
+      ],
+      "constraints": ["1 <= accounts.length <= 1000"],
+      "hints": ["Union-Find over EMAILS (not account indices) -- union every email within the same account together.", "After unioning, group all emails by their root, then attach the name from any account owning one of those emails."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Map each distinct email to an integer id. For each account, union all its emails together. Then group emails by their find() root using a map, sort each group's emails, and prepend the owner's name.",
+          "code": "class Solution {\n    private Map<Integer, Integer> parent = new HashMap<>();\n\n    public List<List<String>> accountsMerge(List<List<String>> accounts) {\n        Map<String, Integer> emailId = new HashMap<>();\n        Map<String, String> emailToName = new HashMap<>();\n        int id = 0;\n        for (List<String> account : accounts) {\n            String name = account.get(0);\n            for (int i = 1; i < account.size(); i++) {\n                String email = account.get(i);\n                if (!emailId.containsKey(email)) {\n                    emailId.put(email, id++);\n                    parent.put(emailId.get(email), emailId.get(email));\n                }\n                emailToName.put(email, name);\n                union(emailId.get(account.get(1)), emailId.get(email));\n            }\n        }\n\n        Map<Integer, TreeSet<String>> groups = new HashMap<>();\n        for (String email : emailId.keySet()) {\n            int root = find(emailId.get(email));\n            groups.computeIfAbsent(root, k -> new TreeSet<>()).add(email);\n        }\n\n        List<List<String>> result = new ArrayList<>();\n        for (TreeSet<String> emails : groups.values()) {\n            List<String> merged = new ArrayList<>();\n            merged.add(emailToName.get(emails.first()));\n            merged.addAll(emails);\n            result.add(merged);\n        }\n        return result;\n    }\n\n    private int find(int x) {\n        if (parent.get(x) != x) parent.put(x, find(parent.get(x)));\n        return parent.get(x);\n    }\n\n    private void union(int a, int b) {\n        int rootA = find(a), rootB = find(b);\n        if (rootA != rootB) parent.put(rootA, rootB);\n    }\n}",
+          "output": "[[\"John\",\"john00@mail.com\",\"john_newyork@mail.com\",\"johnsmith@mail.com\"],[\"Mary\",\"mary@mail.com\"],[\"John\",\"johnny@mail.com\"]]",
+          "timeComplexity": "O(n * alpha(n) * log n) (sorting emails per group)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1319",
+      "number": 1319,
+      "title": "Number of Operations to Make Network Connected",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/number-of-operations-to-make-network-connected/",
+      "problemStatement": "Given n computers and a list of direct connections, return the minimum number of cable removals+reconnections needed to connect all computers, or -1 if there aren't enough cables to do so.",
+      "examples": [
+        { "input": "n = 4, connections = [[0,1],[0,2],[1,2]]", "output": "1", "explanation": "0-1-2 are already connected (with 1 redundant cable among them); computer 3 is isolated. Move the redundant cable to connect 3. Answer: 1." }
+      ],
+      "constraints": ["1 <= n <= 1.5 * 10^5", "connections.length >= 0"],
+      "hints": ["Need at least n-1 cables to connect n computers -- if connections.length < n-1, return -1 immediately.", "Otherwise, count the number of connected components (using Union-Find); you need (components - 1) extra cable moves to connect them all."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "If there are fewer than n-1 cables, it's impossible -> -1. Otherwise, Union-Find over all connections to count the number of components; the answer is components - 1 (each move can join two components using one redundant cable).",
+          "code": "class Solution {\n    private int[] parent;\n\n    public int makeConnected(int n, int[][] connections) {\n        if (connections.length < n - 1) return -1;\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n        for (int[] c : connections) {\n            union(c[0], c[1]);\n        }\n        int components = 0;\n        for (int i = 0; i < n; i++) {\n            if (find(i) == i) components++;\n        }\n        return components - 1;\n    }\n\n    private int find(int x) {\n        if (parent[x] != x) parent[x] = find(parent[x]);\n        return parent[x];\n    }\n\n    private void union(int a, int b) {\n        int rootA = find(a), rootB = find(b);\n        if (rootA != rootB) parent[rootA] = rootB;\n    }\n}",
+          "output": "1",
+          "timeComplexity": "O(n + connections.length)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "type": "leetcode",
+      "id": "lc-1584",
+      "number": 1584,
+      "title": "Min Cost to Connect All Points",
+      "difficulty": "Medium",
+      "link": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+      "problemStatement": "Given points on a 2D plane, connect them all with the minimum total cost, where the cost between two points is their Manhattan distance. Return the minimum total cost (a Minimum Spanning Tree problem).",
+      "examples": [
+        { "input": "points = [[0,0],[2,2],[3,10],[5,2],[7,0]]", "output": "20" }
+      ],
+      "constraints": ["1 <= points.length <= 1000"],
+      "hints": ["This is Minimum Spanning Tree: build ALL pairwise edges (Manhattan distance), sort by cost, and run Kruskal's algorithm with Union-Find, skipping edges that would form a cycle."],
+      "approaches": [
+        {
+          "label": "Optimal",
+          "explanation": "Kruskal's MST: generate every pair's Manhattan distance as an edge, sort edges by cost ascending, then greedily add each edge via Union-Find as long as it connects two different components, accumulating cost until n-1 edges are added.",
+          "code": "class Solution {\n    private int[] parent;\n\n    public int minCostConnectPoints(int[][] points) {\n        int n = points.length;\n        List<int[]> edges = new ArrayList<>(); // {cost, i, j}\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                int cost = Math.abs(points[i][0] - points[j][0]) + Math.abs(points[i][1] - points[j][1]);\n                edges.add(new int[]{cost, i, j});\n            }\n        }\n        edges.sort((a, b) -> a[0] - b[0]);\n\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n\n        int totalCost = 0, edgesUsed = 0;\n        for (int[] edge : edges) {\n            int rootA = find(edge[1]), rootB = find(edge[2]);\n            if (rootA != rootB) {\n                parent[rootA] = rootB;\n                totalCost += edge[0];\n                edgesUsed++;\n                if (edgesUsed == n - 1) break;\n            }\n        }\n        return totalCost;\n    }\n\n    private int find(int x) {\n        if (parent[x] != x) parent[x] = find(parent[x]);\n        return parent[x];\n    }\n}",
+          "output": "20",
+          "timeComplexity": "O(n^2 log n) for sorting all pairwise edges",
+          "spaceComplexity": "O(n^2)"
+        }
+      ]
     }
   ],
   "codeExamples": [
